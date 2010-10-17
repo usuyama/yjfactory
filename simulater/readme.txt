@@ -8,3 +8,6 @@ java Assembler <input> <output>
 でoutputにバイナリが出力される。
 
 命令とコードの対応がまだ変わるみたいなので、opcodeを読む所はほとんど書いてない。
+
+
+シミュレータの注意
