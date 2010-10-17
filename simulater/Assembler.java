@@ -72,6 +72,12 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[3]));
 			    code.append("00000000000");
 			}
+			else if(inst[0].equals("lli")){
+			    code.append("110010");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("00000");
+			    code.append(gr.strToBstr(inst[2],16);
+			}
 			else if(inst[0].equals("jump")){
 			    code.append("010110");
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
