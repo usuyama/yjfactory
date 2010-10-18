@@ -1,4 +1,4 @@
-objs = parser.o simulator2.o
+objs = parser.o simulator.o
 CPPC = g++
 CFLAGS = -Wall
 .SUFFIXES: .o .cpp
