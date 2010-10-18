@@ -1,0 +1,11 @@
+#ifndef INCLUDED_PARSER
+#define INCLUDED_PARSER
+
+#include "inst_info.h"
+
+class parser{
+ public:
+  void parse(inst_info* inst, const char* hoge);
+};
+
+#endif
