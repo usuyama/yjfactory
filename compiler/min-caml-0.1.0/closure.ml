@@ -1,3 +1,7 @@
+(*-*-coding:euc-jp-*-*)
+
+open Printf
+
 type closure = { entry : Id.l; actual_fv : Id.t list }
 type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | Unit
@@ -16,8 +20,8 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
   | MakeCls of (Id.t * Type.t) * closure * t
-  | AppCls of Id.t * Id.t list
-  | AppDir of Id.l * Id.t list
+  | AppCls of Id.t * Id.t list (* apply closure *)
+  | AppDir of Id.l * Id.t list (* apply top level function *)
   | Tuple of Id.t list
   | LetTuple of (Id.t * Type.t) list * Id.t * t
   | Get of Id.t * Id.t
@@ -44,6 +48,7 @@ let rec fv = function
 
 let toplevel : fundef list ref = ref []
 
+(* known <= 自由変数をつかわない関数 *)
 let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure_g) *)
   | KNormal.Unit -> Unit
   | KNormal.Int(i) -> Int(i)
@@ -98,9 +103,61 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
   | KNormal.Get(x, y) -> Get(x, y)
   | KNormal.Put(x, y, z) -> Put(x, y, z)
   | KNormal.ExtArray(x) -> ExtArray(Id.L(x))
-  | KNormal.ExtFunApp(x, ys) -> AppDir(Id.L("min_caml_" ^ x), ys)
+  | KNormal.ExtFunApp(x, ys) -> AppDir(Id.L("yj_" ^ x), ys)
 
 let f e =
   toplevel := [];
   let e' = g M.empty S.empty e in
   Prog(List.rev !toplevel, e')
+
+
+let print_t t = (* Closure.t -> Closure.t *)
+  (* i : indent level *)
+  let rec pt i t =
+    let i = i + 1
+    in let pi () =
+      (printf "%s" (String.make (i * 2) ' '))
+    in
+      pi ();
+      (match t with
+	 | Unit -> printf "Unit\n"
+	 | Int i -> printf "Int(%s)\n" (string_of_int i)
+	 | Float f -> printf "Float(%s)\n" (string_of_float f)
+	 | Var t -> printf "Var(%s)\n" t
+	 | Tuple t -> printf "Tuple Start\n";List.iter (pi ();printf "  %s\n") t;pi ();printf "Tuple end\n"
+	 | Neg t -> printf "Neg %s\n" t;
+	 | Add(t1, t2) -> printf "Add %s + %s\n" t1 t2
+	 | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 t2
+	 | FNeg t -> printf "FNeg %s\n" t
+	 | FAdd(t1, t2) -> printf "FAdd %s +. %s\n" t1 t2
+	 | FSub(t1, t2) -> printf "FSub %s -. %s\n" t1 t2
+	 | FMul(t1, t2) -> printf "FMul %s *. %s\n" t1 t2
+	 | FDiv(t1, t2) -> printf "FDiv %s /. %s\n" t1 t2
+	 | IfEq(t1, t2, t3, t4) -> printf "IF %s = %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
+	 | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
+	 | Let((t1, _), t3, t4) -> printf "LET %s =\n" t1;pt i t3;pi ();printf "IN\n";pt i t4
+	 | LetTuple(itl, t1, t2) -> (printf "LETTUPLE\n";
+				    (List.iter
+				      (fun (id, _ ) -> pi ();printf "  %s\n" id)
+				      itl);
+				    pi ();printf "= %s\n" t1;
+				    pi ();printf "IN\n";
+				    pt i t2;)
+	 | ExtArray(Id.L(t)) -> printf "ExtArray %s\n" t
+	 | Get(t1, t2) -> printf "GET\n %s %s" t1 t2
+	 | Put(t1, t2, t3) -> printf "PUT %s %s %s" t1 t2 t3
+	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s/n" t1;
+					    pi ();printf "entry: %s\n" (Id.str_of_l clo.entry))
+	 | AppCls(t, tl) -> (printf "AppCls %s\n" t;
+			     pi ();List.iter (fun t -> printf "  %s" t) tl;printf "\n")
+	 | AppDir(l, tl) -> (printf "AppDir %s\n" (Id.str_of_l l);
+			     pi ();List.iter (fun t -> printf "  %s" t) tl;printf "\n"))
+ in (printf "=== Closure.t ===\n";pt 0 t;printf "=== End ===\n";t)
+
+let print (Prog(fundef_list, t)) = (* Closure.prog -> Closure.prog *)
+  let print_fundef f =
+    printf "<<< fundef : %s >>>\nargs:" (Id.str_of_l (fst f.name));
+    List.iter (fun (t,_) -> printf "  %s" t) f.args;
+    printf "\nformal_fv:";List.iter (fun (t,_) -> printf "  %s" t) f.formal_fv;printf "\n";
+    printf "body:\n";ignore(print_t f.body);()    
+  in (printf "=== Closure.prog ===\nfundef_list:\n";List.iter print_fundef fundef_list;ignore (print_t t);printf "=== END ===\n";Prog(fundef_list, t))

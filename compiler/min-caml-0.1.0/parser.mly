@@ -1,3 +1,4 @@
+/*-*-coding:euc-jp-*-*/
 %{
 (* parserが利用する変数、関数、型などの定義 *)
 open Syntax
@@ -134,10 +135,11 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     %prec prec_app
     { Array($2, $3) }
 | error
-    { failwith
-	(Printf.sprintf "parse error near characters %d-%d"
+	{ failwith
+	(Printf.sprintf "parse error near characters %d-%d, L: %d"
 	   (Parsing.symbol_start ())
-	   (Parsing.symbol_end ())) }
+	   (Parsing.symbol_end ())
+	(!Syntax.count_line)) }
 
 fundef:
 | IDENT formal_args EQUAL exp

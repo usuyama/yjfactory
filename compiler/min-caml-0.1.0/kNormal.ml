@@ -1,3 +1,5 @@
+(*-*- coding:euc-jp -*-*)
+open Printf
 (* give names to intermediate values (K-normalization) *)
 
 type t = (* K正規化後の式 (caml2html: knormal_t) *)
@@ -41,6 +43,7 @@ let rec fv = function (* 式に出現する（自由な）変数 (caml2html: knormal_fv) *)
   | Put(x, y, z) -> S.of_list [x; y; z]
   | LetTuple(xs, y, e) -> S.add y (S.diff (fv e) (S.of_list (List.map fst xs)))
 
+(* generate let x = e in k x.  *)
 let insert_let (e, t) k = (* letを挿入する補助関数 (caml2html: knormal_insert) *)
   match e with
   | Var(x) -> k x
@@ -49,6 +52,7 @@ let insert_let (e, t) k = (* letを挿入する補助関数 (caml2html: knormal_insert) *
       let e', t' = k x in
       Let((x, t), e, e'), t'
 
+(* TypeEnv -> Syntax.t -> (KNormal.t, Type.t) *)
 let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
   | Syntax.Unit -> Unit, Type.Unit
   | Syntax.Bool(b) -> Int(if b then 1 else 0), Type.Int (* 論理値true, falseを整数1, 0に変換 (caml2html: knormal_bool) *)
@@ -177,3 +181,51 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 		(fun z -> Put(x, y, z), Type.Unit)))
 
 let f e = fst (g M.empty e)
+
+
+let print t = (* KNormal.t -> KNormal.t *)
+  (* i : indent level *)
+  let rec pt i t =
+    let i = i + 1
+    in let pi () =
+      (printf "%s" (String.make (i * 2) ' '))
+    in
+      pi ();
+      (match t with
+	 | Unit -> printf "Unit\n"
+	 | Int i -> printf "Int(%s)\n" (string_of_int i)
+	 | Float f -> printf "Float(%s)\n" (string_of_float f)
+	 | Var t -> printf "Var(%s)\n" t
+	 | Tuple t -> printf "Tuple Start\n";List.iter (pi ();printf "  %s\n") t;pi ();printf "Tuple end\n"
+	 | Neg t -> printf "Neg %s\n" t;
+	 | Add(t1, t2) -> printf "Add %s + %s\n" t1 t2
+	 | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 t2
+	 | FNeg t -> printf "FNeg %s\n" t
+	 | FAdd(t1, t2) -> printf "FAdd %s +. %s\n" t1 t2
+	 | FSub(t1, t2) -> printf "FSub %s -. %s\n" t1 t2
+	 | FMul(t1, t2) -> printf "FMul %s *. %s\n" t1 t2
+	 | FDiv(t1, t2) -> printf "FDiv %s /. %s\n" t1 t2
+	 | IfEq(t1, t2, t3, t4) -> printf "IF %s = %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
+	 | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
+	 | Let((t1, _), t3, t4) -> printf "LET %s =\n" t1;pt i t3;pi ();printf "IN\n";pt i t4
+	 | LetRec(fundef, t) -> (printf "LetRec %s" (fst fundef.name);
+				 (List.iter
+				    (fun (id, _ ) -> printf " %s" id)
+				    fundef.args);
+				 printf " =\n";
+				 pt i fundef.body;
+				 pi ();printf "IN\n";
+				 pt i t);
+	 | App(t, tl) -> printf "APP %s\n" t;pi ();printf "ACTUAL_ARGS";List.iter (printf " %s") tl;printf "\n"
+	 | LetTuple(itl, t1, t2) -> (printf "LETTUPLE\n";
+				    (List.iter
+				      (fun (id, _ ) -> pi ();printf "  %s\n" id)
+				      itl);
+				    pi ();printf "= %s\n" t1;
+				    pi ();printf "IN\n";
+				    pt i t2;)
+	 | ExtArray t -> printf "ExtArray %s\n" t
+	 | ExtFunApp(t, tl) -> printf "ExtFunApp %s\n" t;List.iter (pi ();printf "  %s\n") tl
+	 | Get(t1, t2) -> printf "GET\n %s %s" t1 t2
+	 | Put(t1, t2, t3) -> printf "PUT %s %s %s" t1 t2 t3)
+ in (printf "=== KNormal.t ===\n";pt 0 t;printf "=== End ===\n";t);;

@@ -1,5 +1,6 @@
 (* customized version of Map *)
 
+(* functor *)
 module M =
   Map.Make
     (struct

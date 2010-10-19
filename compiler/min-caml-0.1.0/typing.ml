@@ -1,3 +1,4 @@
+(*-*- coding:euc-jp -*-*)
 (* type inference/reconstruction *)
 
 open Syntax

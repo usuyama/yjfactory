@@ -1,3 +1,4 @@
+(*-*- coding:euc-jp-*-*)
 {
 (* lexerが利用する変数、関数、型などの定義 *)
 open Parser
@@ -5,7 +6,7 @@ open Type
 }
 
 (* 正規表現の略記 *)
-let space = [' ' '\t' '\n' '\r']
+let space = [' ' '\t' '\r']
 let digit = ['0'-'9']
 let lower = ['a'-'z']
 let upper = ['A'-'Z']
@@ -13,6 +14,8 @@ let upper = ['A'-'Z']
 rule token = parse
 | space+
     { token lexbuf }
+| '\n'
+    { Syntax.count_line := 1 + !Syntax.count_line;token lexbuf}
 | "(*"
     { comment lexbuf; (* ネストしたコメントのためのトリック *)
       token lexbuf }
@@ -84,10 +87,11 @@ rule token = parse
     { IDENT(Lexing.lexeme lexbuf) }
 | _
     { failwith
-	(Printf.sprintf "unknown token %s near characters %d-%d"
+	(Printf.sprintf "unknown token %s near characters %d-%d, L:%d"
 	   (Lexing.lexeme lexbuf)
 	   (Lexing.lexeme_start lexbuf)
-	   (Lexing.lexeme_end lexbuf)) }
+	   (Lexing.lexeme_end lexbuf)
+	   (!Syntax.count_line)) }
 and comment = parse
 | "*)"
     { () }

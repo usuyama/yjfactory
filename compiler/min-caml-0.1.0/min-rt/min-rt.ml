@@ -1,3 +1,4 @@
+(*-*-coding:euc-jp-*-*)
 (****************************************************************)
 (*                                                              *)
 (* Ray Tracing Program for (Mini) Objective Caml                *)

@@ -1,3 +1,4 @@
+(*-*-coding:euc-jp-*-*)
 (* rename identifiers to make them unique (alpha-conversion) *)
 
 open KNormal

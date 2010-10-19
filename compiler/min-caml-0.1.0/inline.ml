@@ -29,4 +29,4 @@ let rec g env = function (* インライン展開ルーチン本体 (caml2html: inline_g) *)
   | LetTuple(xts, y, e) -> LetTuple(xts, y, g env e)
   | e -> e
 
-let f e = g M.empty e
+let f e = g M.empty e (* M : func list of is smaller than threashold *)
