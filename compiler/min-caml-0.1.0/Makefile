@@ -9,7 +9,7 @@ NCSUFFIX = .opt
 CC = gcc
 CFLAGS = -g -O2 -Wall
 
-default: debug-code top $(RESULT)
+default: debug-code top $(RESULT) fib_test
 ## [自分（住井）用の注]
 ## ・makeコマンドはdebug-codeでmin-camlが作られることを知らない(?)ので、
 ##   $(RESULT)を入れておかないとdo_testで「min-camlがない」というエラーになる
@@ -35,6 +35,8 @@ join-reg join-reg2 non-tail-if non-tail-if2 \
 inprod inprod-rec inprod-loop matmul matmul-flat
 
 do_test: $(TESTS:%=test/%.cmp)
+fib_test: 
+	./min-caml test/fib;cat test/fib.s
 
 .PRECIOUS: test/%.s test/% test/%.res test/%.ans test/%.cmp
 TRASH = $(TESTS:%=test/%.s) $(TESTS:%=test/%) $(TESTS:%=test/%.res) $(TESTS:%=test/%.ans) $(TESTS:%=test/%.cmp)
