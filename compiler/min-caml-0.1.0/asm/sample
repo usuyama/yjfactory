@@ -1,0 +1,20 @@
+test:
+	li	t0, 2
+	bgt	arg0, t0, else
+	nop	#delay slot
+	add	va0, r0, arg0
+	ret
+else:
+	addi	arg0, arg0, 1
+	b	test
+.global	entry
+entry:
+	li	arg0, 10
+	sw	ra, [sp + 4]
+	call	test
+	nop	#delay slot
+	lw	[sp + 4], ra
+	halt
+	
+	
+	

@@ -1,0 +1,1 @@
+promはこっちにあるのはmodelsimでのテスト用で、実機用にはiSEのジェネレータでblobkRAMで実装します。
