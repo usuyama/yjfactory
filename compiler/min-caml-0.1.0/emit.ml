@@ -75,7 +75,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), SLL(y, z') -> Printf.fprintf oc "\tsll\t%s, %s, %s\n" y (pp_id_or_imm z') x
   | NonTail(x), Ld(y, z') -> Printf.fprintf oc "\tlw\t[%s + %s], %s\n" y (pp_id_or_imm z') x
   | NonTail(_), St(x, y, z') -> Printf.fprintf oc "\tsw\t%s, [%s + %s]\n" x y (pp_id_or_imm z')
-  | NonTail(_), Comment(s) -> Printf.fprintf oc "\t! %s\n" s
+  | NonTail(_), Comment(s) -> Printf.fprintf oc "\t# %s\n" s
   (* 退避の仮想命令の実装 (caml2html: emit_save) *)
   | NonTail(_), Save(x, y) when List.mem x allregs && not (S.mem y !stackset) ->
       save y;
@@ -102,11 +102,11 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       Printf.fprintf oc "\tnop\n"
 (* if *)
   | Tail, IfEq(x, y, e1, e2) ->
-      g'_tail_if oc e1 e2 "beq" x y
+      g'_tail_if oc e1 e2 "bneq" x y
   | Tail, IfLE(x, y, e1, e2) -> (* x <= y *)
-      g'_tail_if oc e1 e2 "bgt" y x
+      g'_tail_if oc e1 e2 "bgt" x y
   | Tail, IfGE(x, y, e1, e2) -> (* x >= y *)
-      g'_tail_if oc e1 e2 "bge" x y
+      g'_tail_if oc e1 e2 "bgt" y x
   | NonTail(z), IfEq(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "beq" x y
   | NonTail(z), IfLE(x, y, e1, e2) ->
@@ -182,7 +182,7 @@ and g'_args oc x_reg_cl ys zs =
       (0, x_reg_cl)
       ys in
   List.iter
-    (fun (y, r) -> print_mov oc y r)
+    (fun (y, r) -> print_mov oc r y)
     (shuffle reg_sw yrs)
   
 
@@ -196,6 +196,7 @@ let f oc (Prog(data, fundefs, e)) =
   Format.eprintf "generating assembly...@.";
   Printf.fprintf oc "entry:\n";
   print_li oc reg_sp 0;
+  print_li oc reg_ra 0;
   stackset := S.empty;
   stackmap := [];
   g oc (NonTail("%g0"), e);

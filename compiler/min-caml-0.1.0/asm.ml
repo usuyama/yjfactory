@@ -109,19 +109,17 @@ let rec print_t t i =
   in let pi () =
       (printf "%s" (String.make (i * 2) ' '))
   in
-    pi ();printf "=== Asm.t ===\n";
-    (match t with
+    match t with
       | Ans(e) -> print_exp e i
       | Let((t1, typ), e, t) -> (pi ();printf "Let %s = \n" t1;
 				 print_exp e i;pi ();printf "In\n";
-				 print_t t i));
-    pi ();printf "=== End Asm.t ===\n")
+				 print_t t i))
 and print_exp t i = (* Asm.t -> Asm.t *)
   (let i = i + 1
   in let pi () =
       (printf "%s" (String.make (i * 2) ' '))
   in
-    pi ();printf "=== Asm.exp ===\n";pi ();
+    pi ();
     (match t with
        | Nop -> printf "Nop\n"
        | Set i -> printf "Set(%s)\n" (string_of_int i)
@@ -152,8 +150,7 @@ and print_exp t i = (* Asm.t -> Asm.t *)
 				   pi ();printf "int args:";List.iter (fun t -> printf "  %s" t) int_args;printf "\n";
 				   pi ();printf "float args:";List.iter (fun t -> printf "  %s" t) float_args;printf "\n")
        | Save(t1,t2) -> printf "Save %s %s\n" t1 t2
-       | Restore(t) -> printf "Restore t\n");
-    pi ();printf "=== End Asm.exp ===\n")
+       | Restore(t) -> printf "Restore t\n"))
 
 let print str (Prog(float_list, fundef_list, t)) = (* string -> Asm.prog -> Asm.prog *)
   let print_fundef f =
