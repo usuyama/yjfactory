@@ -1,4 +1,17 @@
-	j	entry
+entry:
+	lli	%sp, 0
+	lli	%r1, 30
+	sw	%ra, [%sp + 4]
+	jal	fib.10
+	nop	
+	nop
+	lw	[%sp + 4], %ra
+	sw	%ra, [%sp + 4]
+	jal	yj_print_int
+	nop	
+	nop
+	lw	[%sp + 4], %ra
+	halt
 fib.10:
 	lli	%r2, 1
 	bgt	%r2, %r1, bgt_else.24
@@ -27,16 +40,3 @@ bgt_else.24:
 	add	%r1, %r2, %r1
 	jr	%ra
 	nop
-entry:
-	lli	%r1, 30
-	sw	%ra, [%sp + 4]
-	jal	fib.10
-	nop	
-	nop
-	lw	[%sp + 4], %ra
-	sw	%ra, [%sp + 4]
-	jal	yj_print_int
-	nop	
-	nop
-	lw	[%sp + 4], %ra
-	halt

@@ -194,10 +194,11 @@ let h oc { name = Id.L(x); args = _; fargs = _; body = e; ret = _ } =
 
 let f oc (Prog(data, fundefs, e)) =
   Format.eprintf "generating assembly...@.";
-  Printf.fprintf oc "\tj\tentry\n";
-  List.iter (fun fundef -> h oc fundef) fundefs;
   Printf.fprintf oc "entry:\n";
+  print_li oc reg_sp 0;
   stackset := S.empty;
   stackmap := [];
   g oc (NonTail("%g0"), e);
   Printf.fprintf oc "\thalt\n";
+
+  List.iter (fun fundef -> h oc fundef) fundefs;
