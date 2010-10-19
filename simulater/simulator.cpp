@@ -66,27 +66,20 @@ public:
 
   void doInst(int end){
     int opcode;
+    int tmp;
 
     while(pc!=end){
       opcode = inst_mem[pc].opcode;
       switch (opcode){
       case ADD :
-	regs[inst_mem[pc].op3] = regs[inst_mem[pc].op1] + regs[inst_mem[pc].op2];
-	pc++;
-	break;
-      case LOAD :
-	cout << "load\n";
-	regs[inst_mem[pc].op1] = data_mem[regs[inst_mem[pc].op2]] + inst_mem[pc].op3;
-	pc++;
-	break;
-      case STORE :
-	cout << "store\n";
-	data_mem[regs[inst_mem[pc].op2]+inst_mem[pc].op3] = regs[inst_mem[pc].op1];
+	cout << "add\n";
+	regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + regs[inst_mem[pc].op3];
 	pc++;
 	break;
       case JUMP :
 	cout << "jump\n";
 	pc = inst_mem[pc].op1;
+	//	cout << inst_mem[pc].op1 << endl;
 	break;
       case BEQ :
 	cout << "beq\n";
@@ -94,6 +87,26 @@ public:
 	  pc += inst_mem[pc].op3;
 	else
 	  pc++;
+	break;
+      case LW :
+	tmp=inst_mem[pc].op2+inst_mem[pc].op3;
+	cout << "lw\n";
+	if ((tmp >= MEMSIZE) || tmp < 0){
+	  cout << "exceed memory" << tmp << endl;
+	  exit(1);
+	}
+	regs[inst_mem[pc].op1] = data_mem[tmp];
+	pc++;
+	break;
+      case SW :
+	cout << "sw\n";
+	tmp=inst_mem[pc].op2+inst_mem[pc].op3;	
+	if ((tmp >= MEMSIZE) || tmp < 0){
+	  cout << "exceed memory" << tmp << endl;
+	  exit(1);
+	}
+	data_mem[tmp] = regs[inst_mem[pc].op1];
+	pc++;
 	break;
       case LLI :
 	cout << "lli\n";

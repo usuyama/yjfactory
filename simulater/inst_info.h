@@ -10,9 +10,12 @@ class inst_info{
 };
 
 enum { ADD,
-       LOAD,
-       STORE,
+       LW,
+       SW,
        JUMP,
+       JAL,
+       JR,
+       BGT,
        BEQ,
        LLI,
        HALT};

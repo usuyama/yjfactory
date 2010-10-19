@@ -2,9 +2,35 @@ import java.io.*;
 import java.util.*;
 
 class GetReg{
+    public StringBuffer signInt_toStr_nlen(int num, int len){ /* 相対jumpの時に使う */
+	StringBuffer regStr = new StringBuffer();
+	int mask = 1 << (len-2);
+	if(num >= (1 << (len-1)) || num < -(1 << (len-1))){
+	    System.out.println("out of range, jump to too far address");
+	    System.exit(1);
+	}
+	if(num < 0) { regStr.append('1'); num+=(1 << (len-1)); }
+	else regStr.append('0');
+
+	while(mask!=0){
+	    if(num/mask!=0){
+		regStr.append('1');
+		num-=mask;
+	    }
+	    else regStr.append('0');
+	    mask=mask >> 1;
+	}
+	return regStr;
+    }
+
+
     public StringBuffer toStr_nlen(int num, int len){ /* int を 長さlenの2進数表示のstrigbufferに変換 */
 	StringBuffer regStr = new StringBuffer();
 	int mask = 1 << (len-1);
+	if(num >= 1 << len){
+	    System.out.println("out of range, jump to too far address");
+	    System.exit(1);
+	}
 	for(int i=0;i<len;i++){
 	    if((mask&num)!=0)
 		regStr.append('1');
@@ -18,14 +44,36 @@ class GetReg{
 	return toStr_nlen(Integer.parseInt(s),len);
     }
     public StringBuffer getRegnum(String s){ /* rX を X を長さ5の2進数表示のstringbufferに変換 */
-	if (s.charAt(0)!='r'){
+	if (s.charAt(0)!='%'){
 	    System.out.println("called getRegnum, but argument s="+s+" : not a register");
 	    System.exit(1);
 	}
 
-	int tmp = Integer.parseInt(s.substring(1));
-	return toStr_nlen(tmp,5);
-    }	
+	if((s.substring(1,3)).equals("sp"))
+	    return toStr_nlen(30,5);
+	else if((s.substring(1,3)).equals("ra"))
+	    return toStr_nlen(31,5);
+	else {
+	    int tmp = Integer.parseInt(s.substring(2));
+	    return toStr_nlen(tmp,5);
+	}
+    }
+    public StringBuffer getRelate(String s){
+	System.out.println(s.substring(1,s.length()-1));
+
+	String[] str = (s.substring(1,s.length()-1)).split("\\+");
+	//	System.out.println(s);
+	//	System.out.println(str[0]);
+	//	System.out.println(str[1]);
+	
+	return getRegnum(str[0]).append(strToBstr(str[1],16));
+	    //	int len = s.length();
+	    //	if(s[0]!='[' || s[len-1]!=']'){
+	    //	    System.out.prinln("called getRelate, but argument s="+s+ ": net a format [%rx + num]");
+	    //	    System.exit(1);
+	    //	}
+	    //	getRegnum
+    }
 }
 
 public class Assembler {
@@ -44,7 +92,7 @@ public class Assembler {
 			    tagmap.put(str.substring(0,str.length()-1), count);
 			}
 			else{
-			    instMem.add(str);
+			    instMem.add(str.substring(1));
 			    count++;
 			}
 		}
@@ -63,8 +111,8 @@ public class Assembler {
 		    for(int k=0;k<instMem.size();k++){
 			StringBuffer code = new StringBuffer(32);
 			String str= instMem.get(k);
-			String inst[]= str.split(" ");
-
+			String inst[]= str.split("[ ,\t]");
+			System.out.println(inst[0]+"aaa");
 			if(inst[0].equals("add")){
 			    code.append("111000");
 			    code.append(gr.getRegnum(inst[1]));
@@ -72,15 +120,53 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[3]));
 			    code.append("00000000000");
 			}
+			else if(inst[0].equals("subi")){
+			    code.append("101010");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			}
 			else if(inst[0].equals("lli")){
 			    code.append("110010");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000");
-			    code.append(gr.strToBstr(inst[2],16);
+			    code.append(gr.strToBstr(inst[2],16));
 			}
-			else if(inst[0].equals("jump")){
+			else if(inst[0].equals("sw")){
+			    code.append("001111");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRelate(inst[2]));
+			}
+			else if(inst[0].equals("lw")){
+			    code.append("001110");
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRelate(inst[1]));
+			}
+			else if(inst[0].equals("jr")){
+			    code.append("010011");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("000000000000000000000");
+			}
+			else if(inst[0].equals("bgt")){
+			    code.append("001100");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
+			}
+			else if(inst[0].equals("jal")){
 			    code.append("010110");
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
+			}
+			else if(inst[0].equals("j")){
+			    code.append("010101");
+			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
+			}
+			else if(inst[0].equals("nop")){
+			    code.append("00000000000000000000000000000000");
+			}
+			else if(inst[0].equals("halt")){
+			    code.append("110000");
+			    code.append("00000000000000000000000000");
 			}
 			else{
 			    System.out.println(inst[0]+" is not defined");

@@ -22,12 +22,19 @@ int parser::strToInt(string s, int n){ /* 符号有りで string -> int */
 
 int parser::u_strToInt(string s, int n){
   int i,ret=0;
+  //  cout << endl << s << endl;
+  
   for(i=0;i<n;i++){
-    if(s[i]=='1')
+    if(s[i]=='1'){
+      //      cout << 'x';
       ret=ret*2+1;
-    else
+    }
+    else{
       ret*=2;
+      //      cout << 'o';
+    }
   }
+  //  cout << ret << "ret" << endl;
   return ret;
 }
 
@@ -41,10 +48,12 @@ int parser::ext_op3(string inst){
     return u_strToInt(inst.substr(16,21), 5);
   }
 int parser::ext_u16(string inst){
+  //  cout << "ext_u16 called with "+inst<<endl;
+  //  cout << "under16 :" << inst.substr(16,32) << endl;
     return strToInt(inst.substr(16,32), 16);
   }
 int parser::ext_u26(string inst){
-    return u_strToInt(inst.substr(6,32),16);
+  return u_strToInt(inst.substr(6,32),26);
   }
 
 void parser::fill_3reg(inst_info* inst_mem, int index, string str){
@@ -64,6 +73,7 @@ void parser::fill_1reg_1imm(inst_info* inst_mem, int index, string str){
   // only used for "lli"
 }
 void parser::fill_1imm(inst_info* inst_mem, int index, string str){
+  //  cout << endl << ext_u26(str) << " " << str << endl;
   inst_mem[index].op1=ext_u26(str);
   inst_mem[index].op2=-1;
   inst_mem[index].op3=-1;
@@ -91,22 +101,23 @@ void parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= LLI;	
       fill_1reg_1imm(inst_mem,index,str);
     }
-    else if(inst=="010110"){ // jump
+    else if(inst=="010101"){ // jump
       cout << "JUMP";
       inst_mem[index].opcode=JUMP;
       fill_1imm(inst_mem,index,str);
+      //      cout << inst_mem[index].op1;
     }
     else if(inst=="001110"){ // load
-      cout << "LOAD";
-      inst_mem[index].opcode=LOAD;
+      cout << "LW";
+      inst_mem[index].opcode=LW;
       fill_2reg_1imm(inst_mem,index,str);
     }
     else if(inst=="001111"){ // store
       cout << "STORE";
-      inst_mem[index].opcode=STORE;
+      inst_mem[index].opcode=SW;
       fill_2reg_1imm(inst_mem,index,str);
     }
-    else if(inst=="000000"){ // halt
+    else if(inst=="110000"){ // halt
       inst_mem[index].opcode=HALT;
     }
     index++;
