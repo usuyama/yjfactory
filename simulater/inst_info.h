@@ -10,6 +10,8 @@ class inst_info{
 };
 
 enum { ADD,
+       ADDI,
+       SUBI,
        LW,
        SW,
        JUMP,
@@ -18,6 +20,7 @@ enum { ADD,
        BGT,
        BEQ,
        LLI,
+       NOP,
        HALT};
 
 #endif

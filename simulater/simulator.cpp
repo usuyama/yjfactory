@@ -76,6 +76,20 @@ public:
 	regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + regs[inst_mem[pc].op3];
 	pc++;
 	break;
+      case ADDI :
+	cout << "addi\n";
+	regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + inst_mem[pc].op3;
+	pc++;
+	break;
+      case SUBI :
+	cout << "subi\n";
+	regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] - inst_mem[pc].op3;
+	pc++;
+	break;
+      case JR :
+	cout << "jr\n";
+	pc = regs[inst_mem[pc].op1];
+	break;
       case JUMP :
 	cout << "jump\n";
 	pc = inst_mem[pc].op1;
@@ -111,6 +125,24 @@ public:
       case LLI :
 	cout << "lli\n";
 	regs[inst_mem[pc].op1] = inst_mem[pc].op2;
+	pc++;
+	break;
+      case BGT :
+	cout << "bgt\n";
+	if(regs[inst_mem[pc].op1] > regs[inst_mem[pc].op2])
+	  pc +=inst_mem[pc].op3;
+	else 
+	  pc++;
+	break;
+      case JAL :
+	cout << "jal\n";
+	regs[31] = pc+1;
+	cout << inst_mem[pc].op1 << " <- jals dest\n";
+	pc = inst_mem[pc].op1 ;
+	cout << pc << "pc after\n";
+	break;
+      case NOP :
+	cout << "nop\n";
 	pc++;
 	break;
       case HALT :

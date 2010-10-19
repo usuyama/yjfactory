@@ -91,34 +91,70 @@ void parser::parse(inst_info* inst_mem, const char* program){
   string inst;
   while(getline(fin,str)){
     inst = str.substr(0,6);
-    if(inst=="111000"){ // add
-      cout << "ADD";
+    if(inst=="100001"){ // add
+      cout << "ADD\n";
       inst_mem[index].opcode= ADD;
       fill_3reg(inst_mem,index,str);
     }
+    else if(inst=="101001"){ // addi
+      cout << "ADDI\n";
+      inst_mem[index].opcode= ADDI;
+      fill_2reg_1imm(inst_mem,index,str);
+    }
+    else if(inst=="101010"){ // subi
+      cout << "SUBI\n";
+      inst_mem[index].opcode= SUBI;
+      fill_2reg_1imm(inst_mem,index,str);
+    }
     else if(inst=="110010"){ // lli
-      cout << "LLI";
+      cout << "LLI\n";
       inst_mem[index].opcode= LLI;	
       fill_1reg_1imm(inst_mem,index,str);
     }
+    else if(inst=="001100"){ // bgt
+      cout << "BGT\n";
+      inst_mem[index].opcode=BGT;
+      fill_2reg_1imm(inst_mem,index,str);
+    }
     else if(inst=="010101"){ // jump
-      cout << "JUMP";
+      cout << "JUMP\n";
       inst_mem[index].opcode=JUMP;
       fill_1imm(inst_mem,index,str);
       //      cout << inst_mem[index].op1;
     }
+    else if(inst=="010110"){ // jal
+      cout << "JAL\n";
+      inst_mem[index].opcode=JAL;
+      fill_1imm(inst_mem,index,str);
+      //      cout << inst_mem[index].op1;
+    }
+    else if(inst=="010011"){ // jr
+      cout << "JUMP\n";
+      inst_mem[index].opcode=JR;
+      fill_3reg(inst_mem,index,str);
+      //      cout << inst_mem[index].op1;
+    }
     else if(inst=="001110"){ // load
-      cout << "LW";
+      cout << "LW\n";
       inst_mem[index].opcode=LW;
       fill_2reg_1imm(inst_mem,index,str);
     }
     else if(inst=="001111"){ // store
-      cout << "STORE";
+      cout << "SW\n";
       inst_mem[index].opcode=SW;
       fill_2reg_1imm(inst_mem,index,str);
     }
+    else if(inst=="000000"){
+      cout << "NOP\n";
+      inst_mem[index].opcode=NOP;
+    }
     else if(inst=="110000"){ // halt
+      cout << "HALT\n";
       inst_mem[index].opcode=HALT;
+    }
+    else{
+      cout << "unknown opcode" << inst << endl;
+      exit(1);
     }
     index++;
   }

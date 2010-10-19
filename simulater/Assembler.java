@@ -61,7 +61,7 @@ class GetReg{
     public StringBuffer getRelate(String s){
 	System.out.println(s.substring(1,s.length()-1));
 
-	String[] str = (s.substring(1,s.length()-1)).split("\\+");
+	String[] str = (s.substring(1,s.length()-1)).split(" \\+ ");
 	//	System.out.println(s);
 	//	System.out.println(str[0]);
 	//	System.out.println(str[1]);
@@ -111,14 +111,20 @@ public class Assembler {
 		    for(int k=0;k<instMem.size();k++){
 			StringBuffer code = new StringBuffer(32);
 			String str= instMem.get(k);
-			String inst[]= str.split("[ ,\t]");
-			System.out.println(inst[0]+"aaa");
+			String inst[]= str.split("\t|, ");
+			System.out.println(inst[0]);
 			if(inst[0].equals("add")){
-			    code.append("111000");
+			    code.append("100001");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[3]));
 			    code.append("00000000000");
+			}
+			else if(inst[0].equals("addi")){
+			    code.append("101001");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("subi")){
 			    code.append("101010");
