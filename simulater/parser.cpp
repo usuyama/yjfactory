@@ -100,7 +100,7 @@ void parser::parse(inst_info* inst_mem, const char* program){
       cout << "ADDI\n";
       inst_mem[index].opcode= ADDI;
       fill_2reg_1imm(inst_mem,index,str);
-    }
+   }
     else if(inst=="101010"){ // subi
       cout << "SUBI\n";
       inst_mem[index].opcode= SUBI;

@@ -1,0 +1,6 @@
+*.cmi
+*.cmo
+min-caml.top
+min-caml
+*.o
+*._*
