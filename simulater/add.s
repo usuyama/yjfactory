@@ -1,6 +1,7 @@
 entry:
 	lli	%sp, 0
 	lli	%r1, 0
+	lli	%ra, 1111
 	sw	%ra, [%sp + 1]
 	jal	aaa.6
 	nop

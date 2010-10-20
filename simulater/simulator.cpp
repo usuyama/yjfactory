@@ -15,7 +15,7 @@ using namespace std;
 
 class simulator{
 private:
-  bool step_exe;
+  bool runall;
   int pc;
   int regs[32];
   inst_info inst_mem[INSTSIZE];
@@ -35,7 +35,7 @@ public:
     int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
 
     for(int i=start;i<end;i++){
-      cout << start << ": " << data_mem[i] << endl;
+      cout << i << ": " << data_mem[i] << endl;
     }
   }
 
@@ -44,17 +44,17 @@ public:
     //    int count=0;
 
     pc=0;
-    step_exe = false;
+    runall = true;
 
     // load instructions
     parser.parse(inst_mem,program);
   }
 
-  bool get_step(){
-    return step_exe;
+  bool get_runall(){
+    return runall;
   }
-  void set_step(bool flag){
-    step_exe = flag;
+  void set_runall(bool flag){
+    runall = flag;
   }
   int get_regcont(int i){
     return regs[i];
@@ -64,11 +64,11 @@ public:
     return inst_num;
   }
 
-  void doInst(int end){
+  void doInst(int steps){
     int opcode;
     int tmp;
 
-    while(pc!=end){
+    for(int count=0; runall || count<steps; count++){
       opcode = inst_mem[pc].opcode;
       switch (opcode){
       case ADD :
@@ -103,7 +103,7 @@ public:
 	  pc++;
 	break;
       case LW :
-	tmp=inst_mem[pc].op2+inst_mem[pc].op3;
+	tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;
 	cout << "lw\n";
 	if ((tmp >= MEMSIZE) || tmp < 0){
 	  cout << "exceed memory" << tmp << endl;
@@ -114,12 +114,13 @@ public:
 	break;
       case SW :
 	cout << "sw\n";
-	tmp=inst_mem[pc].op2+inst_mem[pc].op3;	
+	tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;	
 	if ((tmp >= MEMSIZE) || tmp < 0){
 	  cout << "exceed memory" << tmp << endl;
 	  exit(1);
 	}
 	data_mem[tmp] = regs[inst_mem[pc].op1];
+	cout << tmp << " " << regs[inst_mem[pc].op1] << endl;
 	pc++;
 	break;
       case LLI :
@@ -152,7 +153,6 @@ public:
 	cerr << "undefined instruction: opcode = " << opcode << endl;
 	exit(1);
       }
-      if(step_exe) break;
     }
   }
 };
@@ -170,14 +170,21 @@ int main(int argc, char* argv[]){
     cout << "simulator option: ";
     cin >> option;
 
-    if(option=="run"){
-      sim.doInst(sim.get_instnum());
+    if(option=="e"){
+      int c;
+      if(!sim.get_runall()){
+	cout << " do X step : ";
+	cin >> c;
+	sim.doInst(c);
+      }
+      else
+	sim.doInst(0);
     }
     else if(option == "step"){
-      if(sim.get_step())
-	sim.set_step(false);
+      if(sim.get_runall())
+	sim.set_runall(false);
       else
-	sim.set_step(true);
+	sim.set_runall(true);
     }
     else if(option == "break"){
       int b;

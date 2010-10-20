@@ -20,7 +20,7 @@ int parser::strToInt(string s, int n){ /* 符号有りで string -> int */
   return ret;
 }
 
-int parser::u_strToInt(string s, int n){
+int parser::u_strToInt(string s, int n){ // 符号無しで string -> int 
   int i,ret=0;
   //  cout << endl << s << endl;
   
@@ -47,12 +47,12 @@ int parser::ext_op2(string inst){
 int parser::ext_op3(string inst){
     return u_strToInt(inst.substr(16,21), 5);
   }
-int parser::ext_u16(string inst){
+int parser::ext_u16(string inst){  // 符号有り
   //  cout << "ext_u16 called with "+inst<<endl;
   //  cout << "under16 :" << inst.substr(16,32) << endl;
     return strToInt(inst.substr(16,32), 16);
   }
-int parser::ext_u26(string inst){
+int parser::ext_u26(string inst){  // 26は符号無し
   return u_strToInt(inst.substr(6,32),26);
   }
 

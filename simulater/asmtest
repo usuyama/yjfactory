@@ -1,3 +1,2 @@
-lli r1 10
-lli r2 2
-add r1 r2 r3
+	lli	%r1, -16385
+	halt
