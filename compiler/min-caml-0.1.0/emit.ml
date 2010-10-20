@@ -117,23 +117,21 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *)
       g'_args oc [(x, reg_cl)] ys zs;
       Printf.fprintf oc "\tlw\t[%s + 0], %s\n" reg_cl reg_sw;
-      Printf.fprintf oc "\tjmp\t%s\n" reg_sw;
-      Printf.fprintf oc "\tnop\n"
+      Printf.fprintf oc "\tj\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      Printf.fprintf oc "\tb\t%s\n" x;
-      Printf.fprintf oc "\tnop\n"
+      Printf.fprintf oc "\tj\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
       Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 4);
       Printf.fprintf oc "\tlw\t[%s + 0], %s\n" reg_cl reg_sw;
-      Printf.fprintf oc "\tjal\t%s\n" reg_sw;
-      Printf.fprintf oc "\tnop\t\n";
-      Printf.fprintf oc "\tnop\n";
+      print_int_ope oc "add" reg_sp reg_sp (C(ss));
+      Printf.fprintf oc "\tjal\t%s\n" x;
+      print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
       Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 4) reg_ra;
       if List.mem a allregs && a <> regs.(0) then
-	print_mov oc a regs.(0)
+	print_mov oc a regs.(0) (* a <- regs.(0) *)
       else if List.mem a allfregs && a <> fregs.(0) then
 	(Printf.fprintf oc "\tfmovs\t%s, %s\n" fregs.(0) a;
 	 Printf.fprintf oc "\tfmovs\t%s, %s\n" (co_freg fregs.(0)) (co_freg a))
@@ -141,12 +139,12 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       g'_args oc [] ys zs;
       let ss = stacksize () in
       Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 4);
+      print_int_ope oc "add" reg_sp reg_sp (C(ss));
       Printf.fprintf oc "\tjal\t%s\n" x;
-      Printf.fprintf oc "\tnop\t\n";
-      Printf.fprintf oc "\tnop\n";
+      print_int_ope oc "sub" reg_sp reg_sp (C(ss));
       Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 4) reg_ra;
       if List.mem a allregs && a <> regs.(0) then
-	Printf.fprintf oc "\tmov\t%s, %s\n" regs.(0) a
+	print_mov oc a regs.(0)
       else if List.mem a allfregs && a <> fregs.(0) then
 	(Printf.fprintf oc "\tfmovs\t%s, %s\n" fregs.(0) a;
 	 Printf.fprintf oc "\tfmovs\t%s, %s\n" (co_freg fregs.(0)) (co_freg a))
