@@ -23,8 +23,8 @@ let locate x =
     | y :: zs when x = y -> 0 :: List.map succ (loc zs)
     | y :: zs -> List.map succ (loc zs) in
   loc !stackmap
-let offset x = 4 * List.hd (locate x)
-let stacksize () = align ((List.length !stackmap + 1) * 4)
+let offset x = List.hd (locate x)
+let stacksize () = List.length !stackmap + 1 (* align 消した。float対応時要注意 *)
 
 let pp_id_or_imm = function
   | V(x) -> x
@@ -124,12 +124,12 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
-      Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 4);
+      Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       Printf.fprintf oc "\tlw\t[%s + 0], %s\n" reg_cl reg_sw;
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
       Printf.fprintf oc "\tjal\t%s\n" x;
       print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
-      Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 4) reg_ra;
+      Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 1) reg_ra;
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0) (* a <- regs.(0) *)
       else if List.mem a allfregs && a <> fregs.(0) then
@@ -138,11 +138,11 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(a), CallDir(Id.L(x), ys, zs) ->
       g'_args oc [] ys zs;
       let ss = stacksize () in
-      Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 4);
+      Printf.fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
       Printf.fprintf oc "\tjal\t%s\n" x;
       print_int_ope oc "sub" reg_sp reg_sp (C(ss));
-      Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 4) reg_ra;
+      Printf.fprintf oc "\tlw\t[%s + %d], %s\n" reg_sp (ss - 1) reg_ra;
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0)
       else if List.mem a allfregs && a <> fregs.(0) then
