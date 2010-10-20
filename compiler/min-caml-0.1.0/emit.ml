@@ -197,7 +197,7 @@ let f oc (Prog(data, fundefs, e)) =
   print_li oc reg_ra 0;
   stackset := S.empty;
   stackmap := [];
-  g oc (NonTail("%g0"), e);
+  g oc (Tail, e);
   Printf.fprintf oc "\thalt\n";
 
   List.iter (fun fundef -> h oc fundef) fundefs;
