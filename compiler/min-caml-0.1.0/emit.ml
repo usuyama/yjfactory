@@ -88,18 +88,15 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, (Nop | St _ | StDF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
       Printf.fprintf oc "\tjr\t%s\n" reg_ra;
-      Printf.fprintf oc "\tnop\n"
   | Tail, (Set _ | SetL _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ as exp) ->
       g' oc (NonTail(regs.(0)), exp);
       Printf.fprintf oc "\tjr\t%s\n" reg_ra;
-      Printf.fprintf oc "\tnop\n"
   | Tail, (Restore(x) as exp) ->
       (match locate x with
       | [i] -> g' oc (NonTail(regs.(0)), exp)
       | [i; j] when i + 1 = j -> g' oc (NonTail(fregs.(0)), exp)
       | _ -> assert false);
       Printf.fprintf oc "\tjr\t%sl\n" reg_ra; (* retl とretはどう違うんだろう *)
-      Printf.fprintf oc "\tnop\n"
 (* if *)
   | Tail, IfEq(x, y, e1, e2) ->
       g'_tail_if oc e1 e2 "bneq" x y
@@ -114,10 +111,10 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(z), IfGE(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" x y
 (* 関数呼び出しの仮想命令の実装 (caml2html: emit_call) *)
-  | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *)
+  | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
       Printf.fprintf oc "\tlw\t[%s + 0], %s\n" reg_cl reg_sw;
-      Printf.fprintf oc "\tj\t%s\n" reg_sw;
+      Printf.fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
       Printf.fprintf oc "\tj\t%s\n" x;
@@ -151,7 +148,6 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
 and g'_tail_if oc e1 e2 ope r1 r2 =
   let b_else = Id.genid (ope ^ "_else") in
     Printf.fprintf oc "\t%s\t%s, %s, %s\n" ope r1 r2 b_else;
-    Printf.fprintf oc "\tnop\n";
     let stackset_back = !stackset in
       g oc (Tail, e1);
       Printf.fprintf oc "%s:\n" b_else;
@@ -161,12 +157,10 @@ and g'_non_tail_if oc dest e1 e2 ope x y =
   let b_else = Id.genid (ope ^ "_else") in
   let b_cont = Id.genid (ope ^ "_cont") in
   Printf.fprintf oc "\t%s\t%s, %s, %s\n" ope x y b_else;
-  Printf.fprintf oc "\tnop\n";
   let stackset_back = !stackset in
   g oc (dest, e1);
   let stackset1 = !stackset in
   Printf.fprintf oc "\tj\t%s\n" b_cont;
-  Printf.fprintf oc "\tnop\n";
   Printf.fprintf oc "%s:\n" b_else;
   stackset := stackset_back;
   g oc (dest, e2);
