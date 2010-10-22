@@ -36,18 +36,7 @@ let expand xts ini addf addi =
 let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.Unit -> Ans(Nop)
   | Closure.Int(i) -> Ans(Set(i))
-  | Closure.Float(d) ->
-      let l =
-	try
-	  (* すでに定数テーブルにあったら再利用 *)
-	  let (l, _) = List.find (fun (_, d') -> d = d') !data in
-	  l
-	with Not_found ->
-	  let l = Id.L(Id.genid "l") in
-	  data := (l, d) :: !data;
-	  l in
-      let x = Id.genid "l" in
-	Let((x, Type.Int), SetL(l), Ans(LdDF(x, C(0))))
+  | Closure.Float(d) -> Ans(SetF(d))
   | Closure.Neg(x) -> Ans(Neg(x))
   | Closure.Add(x, y) -> Ans(Add(x, V(y)))
   | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
@@ -82,7 +71,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
 	expand
 	  (List.map (fun y -> (y, M.find y env)) ys)
 	  (4, e2')
-	  (fun y offset store_fv -> seq(StDF(y, x, C(offset)), store_fv))
+	  (fun y offset store_fv -> seq(StF(y, x, C(offset)), store_fv))
 	  (fun y _ offset store_fv -> seq(St(y, x, C(offset)), store_fv)) in
       Let((x, t), Mov(reg_hp),
 	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),

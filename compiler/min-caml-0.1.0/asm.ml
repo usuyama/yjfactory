@@ -13,22 +13,23 @@ type t = (* 命令の列 (caml2html: sparcasm_t) *)
 and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | Nop
   | Set of int
+  | SetF of float
   | SetL of Id.l
   | Mov of Id.t
   | Neg of Id.t
   | Add of Id.t * id_or_imm
   | Sub of Id.t * id_or_imm
-  | SLL of Id.t * id_or_imm
-  | Ld of Id.t * id_or_imm
-  | St of Id.t * Id.t * id_or_imm
-  | FMovD of Id.t
-  | FNegD of Id.t
-  | FAddD of Id.t * Id.t
-  | FSubD of Id.t * Id.t
-  | FMulD of Id.t * Id.t
-  | FDivD of Id.t * Id.t
-  | LdDF of Id.t * id_or_imm
-  | StDF of Id.t * Id.t * id_or_imm
+  | SLL of Id.t * int
+  | Ld of Id.t * int
+  | St of Id.t * Id.t * int
+  | FMov of Id.t
+  | FNeg of Id.t
+  | FAdd of Id.t * Id.t
+  | FSub of Id.t * Id.t
+  | FMul of Id.t * Id.t
+  | FDiv of Id.t * Id.t
+  | LdF of Id.t * int
+  | StF of Id.t * Id.t * int
   | Comment of string
   (* virtual instructions *)
   | IfEq of Id.t * Id.t * t * t
@@ -52,7 +53,7 @@ let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
   [| "%r1"; "%r2"; "%r3"; "%r4";
      "%r5"; "%r6"; "%r7"; "%r8"; "%r9"; "%r10"; "%r11"; "%r12";
      "%r13"; "%r14"; "%r15"; "%r16"; "%r17"; "%r18" |]
-let fregs = Array.init 16 (fun i -> Printf.sprintf "%%f%d" (i * 2))
+let fregs = Array.init 32 (fun i -> Printf.sprintf "%%f%d" i)
 let allregs = Array.to_list regs
 let allfregs = Array.to_list fregs
 let reg_cl = regs.(Array.length regs - 1) (* closure address (caml2html: sparcasm_regcl) *)
@@ -83,10 +84,10 @@ let rec remove_and_uniq xs = function
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
   | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
-  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> [x]
-  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> x :: fv_id_or_imm y'
-  | St(x, y, z') | StDF(x, y, z') -> x :: y :: fv_id_or_imm z'
-  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> [x; y]
+  | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) -> [x]
+  | Add(x, y') | Sub(x, y') -> x :: fv_id_or_imm y'
+  | St(x, y, _) | StF(x, y, _) -> [x; y]
+  | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) -> [x; y]
   | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: y' :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
   | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
   | CallCls(x, ys, zs) -> x :: ys @ zs
@@ -128,17 +129,17 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | Neg t -> printf "Neg %s\n" t;
        | Add(t1, t2) -> printf "Add %s + %s\n" t1 (str_of_ioi t2)
        | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 (str_of_ioi t2)
-       | SLL(t1, t2) -> printf "SLL %s %s\n" t1 (str_of_ioi t2)
-       | Ld(t1, t2) -> printf "Ld %s %s\n" t1 (str_of_ioi t2)
-       | St(t1, t2, t3) -> printf "St %s %s %s\n" t1 t2 (str_of_ioi t3)
-       | FMovD t -> printf "FMov %s\n" t
-       | FNegD t -> printf "FNeg %s\n" t
-       | FAddD(t1, t2) -> printf "FAdd %s + %s\n" t1 t2
-       | FSubD(t1, t2) -> printf "FSub %s + %s\n" t1 t2
-       | FMulD(t1, t2) -> printf "FMul %s + %s\n" t1 t2
-       | FDivD(t1, t2) -> printf "FDiv %s + %s\n" t1 t2
-       | LdDF(t1, t2) -> printf "LdDF %s %s\n" t1 (str_of_ioi t2)
-       | StDF(t1, t2, t3) -> printf "StDF %s %s %s\n" t1 t2 (str_of_ioi t3)
+       | SLL(t1, t2) -> printf "SLL %s %d\n" t1 t2
+       | Ld(t1, t2) -> printf "Ld [%s + %d]\n" t1 t2
+       | St(t1, t2, t3) -> printf "St %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)
+       | FMov t -> printf "FMov %s\n" t
+       | FNeg t -> printf "FNeg %s\n" t
+       | FAdd(t1, t2) -> printf "FAdd %s + %s\n" t1 t2
+       | FSub(t1, t2) -> printf "FSub %s + %s\n" t1 t2
+       | FMul(t1, t2) -> printf "FMul %s + %s\n" t1 t2
+       | FDiv(t1, t2) -> printf "FDiv %s + %s\n" t1 t2
+       | LdF(t1, t2) -> printf "LdF %s %d\n" t1 t2
+       | StF(t1, t2, t3) -> printf "StF %s %s %d\n" t1 t2 t3
        | Comment(s) -> printf "Commnet(%s)\n" s
        | IfEq(t1, t2, t3, t4) -> printf "IF %s = %s THEN\n" t1  t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
