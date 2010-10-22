@@ -145,8 +145,8 @@ public class Assembler {
 			}
 			else if(inst[0].equals("lw")){
 			    code.append("001110");
-			    code.append(gr.getRegnum(inst[2]));
-			    code.append(gr.getRelate(inst[1]));
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRelate(inst[2]));
 			}
 			else if(inst[0].equals("jr")){
 			    code.append("010011");
