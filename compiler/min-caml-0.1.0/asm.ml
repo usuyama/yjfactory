@@ -49,10 +49,7 @@ type prog = Prog of (Id.l * float) list * fundef list * t
 let fletd(x, e1, e2) = Let((x, Type.Float), e1, e2)
 let seq(e1, e2) = Let((Id.gentmp Type.Unit, Type.Unit), e1, e2)
 
-let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
-  [| "%r1"; "%r2"; "%r3"; "%r4";
-     "%r5"; "%r6"; "%r7"; "%r8"; "%r9"; "%r10"; "%r11"; "%r12";
-     "%r13"; "%r14"; "%r15"; "%r16"; "%r17"; "%r18" |]
+let regs = Array.init 28 (fun i -> Printf.sprintf "%%r%d" i)
 let fregs = Array.init 32 (fun i -> Printf.sprintf "%%f%d" i)
 let allregs = Array.to_list regs
 let allfregs = Array.to_list fregs
@@ -83,7 +80,7 @@ let rec remove_and_uniq xs = function
 (* free variables in the order of use (for spilling) (caml2html: sparcasm_fv) *)
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
-  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
+  | Nop | Set(_) | SetF(_) | Comment(_) | Restore(_) -> []
   | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) -> [x]
   | Add(x, y') | Sub(x, y') -> x :: fv_id_or_imm y'
   | St(x, y, _) | StF(x, y, _) -> [x; y]
@@ -124,6 +121,7 @@ and print_exp t i = (* Asm.t -> Asm.t *)
     (match t with
        | Nop -> printf "Nop\n"
        | Set i -> printf "Set(%s)\n" (string_of_int i)
+       | SetF f -> printf "SetF(%s)\n" (string_of_float f)
        | SetL l -> printf "SetL(%s)\n" (Id.str_of_l l)
        | Mov t -> printf "Mov(%s)\n" t
        | Neg t -> printf "Neg %s\n" t;

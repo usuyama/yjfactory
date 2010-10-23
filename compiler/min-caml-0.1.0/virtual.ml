@@ -29,9 +29,9 @@ let expand xts ini addf addi =
     ini
     (fun (offset, acc) x ->
       let offset = align offset in
-      (offset + 8, addf x offset acc)) (* double wordを考慮 *)
+      (offset + 1, addf x offset acc)) (* double wordじゃなくなったので、同じ *)
     (fun (offset, acc) x t ->
-      (offset + 4, addi x t offset acc))
+      (offset + 1, addi x t offset acc))
 
 let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.Unit -> Ans(Nop)
@@ -40,44 +40,45 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.Neg(x) -> Ans(Neg(x))
   | Closure.Add(x, y) -> Ans(Add(x, V(y)))
   | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
-  | Closure.FNeg(x) -> Ans(FNegD(x))
-  | Closure.FAdd(x, y) -> Ans(FAddD(x, y))
-  | Closure.FSub(x, y) -> Ans(FSubD(x, y))
-  | Closure.FMul(x, y) -> Ans(FMulD(x, y))
-  | Closure.FDiv(x, y) -> Ans(FDivD(x, y))
+  | Closure.FNeg(x) -> Ans(FNeg(x))
+  | Closure.FAdd(x, y) -> Ans(FAdd(x, y))
+  | Closure.FSub(x, y) -> Ans(FSub(x, y))
+  | Closure.FMul(x, y) -> Ans(FMul(x, y))
+  | Closure.FDiv(x, y) -> Ans(FDiv(x, y))
   | Closure.IfEq(x, y, e1, e2) ->
       (match M.find x env with
-      | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
-      | Type.Float -> Ans(IfFEq(x, y, g env e1, g env e2))
-      | _ -> failwith "equality supported only for bool, int, and float")
+	 | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
+	 | Type.Float -> Ans(IfFEq(x, y, g env e1, g env e2))
+	 | _ -> failwith "equality supported only for bool, int, and float")
   | Closure.IfLE(x, y, e1, e2) ->
       (match M.find x env with
-      | Type.Bool | Type.Int -> Ans(IfLE(x, y, g env e1, g env e2))
-      | Type.Float -> Ans(IfFLE(x, y, g env e1, g env e2))
-      | _ -> failwith "inequality supported only for bool, int, and float")
+	 | Type.Bool | Type.Int -> Ans(IfLE(x, y, g env e1, g env e2))
+	 | Type.Float -> Ans(IfFLE(x, y, g env e1, g env e2))
+	 | _ -> failwith "inequality supported only for bool, int, and float")
   | Closure.Let((x, t1), e1, e2) ->
       let e1' = g env e1 in
       let e2' = g (M.add x t1 env) e2 in
       concat e1' (x, t1) e2' (* e1の後ろにe2をつなげる *)
   | Closure.Var(x) ->
       (match M.find x env with
-      | Type.Unit -> Ans(Nop)
-      | Type.Float -> Ans(FMovD(x))
-      | _ -> Ans(Mov(x)))
+	 | Type.Unit -> Ans(Nop)
+	 | Type.Float -> Ans(FMov(x))
+	 | Type.Int -> Ans(Mov(x))
+	 | _ -> assert false)
   | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
       (* Closureのアドレスをセットしてから、自由変数の値をストア *)
       let e2' = g (M.add x t env) e2 in
       let offset, store_fv =
 	expand
 	  (List.map (fun y -> (y, M.find y env)) ys)
-	  (4, e2')
-	  (fun y offset store_fv -> seq(StF(y, x, C(offset)), store_fv))
-	  (fun y _ offset store_fv -> seq(St(y, x, C(offset)), store_fv)) in
+	  (1, e2')
+	  (fun y offset store_fv -> seq(StF(y, x, offset), store_fv))
+	  (fun y _ offset store_fv -> seq(St(y, x, offset), store_fv)) in
       Let((x, t), Mov(reg_hp),
 	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
 	      let z = Id.genid "l" in
 	      Let((z, Type.Int), SetL(l),
-		  seq(St(z, x, C(0)),
+		  seq(St(z, x, 0),
 		      store_fv))))
   | Closure.AppCls(x, ys) ->
       let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
