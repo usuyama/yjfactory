@@ -114,7 +114,7 @@ public:
 	break;
       case SW :
 	cout << "sw\n";
-	tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;	
+	tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;
 	if ((tmp >= MEMSIZE) || tmp < 0){
 	  cout << "exceed memory" << tmp << endl;
 	  exit(1);
