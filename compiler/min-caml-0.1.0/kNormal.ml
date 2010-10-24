@@ -151,12 +151,12 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	    insert_let g_e
 	      (fun x -> bind (xs @ [x]) (ts @ [t]) es) in
       bind [] [] es
-  | Syntax.LetTuple(xts, e1, e2) ->
+  | Syntax.LetTuple(xts, e1, e2) -> 
       insert_let (g env e1)
 	(fun y ->
 	  let e2', t2 = g (M.add_list xts env) e2 in
 	  LetTuple(xts, y, e2'), t2)
-  | Syntax.Array(e1, e2) ->
+  | Syntax.Array(e1, e2) -> (* Array.create e1 e2 *)
       insert_let (g env e1)
 	(fun x ->
 	  let _, t2 as g_e2 = g env e2 in
@@ -167,18 +167,18 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 		| Type.Float -> "create_float_array"
 		| _ -> "create_array" in
 	      ExtFunApp(l, [x; y]), Type.Array(t2)))
-  | Syntax.Get(e1, e2) ->
+  | Syntax.Get(e1, e2) -> (* e1.(e2) *)
       (match g env e1 with
       |	_, Type.Array(t) as g_e1 ->
 	  insert_let g_e1
 	    (fun x -> insert_let (g env e2)
 		(fun y -> Get(x, y), t))
       | _ -> assert false)
-  | Syntax.Put(e1, e2, e3) ->
+  | Syntax.Put(e1, e2, e3) -> (* e1.(e2) <- e3 *)
       insert_let (g env e1)
 	(fun x -> insert_let (g env e2)
-	    (fun y -> insert_let (g env e3)
-		(fun z -> Put(x, y, z), Type.Unit)))
+	   (fun y -> insert_let (g env e3)
+	       (fun z -> Put(x, y, z), Type.Unit)))
 
 let f e = fst (g M.empty e)
 

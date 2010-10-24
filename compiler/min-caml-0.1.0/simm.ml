@@ -10,7 +10,7 @@ let rec g env = function (* Ì¿ÎáÎó¤Î13bitÂ¨ÃÍºÇÅ¬²½ (caml2html: simm13_g) *)
       if List.mem x (fv e') then Let((x, t), Set(i), e') else
       ((* Format.eprintf "erased redundant Set to %s@." x; *)
        e')
-  | Let(xt, SLL(y, C(i)), e) when M.mem y env -> (* for array access *)
+  | Let(xt, SLL(y, i), e) when M.mem y env -> (* for array access *)
       (* Format.eprintf "erased redundant SLL on %s@." x; *)
       g env (Let(xt, Set((M.find y env) lsl i), e))
   | Let(xt, exp, e) -> Let(xt, g' env exp, g env e)
