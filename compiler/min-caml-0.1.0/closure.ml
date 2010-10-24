@@ -24,8 +24,8 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | AppDir of Id.l * Id.t list (* apply top level function *)
   | Tuple of Id.t list
   | LetTuple of (Id.t * Type.t) list * Id.t * t
-  | Get of Id.t * Id.t
-  | Put of Id.t * Id.t * Id.t
+  | Get of Id.t * int
+  | Put of Id.t * Id.t * int
   | ExtArray of Id.l
 type fundef = { name : Id.l * Type.t;
 		args : (Id.t * Type.t) list;
