@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->tableWidget->setShowGrid(true);
             std::cout << "hogehoge\n";
+            ui->tableWidget->setWindowFlags(Qt::SubWindow);
+            ui->tableWidget->show();
 
     for(int i=0;i<32;i++){
         items[i] =QTableWidgetItem(QString::number(0));
@@ -25,36 +27,42 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+/*
 void MainWindow::changeStep(){
     if(ui->stepExe->isChecked())
-        sim.set_runall(false);
+        ui->frame->set_runall(false);
     else
-        sim.set_runall(true);
+        ui->frame->set_runall(true);
 }
 
 void specifySteps(){
 
 
 }
+*/
 
 void MainWindow::loadProgram(){
     std::cout<<"loadProgramm called" << std::endl;
     QString program = (ui->lineEdit->text());
-    if(par.parse(sim.inst_mem, (program.toStdString()).c_str()) == -1){
-        sim.ready = false;
+    if(par.parse(ui->frame->inst_mem, (program.toStdString()).c_str()) == -1){
+        ui->frame->ready = false;
         ui->messageBuff->insertPlainText("cannot open ");
         ui->messageBuff->insertPlainText(program);
         return;
     }
-    sim.ready = true;
-    sim.setPC(0);
+    for(int i=0;i<32;i++){
+        items[i].setData(Qt::EditRole, QString::number(ui->frame->regs[i]));
+    }
+    ui->frame->ready = true;
+    ui->frame->setPC(0);
  }
 
 
 void MainWindow::runSimulation(){
  int steps=1;
  bool ok;
-    if(!sim.ready){
+    if(!ui->frame->ready){
         ui->messageBuff->insertPlainText("please load programm\n");
         return;
     }
@@ -64,11 +72,14 @@ void MainWindow::runSimulation(){
             ui->messageBuff->insertPlainText("step count is invalid\n");
             return;
         }
+        ui->frame->set_runall(false);
     }
+    else
+        ui->frame->set_runall(true);
 
-    sim.doInst(steps);
+    ui->frame->doInst(steps);
     for(int i=0;i<32;i++){
-        items[i].setData(Qt::EditRole, QString::number(sim.regs[i]));
+        items[i].setData(Qt::EditRole, QString::number(ui->frame->regs[i]));
         //items[i]=QTableWidgetItem(QString::number(sim.regs[i]));
         //ui->tableWidget->setItem(i,0,&items[i]);
 }

@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "simulator.h"
+#include "hogehoge.h"
 #include "parser.h"
 #include <QTableWidgetItem>
 
@@ -21,12 +21,12 @@ public:
 public slots:
     void loadProgram();
     void runSimulation();
-    void changeStep();
+    //void changeStep();
 
 private:
     Ui::MainWindow *ui;
     QTableWidgetItem items[32] ;
-    simulator   sim;
+    //hogehoge   sim;
     parser par;
 };
 
