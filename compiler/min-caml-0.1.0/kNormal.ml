@@ -226,6 +226,6 @@ let print t = (* KNormal.t -> KNormal.t *)
 				    pt i t2;)
 	 | ExtArray t -> printf "ExtArray %s\n" t
 	 | ExtFunApp(t, tl) -> printf "ExtFunApp %s\n" t;List.iter (pi ();printf "  %s\n") tl
-	 | Get(t1, t2) -> printf "GET\n %s %s" t1 t2
-	 | Put(t1, t2, t3) -> printf "PUT %s %s %s" t1 t2 t3)
+	 | Get(t1, t2) -> printf "GET %s %s\n" t1 t2
+	 | Put(t1, t2, t3) -> printf "PUT %s %s %s\n" t1 t2 t3)
  in (printf "=== KNormal.t ===\n";pt 0 t;printf "=== End ===\n";t);;

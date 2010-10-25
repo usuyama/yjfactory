@@ -36,7 +36,7 @@ type prog = Prog of fundef list * t
 let rec fv = function (* 自由変数のリスト *)
   | Unit | Int(_) | Float(_) | ExtArray(_) -> S.empty
   | Neg(x) | FNeg(x) | Get(x, _) -> S.singleton x
-  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Put(x, y, _)-> S.of_list [x; y]
+  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Put(x, y, _) -> S.of_list [x; y]
   | IfEq(x, y, e1, e2)| IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
@@ -115,7 +115,7 @@ let print_t t = (* Closure.t -> Closure.t *)
   let rec pt i t =
     let i = i + 1
     in let pi () =
-      (printf "%s" (String.make (i * 2) ' '))
+      (printf "%s" (String.make (i) ' '))
     in
       pi ();
       (match t with
@@ -143,8 +143,8 @@ let print_t t = (* Closure.t -> Closure.t *)
 				    pi ();printf "IN\n";
 				    pt i t2;)
 	 | ExtArray(Id.L(t)) -> printf "ExtArray %s\n" t
-	 | Get(t1, t2) -> printf "GET\n %s %s" t1 t2
-	 | Put(t1, t2, t3) -> printf "PUT %s %s %s" t1 t2 t3
+	 | Get(t1, t2) -> printf "GET %s %s\n" t1 t2
+	 | Put(t1, t2, t3) -> printf "PUT %s %s %s\n" t1 t2 t3
 	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s/n" t1;
 					    pi ();printf "entry: %s\n" (Id.str_of_l clo.entry))
 	 | AppCls(t, tl) -> (printf "AppCls %s\n" t;
