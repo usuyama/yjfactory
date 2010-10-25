@@ -24,6 +24,7 @@ class parser{
   QString make_asm_mem(inst_info& info);
   QString make_asm_1r1i(inst_info& info);
   QString make_asm_1i(inst_info& info);
+  QString make_asm_3fp(inst_info& info);
 
  public:
   int parse(inst_info* inst, const char* hoge);

@@ -44,6 +44,7 @@ private:
 
 public:
     int regs[32];
+    float fpr[32];
     inst_info inst_mem[INSTSIZE];
     int data_mem[MEMSIZE];
     bool ready;

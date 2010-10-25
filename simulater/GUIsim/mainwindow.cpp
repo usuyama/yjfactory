@@ -14,11 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setShowGrid(true);
             std::cout << "hogehoge\n";
             ui->tableWidget->setWindowFlags(Qt::SubWindow);
+            ui->tableWidget_2->setWindowFlags(Qt::SubWindow);
             ui->tableWidget->show();
+            ui->tableWidget_2->show();
 
     for(int i=0;i<32;i++){
-        items[i] =QTableWidgetItem(QString::number(0));
+        items[i] = QTableWidgetItem(QString::number(0));
+        fp_items[i] = QTableWidgetItem(QString::number(0.01));
         ui->tableWidget->setItem(i,0,&items[i]);
+        ui->tableWidget_2->setItem(i,0,&fp_items[i]);
         }
 }
 
@@ -53,6 +57,8 @@ void MainWindow::loadProgram(){
     }
     for(int i=0;i<32;i++){
         items[i].setData(Qt::EditRole, QString::number(ui->frame->regs[i]));
+        std::cout<< (ui->frame->fpr) << std::endl;
+        fp_items[i].setData(Qt::EditRole, QString::number(ui->frame->fpr[i]));
     }
     ui->frame->ready = true;
     ui->frame->setPC(0);
@@ -80,6 +86,7 @@ void MainWindow::runSimulation(){
     ui->frame->doInst(steps);
     for(int i=0;i<32;i++){
         items[i].setData(Qt::EditRole, QString::number(ui->frame->regs[i]));
+        fp_items[i].setData(Qt::EditRole, QString::number(ui->frame->fpr[i]));
         //items[i]=QTableWidgetItem(QString::number(sim.regs[i]));
         //ui->tableWidget->setItem(i,0,&items[i]);
 }

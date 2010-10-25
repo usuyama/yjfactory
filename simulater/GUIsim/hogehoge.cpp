@@ -67,6 +67,7 @@ hogehoge::~hogehoge()
    void hogehoge::doInst(int steps){
     int opcode;
     int tmp;
+    float_int tmp_union;
 
     for(int count=0; runall || count<steps; count++){
       opcode = inst_mem[pc].opcode;
@@ -77,13 +78,49 @@ hogehoge::~hogehoge()
         pc++;
         break;
       case ADDI :
-        ui->instruction->insertPlainText( "addi");
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
         regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + inst_mem[pc].op3;
         pc++;
         break;
       case SUBI :
-        ui->instruction->insertPlainText( "subi");
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
         regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] - inst_mem[pc].op3;
+        pc++;
+        break;
+      case ADDF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] + fpr[inst_mem[pc].op3];
+        pc++;
+        break;
+      case MULF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] * fpr[inst_mem[pc].op3];
+        pc++;
+        break;
+      case SUBF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] - fpr[inst_mem[pc].op3];
+        pc++;
+        break;
+      case DIVF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] / fpr[inst_mem[pc].op3];
+        pc++;
+        break;
+      case LLIF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        std::cout << "llif\n";
+	tmp_union.myint = inst_mem[pc].op2;
+	fpr[inst_mem[pc].op1] = tmp_union.myfloat;
+        pc++;
+        //std::cout << "llif done\n";
+        break;
+      case LHIF :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+	tmp_union.myfloat = fpr[inst_mem[pc].op1];
+	tmp_union.myint = tmp_union.myint + (((unsigned int)inst_mem[pc].op2) << 16);
+	fpr[inst_mem[pc].op1] = tmp_union.myfloat;
+        std::cout << fpr[inst_mem[pc].op1] << std::endl;
         pc++;
         break;
       case JR :
@@ -144,12 +181,23 @@ hogehoge::~hogehoge()
         pc = inst_mem[pc].op1 ;
                                                //        ui->instruction->insertPlainText( pc << "pc after");
         break;
+      case MVF2I :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        tmp_union.myfloat = fpr[inst_mem[pc].op2];
+        regs[inst_mem[pc].op1] = tmp_union.myint;
+        pc++;
+        break;
+      case SENDW :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        std::cout << regs[inst_mem[pc].op1] << std::endl;
+        pc++;
+        break;
       case NOP :
         ui->instruction->insertPlainText("nop");
         pc++;
         break;
       case HALT :
-                //			       ui->instruction->insertPlainText( regs[1] << endl;
+        ui->instruction->insertPlainText("\nprogram end\n");
         return;
       default :
         std::cerr << "undefined instruction: opcode = " << opcode << std::endl;

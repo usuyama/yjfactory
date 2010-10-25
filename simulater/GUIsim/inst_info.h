@@ -3,6 +3,11 @@
 
 #include <QString>
 
+union float_int{
+  unsigned int myint;
+  float myfloat;
+};
+
 class inst_info{
  public:
   int opcode;
@@ -12,19 +17,34 @@ class inst_info{
   QString assm;
 };
 
-enum { ADD,
-       ADDI,
-       SUBI,
-       LW,
-       SW,
-       JUMP,
-       JAL,
-       JR,
-       BGT,
-       BEQ,
-       LLI,
-       NOP,
-       HALT};
+enum { 
+  ADD,
+  ADDI,
+  SUBI,
+  LW,
+  SW,
+  JUMP,
+  JAL,
+  JR,
+  BGT,
+  BEQ,
+  LLI,
+  LHIF,
+  LLIF,
+  NOP,
+  LF,
+  SF,
+  ADDF,
+  SUBF,
+  MULF,
+  DIVF,
+  SQRT,
+  MVF2I,
+  SENDW,
+  SENDC,
+  RECVF,
+  HALT
+};
 
 #endif
 

@@ -26,6 +26,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QTableWidgetItem items[32] ;
+    QTableWidgetItem fp_items[32];
     //hogehoge   sim;
     parser par;
 };
