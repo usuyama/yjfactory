@@ -170,22 +170,46 @@ public class Assembler {
 			    code.append(gr.strToBstr(inst[2],16));
 			}
 			else if(inst[0].equals("addf")){
-			    code.append("XXXXXX");
+			    code.append("XXADDF");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
+			    code.append("00000000000");
+			}
+			else if(inst[0].equals("mulf")){
+			    code.append("XXMULF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[3]));
+			    code.append("00000000000");
+			}
+			else if(inst[0].equals("subf")){
+			    code.append("XXSUBF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[3]));
+			    code.append("00000000000");
+			}
+			else if(inst[0].equals("divf")){
+			    code.append("XXDIVF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[3]));
+			    code.append("00000000000");
 			}
 			else if(inst[0].equals("lhif")){
-			    code.append("XXXXXX");
+			    System.out.println("hoge");
+			    code.append("XXLHIF");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000");
-			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[3])) >> 16, 16));
+			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) >> 16, 16));
 			}
 			else if(inst[0].equals("llif")){
-			    code.append("XXXXXX");
+			    System.out.println("fuga");
+			    code.append("XXLLIF");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000");
-			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[3])) & 0x0000FFFF, 16));
+			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) & 0x0000FFFF, 16));
 			}
 			else if(inst[0].equals("sw")){
 			    code.append("001111");
@@ -232,6 +256,22 @@ public class Assembler {
 			else if(inst[0].equals("j")){
 			    code.append("010101");
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
+			}
+			else if(inst[0].equals("sendw")){
+			    code.append("XSENDW");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("000000000000000000000");
+			}
+			else if(inst[0].equals("sendc")){
+			    code.append("XSENDC");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("000000000000000000000");
+			}
+			else if(inst[0].equals("movf2i")){
+			    code.append("MOVF2I");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("nop")){
 			    code.append("00000000000000000000000000000000");
