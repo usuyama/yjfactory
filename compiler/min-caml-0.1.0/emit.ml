@@ -135,7 +135,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      fprintf oc "\tj\t%s\n" x;
+      fprintf oc "\tjal\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
