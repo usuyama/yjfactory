@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+import java.lang.Float;
 
 class GetReg{
     public StringBuffer signInt_toStr_nlen(int num, int len){ /* 相対jumpの時に使う */
@@ -43,6 +44,15 @@ class GetReg{
     public StringBuffer strToBstr(String s, int len){ /* string を 長さlenの2進数表示のstringbufferに変換 */
 	return toStr_nlen(Integer.parseInt(s),len);
     }
+    public StringBuffer getFnum(String s){
+	if (s.charAt(0)!='%'){
+	    System.out.println("called getRegnum, but argument s="+s+" : not a register");
+	    System.exit(1);
+	}
+	int tmp = Integer.parseInt(s.substring(2));
+	return toStr_nlen(tmp,5);
+    }
+
     public StringBuffer getRegnum(String s){ /* rX を X を長さ5の2進数表示のstringbufferに変換 */
 	if (s.charAt(0)!='%'){
 	    System.out.println("called getRegnum, but argument s="+s+" : not a register");
@@ -58,6 +68,7 @@ class GetReg{
 	    return toStr_nlen(tmp,5);
 	}
     }
+
     public StringBuffer getRelate(String s){
 	System.out.println(s.substring(1,s.length()-1));
 
@@ -126,8 +137,28 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
+			else if(inst[0].equals("sub")){
+			    code.append("100010");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[3]));
+			    code.append("00000000000");
+			}
 			else if(inst[0].equals("subi")){
 			    code.append("101010");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			}
+			else if(inst[0].equals("mul")){
+			    code.append("100011");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[3]));
+			    code.append("00000000000");
+			}
+			else if(inst[0].equals("muli")){
+			    code.append("101011");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
@@ -137,6 +168,24 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000");
 			    code.append(gr.strToBstr(inst[2],16));
+			}
+			else if(inst[0].equals("addf")){
+			    code.append("XXXXXX");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[3]));
+			}
+			else if(inst[0].equals("lhif")){
+			    code.append("XXXXXX");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("00000");
+			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[3])) >> 16, 16));
+			}
+			else if(inst[0].equals("llif")){
+			    code.append("XXXXXX");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("00000");
+			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[3])) & 0x0000FFFF, 16));
 			}
 			else if(inst[0].equals("sw")){
 			    code.append("001111");
@@ -153,8 +202,25 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("000000000000000000000");
 			}
+			else if(inst[0].equals("jalr")){
+			    code.append("010110");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("000000000000000000000");
+			}
 			else if(inst[0].equals("bgt")){
 			    code.append("001100");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
+			}
+			else if(inst[0].equals("beq")){
+			    code.append("001001");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
+			}
+			else if(inst[0].equals("bneq")){
+			    code.append("001010");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
