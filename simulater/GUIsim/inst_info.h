@@ -20,6 +20,7 @@ class inst_info{
 enum { 
   ADD,
   ADDI,
+  SUB,
   SUBI,
   LW,
   SW,

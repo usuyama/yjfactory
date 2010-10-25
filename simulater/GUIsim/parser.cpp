@@ -126,6 +126,12 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       inst_mem[index].assm = "addi\t" + make_asm_2r1i(inst_mem[index]);
    }
+   else if(inst=="100010"){ //sub
+     cout << "SUB\n";
+     inst_mem[index].opcode= SUB;
+     fill_3reg(inst_mem,index,str);
+     inst_mem[index].assm= "sub\t" + make_asm_3r(inst_mem[index]);
+    }
     else if(inst=="101010"){ // subi
       cout << "SUBI\n";
       inst_mem[index].opcode= SUBI;

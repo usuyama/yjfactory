@@ -77,6 +77,11 @@ hogehoge::~hogehoge()
         regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + regs[inst_mem[pc].op3];
         pc++;
         break;
+      case SUB :
+        ui->instruction->insertPlainText(inst_mem[pc].assm);
+        regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] - regs[inst_mem[pc].op3];
+        pc++;
+        break;
       case ADDI :
         ui->instruction->insertPlainText(inst_mem[pc].assm);
         regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + inst_mem[pc].op3;
