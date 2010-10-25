@@ -24,8 +24,8 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | AppDir of Id.l * Id.t list (* apply top level function *)
   | Tuple of Id.t list
   | LetTuple of (Id.t * Type.t) list * Id.t * t
-  | Get of Id.t * int
-  | Put of Id.t * Id.t * int
+  | Get of Id.t * Id.t
+  | Put of Id.t * Id.t * Id.t
   | ExtArray of Id.l
 type fundef = { name : Id.l * Type.t;
 		args : (Id.t * Type.t) list;
@@ -33,10 +33,10 @@ type fundef = { name : Id.l * Type.t;
 		body : t }
 type prog = Prog of fundef list * t
 
-let rec fv = function
+let rec fv = function (* 自由変数のリスト *)
   | Unit | Int(_) | Float(_) | ExtArray(_) -> S.empty
-  | Neg(x) | FNeg(x) -> S.singleton x
-  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Get(x, y) -> S.of_list [x; y]
+  | Neg(x) | FNeg(x) | Get(x, _) -> S.singleton x
+  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Put(x, y, _)-> S.of_list [x; y]
   | IfEq(x, y, e1, e2)| IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
@@ -44,7 +44,6 @@ let rec fv = function
   | AppCls(x, ys) -> S.of_list (x :: ys)
   | AppDir(_, xs) | Tuple(xs) -> S.of_list xs
   | LetTuple(xts, y, e) -> S.add y (S.diff (fv e) (S.of_list (List.map fst xts)))
-  | Put(x, y, z) -> S.of_list [x; y; z]
 
 let toplevel : fundef list ref = ref []
 

@@ -14,9 +14,7 @@ let lexbuf outchan l = (* バッファをコンパイルしてチャンネルへ出力する (caml2htm
   Emit.f outchan
     (Asm.print "RegAlloc"
        (RegAlloc.f
-	  (Asm.print "Simm"
-	     (Simm.f
-		(Asm.print "Virtual"
+	  (Asm.print "Virtual"
 		   (Virtual.f
 		      (Closure.print 
 			 (Closure.f
@@ -26,7 +24,7 @@ let lexbuf outchan l = (* バッファをコンパイルしてチャンネルへ出力する (caml2htm
 				     (KNormal.f
 					(Typing.f
 					   (Syntax.print
-					      (Parser.exp Lexer.token l)))))))))))))))
+					      (Parser.exp Lexer.token l)))))))))))))
     
 let string s = lexbuf stdout (Lexing.from_string s) (* 文字列をコンパイルして標準出力に表示する (caml2html: main_string) *)
 
