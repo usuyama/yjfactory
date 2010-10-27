@@ -293,7 +293,7 @@ use ieee.std_logic_unsigned.all;
 entity Reg is
   port (clk : in std_logic;
         we    : in std_logic;
-        out_a     : in std_logic_vector(4 downto 0);
+        out_a  : in std_logic_vector(4 downto 0);
         dpra : in std_logic_vector(4 downto 0);
         di    : in std_logic_vector(31 downto 0);
         in_a : in std_logic_vector(4 downto 0); 
