@@ -21,6 +21,9 @@ architecture WB of WB_stage is
 
 begin  -- WB
 
-  
+  data_out<=Mem_data when MemtoReg='1' else
+             ALU_data;
+  r_out<=rt when RegDst ='0' else
+          rd;
 
 end WB;
