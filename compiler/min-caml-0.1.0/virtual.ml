@@ -115,7 +115,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       | Type.Array(Type.Float) ->
 	  Let((addr, Type.Int), Add(x, V(y)), Ans(LdF(addr, 0)))
       | Type.Array(_) ->
-	  Let((addr, Type.Int), Add(x, V(y)), Ans(LdF(addr, 0)))
+	  Let((addr, Type.Int), Add(x, V(y)), Ans(Ld(addr, 0)))
       | _ -> assert false)
   | Closure.Put(x, y, z) -> 
       let addr = Id.genid "t" in
