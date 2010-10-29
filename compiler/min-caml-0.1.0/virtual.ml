@@ -61,8 +61,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       (match M.find x env with
 	 | Type.Unit -> Ans(Nop)
 	 | Type.Float -> Ans(FMov(x))
-	 | Type.Int -> Ans(Mov(x))
-	 | _ -> assert false)
+	 | _ -> Ans(Mov(x)))
   | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
       (* Closureのアドレスをセットしてから、自由変数の値をストア *)
       let e2' = g (M.add x t env) e2 in

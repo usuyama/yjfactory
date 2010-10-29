@@ -145,7 +145,7 @@ let print_t t = (* Closure.t -> Closure.t *)
 	 | ExtArray(Id.L(t)) -> printf "ExtArray %s\n" t
 	 | Get(t1, t2) -> printf "GET %s %s\n" t1 t2
 	 | Put(t1, t2, t3) -> printf "PUT %s %s %s\n" t1 t2 t3
-	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s/n" t1;
+	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s\n" t1;
 					    pi ();printf "entry: %s\n" (Id.str_of_l clo.entry))
 	 | AppCls(t, tl) -> (printf "AppCls %s\n" t;
 			     pi ();List.iter (fun t -> printf "  %s" t) tl;printf "\n")
