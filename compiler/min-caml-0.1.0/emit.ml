@@ -204,7 +204,7 @@ let f oc (Prog(fundefs, e)) =
   fprintf oc "entry:\n";
   print_li oc reg_sp 0;
   print_li oc reg_ra 0;
-  print_li oc reg_ra 10000;
+  print_li oc reg_hp 10000;
   stackset := S.empty;
   stackmap := [];
   g oc (Tail, e);
