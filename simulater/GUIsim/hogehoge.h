@@ -14,7 +14,7 @@
 #include "parser.h"
 #include "inst_info.h"
 
-#define MEMSIZE 10000
+#define MEMSIZE 100000
 #define INSTSIZE 10000
 #define MSCOPE 10
 
@@ -41,12 +41,13 @@ private:
     void print_mem(int address);
     void print_regs();
     void print_regs(int index);
+    std::ofstream outfile;
 
 public:
     int regs[32];
     float fpr[32];
     inst_info inst_mem[INSTSIZE];
-    int data_mem[MEMSIZE];
+    float_int data_mem[MEMSIZE];
     bool ready;
 
     hogehoge();

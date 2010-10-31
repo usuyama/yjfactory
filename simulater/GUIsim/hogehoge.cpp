@@ -14,6 +14,7 @@ hogehoge::hogehoge(QWidget *parent) :
 
 hogehoge::~hogehoge()
 {
+
     delete ui;
 }
 
@@ -33,7 +34,7 @@ hogehoge::~hogehoge()
     int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
 
     for(int i=start;i<end;i++){
-    std::cout << i << ": " << data_mem[i] << std::endl;
+    std::cout << i << ": " << data_mem[i].myfloat << std::endl;
     }
   }
 
@@ -52,6 +53,7 @@ hogehoge::~hogehoge()
   void hogehoge::setPC(int address){
     pc=address;
   }
+
   /*
   int hogehoge::get_steps(){
     return steps;
@@ -66,6 +68,7 @@ hogehoge::~hogehoge()
   //}
 
    void hogehoge::doInst(int steps){
+    std::ofstream os("outputfile");
     int opcode;
     int tmp;
     float_int tmp_union;
@@ -154,20 +157,45 @@ hogehoge::~hogehoge()
           ui->instruction->appendPlainText( "exceed memory\n");
           exit(1);
         }
-        regs[iinfo.op1] = data_mem[tmp];
+        regs[iinfo.op1] = data_mem[tmp].myint;
         pc++;
         break;
-      case SW :
-        ui->instruction->appendPlainText(iinfo.assm);
-        tmp=regs[iinfo.op2]+iinfo.op3;
-        if ((tmp >= MEMSIZE) || tmp < 0){
-          ui->instruction->appendPlainText( "exceed memory\n");
-          exit(1);
+      case LF :
+            ui->instruction->appendPlainText(iinfo.assm);
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+            ui->instruction->appendPlainText( "exceed memory\n");
+            exit(1);
         }
-        data_mem[tmp] = regs[iinfo.op1];
-        //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
-        pc++;
-        break;
+            fpr[iinfo.op1] = data_mem[tmp].myfloat;
+            pc++;
+            break;
+      case SW :
+            ui->instruction->appendPlainText(iinfo.assm);
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+              ui->instruction->appendPlainText( "exceed memory\n");
+              exit(1);
+            }
+            data_mem[tmp].myint = regs[iinfo.op1];
+            //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
+            pc++;
+            break;
+      case SF :
+            ui->instruction->appendPlainText(iinfo.assm);
+            ui->instruction->appendPlainText(QString::number(fpr[iinfo.op1]));
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+              ui->instruction->appendPlainText( "exceed memory\n");
+              exit(1);
+            }
+            std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+            data_mem[tmp].myfloat = fpr[iinfo.op1];
+            std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+    //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
+            pc++;
+            break;
+
       case LLI :
         ui->instruction->appendPlainText(iinfo.assm);
         regs[iinfo.op1] = iinfo.op2;
@@ -189,6 +217,11 @@ hogehoge::~hogehoge()
         pc = iinfo.op1 ;
                                                //        ui->instruction->appendPlainText( pc << "pc after");
         break;
+      case JALR :
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[31] = pc+1;
+        pc = regs[iinfo.op1];
+        break;
       case MVF2I :
         ui->instruction->appendPlainText(iinfo.assm);
         tmp_union.myfloat = fpr[iinfo.op2];
@@ -196,12 +229,15 @@ hogehoge::~hogehoge()
         pc++;
         break;
       case SENDW :
+        ui->instruction->appendPlainText("sendw called");
         ui->instruction->appendPlainText(iinfo.assm);
-        std::cout << regs[iinfo.op1];
+        ui->instruction->appendPlainText(QString::number(regs[iinfo.op1]));
+        os << regs[iinfo.op1];
         pc++;
         break;
       case SENDC :
-        std::cout << (char)regs[iinfo.op1];
+        os << (char)regs[iinfo.op1];
+        ui->instruction->appendPlainText("sendc called");
         pc++;
         break;
       case NOP :
@@ -216,6 +252,7 @@ hogehoge::~hogehoge()
         return;
       }
      }
+     os.close();
     }
 
 

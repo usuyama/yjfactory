@@ -90,8 +90,11 @@ QString parser::make_asm_3fp(inst_info& info){
 QString parser::make_asm_2r1i(inst_info &info){
   return "r" + QString::number(info.op1) + ", r" + QString::number(info.op2) + ", " + QString::number(info.op3) + "\n";
 }
-QString parser::make_asm_mem(inst_info& info){
-  return "r" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]\n";
+QString parser::make_asm_mem(inst_info& info, bool isint){
+   if(isint)
+    return "r" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]\n";
+   else
+    return "f" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]\n";
   }
 QString parser::make_asm_1r1i(inst_info& info){
   return "r" + QString::number(info.op1) + ", " + "hogegege\n"; //QString::number(info.op2) + "\n";
@@ -102,11 +105,11 @@ QString parser::make_asm_1r1i(inst_info& info){
 
 
 int parser::parse(inst_info* inst_mem, const char* program){
-  std::cout<< program << std::endl;
+  //std::cout<< program << std::endl;
   ifstream fin(program);
   int index=0;
   if(!fin){
-    cout << "cannot open " << program << endl;
+    //cout << "cannot open " << program << endl;
     return -1;
   }
 
@@ -173,7 +176,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= LLIF;
       inst_mem[index].op1 = ext_op1(str);
       inst_mem[index].op2 = u_strToInt(str.substr(16,32) ,16);
-      std::cout << inst_mem[index].op1 << endl;
+      //      std::cout << inst_mem[index].op1 << endl;
       inst_mem[index].assm = "llif\t" + make_asm_1r1i(inst_mem[index]);
     }
     else if(inst=="XXLHIF"){ // llih
@@ -181,7 +184,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= LHIF;
       inst_mem[index].op1 = ext_op1(str);
       inst_mem[index].op2 = u_strToInt(str.substr(16,32) ,16);
-      std::cout << inst_mem[index].op1 << endl;
+      //      std::cout << inst_mem[index].op1 << endl;
       inst_mem[index].assm = "lhif\t" + make_asm_1r1i(inst_mem[index]);
     }
     else if(inst=="001100"){ // bgt
@@ -208,20 +211,38 @@ int parser::parse(inst_info* inst_mem, const char* program){
       cout << "jr\n";
       inst_mem[index].opcode=JR;
       fill_3reg(inst_mem,index,str);
-      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1) + "\n";
+      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
+    }
+    else if(inst=="010100"){
+        cout << "jalr\n";
+        inst_mem[index].opcode=JALR;
+        fill_3reg(inst_mem,index,str);
+        inst_mem[index].assm = "jalr\tr" + QString::number(inst_mem[index].op1);
     }
     else if(inst=="001110"){ // load
       cout << "LW\n";
       inst_mem[index].opcode=LW;
       fill_2reg_1imm(inst_mem,index,str);
-      inst_mem[index].assm = "lw\t" + make_asm_mem(inst_mem[index]);
+      inst_mem[index].assm = "lw\t" + make_asm_mem(inst_mem[index], true);
+    }
+    else if(inst=="XXXXLF"){ // load float
+      cout << "LF\n";
+      inst_mem[index].opcode=LF;
+      fill_2reg_1imm(inst_mem,index,str);
+      inst_mem[index].assm = "lf\t" + make_asm_mem(inst_mem[index], false);
     }
     else if(inst=="001111"){ // store
       cout << "SW\n";
       inst_mem[index].opcode=SW;
       fill_2reg_1imm(inst_mem,index,str);
-      inst_mem[index].assm = "sw\t" + make_asm_mem(inst_mem[index]);
+      inst_mem[index].assm = "sw\t" + make_asm_mem(inst_mem[index], true);
+    }
+    else if(inst=="XXXXSF"){ // store float
+      cout << "SF\n";
+      inst_mem[index].opcode=SF;
+      fill_2reg_1imm(inst_mem,index,str);
+      inst_mem[index].assm = "sf\t" + make_asm_mem(inst_mem[index], false);
 }
     else if(inst=="MOVF2I"){
       cout << "MOVF2I\n";

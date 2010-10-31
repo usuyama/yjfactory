@@ -55,6 +55,7 @@ void MainWindow::loadProgram(){
         ui->messageBuff->insertPlainText(program);
         return;
     }
+
     for(int i=0;i<32;i++){
         items[i].setData(Qt::EditRole, QString::number(ui->frame->regs[i]));
         //std::cout<< (ui->frame->fpr) << std::endl;

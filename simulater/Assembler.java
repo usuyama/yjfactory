@@ -1,4 +1,4 @@
-=import java.io.*;
+import java.io.*;
 import java.util.*;
 import java.lang.Float;
 
@@ -137,7 +137,11 @@ public class Assembler {
 			    code.append("101001");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
-			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			    System.out.println(inst[3]);
+			    if(inst[3].matches("[1-9][0-9]*"))
+				code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			    else
+				code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3]), 16));
 			}
 			else if(inst[0].equals("sub")){
 			    code.append("100010");
@@ -218,9 +222,19 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRelate(inst[2]));
 			}
+			else if(inst[0].equals("sf")){
+			    code.append("XXXXSF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getRelate(inst[2]));
+			}
 			else if(inst[0].equals("lw")){
 			    code.append("001110");
 			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRelate(inst[2]));
+			}
+			else if(inst[0].equals("lf")){
+			    code.append("XXXXLF");
+			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getRelate(inst[2]));
 			}
 			else if(inst[0].equals("jr")){
@@ -229,7 +243,7 @@ public class Assembler {
 			    code.append("000000000000000000000");
 			}
 			else if(inst[0].equals("jalr")){
-			    code.append("010110");
+			    code.append("010100");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("000000000000000000000");
 			}

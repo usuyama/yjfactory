@@ -21,7 +21,7 @@ class parser{
   void fill_1imm(inst_info* inst_mem, int index, std::string str);
   QString make_asm_3r(inst_info& info);
   QString make_asm_2r1i(inst_info& info);
-  QString make_asm_mem(inst_info& info);
+  QString make_asm_mem(inst_info& info, bool isint);
   QString make_asm_1r1i(inst_info& info);
   QString make_asm_1i(inst_info& info);
   QString make_asm_3fp(inst_info& info);
