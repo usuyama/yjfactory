@@ -1,42 +1,39 @@
-	j	entry
+entry:
+	lli	%sp, 0
+	lli	%ra, 0
+	lli	%hp, 10000
+	lli	%r1, 5
+	sw	%ra, [%sp + 0]
+	addi	%sp, %sp, 1
+	jal	fib.10
+	subi	%sp, %sp, 1
+	lw	%ra, [%sp + 0]
+	j	yj_print_int
+	halt
 fib.10:
-	li	%r2, 1
-	bgt	%r2, %r1, bgt_else.24
-	nop
+	lli	%r2, 1
+	bgt	%r1, %r2, bgt_else.24
 	jr	%ra
-	nop
 bgt_else.24:
-	subi	%r2, %r1, 1
+	lli	%r2, 1
+	sub	%r2, %r1, %r2
 	sw	%r1, [%sp + 0]
-	add	%r2, r0, %r1
-	sw	%ra, [%sp + 4]
+	add	%r1, %r0, %r2
+	sw	%ra, [%sp + 1]
+	addi	%sp, %sp, 2
 	jal	fib.10
-	nop	# delay slot
-	nop
-	lw	[%sp + 4], %ra
-	lw	[%sp + 0], %r2
-	subi	%r2, %r2, 2
-	sw	%r1, [%sp + 4]
-	add	%r2, r0, %r1
-	sw	%ra, [%sp + 12]
+	subi	%sp, %sp, 2
+	lw	%ra, [%sp + 1]
+	lli	%r2, 2
+	lw	%r3, [%sp + 0]
+	sub	%r2, %r3, %r2
+	sw	%r1, [%sp + 1]
+	add	%r1, %r0, %r2
+	sw	%ra, [%sp + 2]
+	addi	%sp, %sp, 3
 	jal	fib.10
-	nop	# delay slot
-	nop
-	lw	[%sp + 12], %ra
-	lw	[%sp + 4], %r2
+	subi	%sp, %sp, 3
+	lw	%ra, [%sp + 2]
+	lw	%r2, [%sp + 1]
 	add	%r1, %r2, %r1
 	jr	%ra
-	nop
-entry:
-	li	%r1, 30
-	sw	%ra, [%sp + 4]
-	jal	fib.10
-	nop	# delay slot
-	nop
-	lw	[%sp + 4], %ra
-	sw	%ra, [%sp + 4]
-	jal	yj_print_int
-	nop	# delay slot
-	nop
-	lw	[%sp + 4], %ra
-	halt

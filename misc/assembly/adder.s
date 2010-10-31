@@ -13,10 +13,10 @@ entry:
 	sw	%ra, [%sp + 0]
 	lw	%r26, [%r27 + 0]
 	addi	%sp, %sp, 1
-	jal	%r27
+	jalr	%r26
 	subi	%sp, %sp, 1
 	lw	%ra, [%sp + 0]
-	jal	yj_print_int
+	j	yj_print_int
 	halt
 adder.11:
 	lw	%r2, [%r27 + 1]

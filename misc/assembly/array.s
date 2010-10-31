@@ -31,5 +31,5 @@ entry:
 	lw	%r2, [%sp + 0]
 	add	%r1, %r2, %r1
 	lw	%r1, [%r1 + 0]
-	jal	yj_print_int
+	j	yj_print_int
 	halt
