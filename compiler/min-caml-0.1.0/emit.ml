@@ -42,7 +42,10 @@ let rec shuffle sw xys =
 let print_int_ope oc ope rd arg0 arg1 =
   match arg1 with
     | V(z) -> fprintf oc "\t%s\t%s, %s, %s\n" ope rd arg0 z
-    | C(z) -> fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+    | C(z) -> (if z <= 65536 then 
+		 fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+	       else
+		 assert false) (* [XXX] fix later *)
 
 let print_li oc rd imm =
   fprintf oc "\tlli\t%s, %d\n" rd imm; (* 即値が16bitに収まればlliのみ *)
