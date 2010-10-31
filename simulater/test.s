@@ -1,5 +1,7 @@
-	lli	%r1, 23
-	sw	%r1, [%r1 + 1]
-	lw	%r2, [%r1 + 1]
-	add	%r1, %r2, %r1
+	lli	%r3, 32
+	lli	%r2, 10
+	sendc	%r3
+	sendw	%r3
+	sendc	%r2
+	sendw	%r2
 	halt

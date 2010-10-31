@@ -223,18 +223,24 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       inst_mem[index].assm = "sw\t" + make_asm_mem(inst_mem[index]);
 }
-    else if(inst=="MVF2I"){
+    else if(inst=="MOVF2I"){
       cout << "MOVF2I\n";
       inst_mem[index].opcode=MVF2I;
       inst_mem[index].op1=ext_op1(str);
       inst_mem[index].op2=ext_op2(str);
-      inst_mem[index].assm = "movf2i\tr" + QString::number(inst_mem[index].op1) + "f" + QString::number(inst_mem[index].op2) + "\n";
+      inst_mem[index].assm = "movf2i\tr" + QString::number(inst_mem[index].op1) + "f" + QString::number(inst_mem[index].op2);
     }
     else if(inst=="XSENDW"){
       cout << "SENDW\n";
       inst_mem[index].opcode=SENDW;
       inst_mem[index].op1=ext_op1(str);
-      inst_mem[index].assm = "sendw\tr" + QString::number(inst_mem[index].op1) + "\n";
+      inst_mem[index].assm = "sendw\tr" + QString::number(inst_mem[index].op1);
+    }
+    else if(inst=="XSENDC"){
+      cout << "SENDC\n";
+      inst_mem[index].opcode=SENDC;
+      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].assm = "sendc\tr" + QString::number(inst_mem[index].op1);
     }
     else if(inst=="000000"){
       cout << "NOP\n";

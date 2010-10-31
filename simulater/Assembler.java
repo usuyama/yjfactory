@@ -63,6 +63,8 @@ class GetReg{
 	    return toStr_nlen(30,5);
 	else if((s.substring(1,3)).equals("ra"))
 	    return toStr_nlen(31,5);
+	else if((s.substring(1,3)).equals("hp"))
+	    return toStr_nlen(29,5);
 	else {
 	    int tmp = Integer.parseInt(s.substring(2));
 	    return toStr_nlen(tmp,5);
