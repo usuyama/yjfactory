@@ -76,6 +76,8 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), Add(y, z) -> print_int_ope oc "add" x y z
   | NonTail(x), Sub(y, z) -> print_int_ope oc "sub" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
+  | NonTail(x), Neg(y) -> fprintf oc "\tneg\t%s, %s\n" x y
+  | NonTail(x), FNeg(y) -> fprintf oc "\tfneg\t%s, %s\n" x y
   | NonTail(x), Ld(y, z) -> fprintf oc "\tlw\t%s, [%s + %d]\n" x y z
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
   | NonTail(_), Comment(s) -> fprintf oc "\t# %s\n" s
@@ -101,6 +103,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tlw\t%s, [%s + %d]\n" x reg_sp (offset y)
   | NonTail(x), Restore(y) when List.mem x allfregs ->
       fprintf oc "\tlf\t%s, [%s + %d]\n" x reg_sp (offset y)
+  | NonTail(x), Restore(y) -> assert false
   (* 末尾だったら計算結果を第一レジスタにセットしてret (caml2html: emit_tailret) *)
   | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
