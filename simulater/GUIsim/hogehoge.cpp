@@ -244,6 +244,9 @@ hogehoge::~hogehoge()
         ui->instruction->appendPlainText("nop");
         pc++;
         break;
+      case BREAK :
+        pc++;
+        return;
       case HALT :
         ui->instruction->appendPlainText("\nprogram end\n");
         return;

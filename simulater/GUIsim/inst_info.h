@@ -45,6 +45,7 @@ enum {
   SENDW,
   SENDC,
   RECVF,
+  BREAK,
   HALT
 };
 
