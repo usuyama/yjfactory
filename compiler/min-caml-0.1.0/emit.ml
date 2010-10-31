@@ -42,7 +42,10 @@ let rec shuffle sw xys =
 let print_int_ope oc ope rd arg0 arg1 =
   match arg1 with
     | V(z) -> fprintf oc "\t%s\t%s, %s, %s\n" ope rd arg0 z
-    | C(z) -> fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+    | C(z) -> (if z <= 65536 then 
+		 fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+	       else
+		 assert false) (* [XXX] fix later *)
 
 let print_li oc rd imm =
   fprintf oc "\tlli\t%s, %d\n" rd imm; (* 即値が16bitに収まればlliのみ *)
@@ -66,7 +69,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   (* 末尾でなかったら計算結果をdestにセット (caml2html: emit_nontail) *)
   | NonTail(_), Nop -> ()
   | NonTail(x), Set(i) -> print_li oc x i
-  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\tadd\t%s, %%r0, %s\n" x y (* XXX *)
+  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\tlli\t%s\t%s\n" x y (* XXX *)
   | NonTail(x), SetF(f) -> print_lif oc x f
   | NonTail(x), Mov(y) when x = y -> ()
   | NonTail(x), Mov(y) -> print_mov oc x y
@@ -134,14 +137,14 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tj\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
       fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tjalr\t%s\n" reg_sw;
       print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
       fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       if List.mem a allregs && a <> regs.(0) then
