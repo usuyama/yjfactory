@@ -23,10 +23,6 @@ rule token = parse
     { LPAREN }
 | ')'
     { RPAREN }
-| "true"
-    { BOOL(true) }
-| "false"
-    { BOOL(false) }
 | "not"
     { NOT }
 | digit+ (* 整数を字句解析するルール (caml2html: lexer_int) *)
