@@ -229,14 +229,14 @@ hogehoge::~hogehoge()
         pc++;
         break;
       case SENDW :
-        ui->instruction->appendPlainText("sendw called");
+       // ui->instruction->appendPlainText("sendw called");
         ui->instruction->appendPlainText(iinfo.assm);
-        ui->instruction->appendPlainText(QString::number(regs[iinfo.op1]));
-        os << regs[iinfo.op1];
+        std::cout << regs[iinfo.op1] << std::endl;
         pc++;
         break;
       case SENDC :
-        os << (char)regs[iinfo.op1];
+        //os << (char)regs[iinfo.op1];
+        std::cout << (char)regs[iinfo.op1] << std::endl;
         ui->instruction->appendPlainText("sendc called");
         pc++;
         break;
