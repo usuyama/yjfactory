@@ -134,14 +134,14 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tj\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
       fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tjalr\t%s\n" reg_sw;
       print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
       fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       if List.mem a allregs && a <> regs.(0) then
