@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "parser.h"
 #include "inst_info.h"
@@ -49,6 +50,7 @@ public:
     inst_info inst_mem[INSTSIZE];
     float_int data_mem[MEMSIZE];
     bool ready;
+    FILE* outf;
 
     hogehoge();
     void setPC(int address);
