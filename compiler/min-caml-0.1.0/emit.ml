@@ -137,10 +137,10 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
-      fprintf oc "\tjr\t%s\n" reg_sw;
+      fprintf oc "\tjalr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      fprintf oc "\tj\t%s\n" x;
+      fprintf oc "\tjal\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
