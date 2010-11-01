@@ -128,13 +128,14 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, IfLE(x, y, e1, e2) -> (* x <= y *)
       g'_tail_if oc e1 e2 "bgt" x y
   | Tail, IfGE(x, y, e1, e2) -> (* x >= y *)
-      g'_tail_if oc e1 e2 "bgt" y x
+      failwith "ifge" (* XXX *)
+      (* g'_tail_if oc e1 e2 "bgt" y x *)
   | NonTail(z), IfEq(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "beq" x y
   | NonTail(z), IfLE(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "bgt" y x
-  | NonTail(z), IfGE(x, y, e1, e2) ->
-      g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" x y
+  | NonTail(z), IfGE(x, y, e1, e2) -> (* XXX ここには来ない *)
+      failwith "ifge" (* g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" x y *)
 (* float if *)
   | Tail, IfFLE(x, y, e1, e2) -> (* x <= y *)
       g'_tail_if oc e1 e2 "bgtf" x y
