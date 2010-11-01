@@ -82,25 +82,25 @@ void parser::fill_1imm(inst_info* inst_mem, int index, string str){
 }
 
 QString parser::make_asm_3r(inst_info& info){
-  return "r" + QString::number(info.op1) + ", r" + QString::number(info.op2) + ", r" + QString::number(info.op3) + "\n";
+  return "r" + QString::number(info.op1) + ", r" + QString::number(info.op2) + ", r" + QString::number(info.op3);
   }
 QString parser::make_asm_3fp(inst_info& info){
-  return "f" + QString::number(info.op1) + ", f" + QString::number(info.op2) + ", f" + QString::number(info.op3) + "\n";
+  return "f" + QString::number(info.op1) + ", f" + QString::number(info.op2) + ", f" + QString::number(info.op3);
   }
 QString parser::make_asm_2r1i(inst_info &info){
-  return "r" + QString::number(info.op1) + ", r" + QString::number(info.op2) + ", " + QString::number(info.op3) + "\n";
+  return "r" + QString::number(info.op1) + ", r" + QString::number(info.op2) + ", " + QString::number(info.op3);
 }
 QString parser::make_asm_mem(inst_info& info, bool isint){
    if(isint)
-    return "r" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]\n";
+    return "r" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]";
    else
-    return "f" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]\n";
+    return "f" + QString::number(info.op1) + ", [r" + QString::number(info.op2) + " + " + QString::number(info.op3) + "]";
   }
 QString parser::make_asm_1r1i(inst_info& info){
-  return "r" + QString::number(info.op1) + ", " + "hogegege\n"; //QString::number(info.op2) + "\n";
+  return "r" + QString::number(info.op1) + ", " + "hogegege"; //QString::number(info.op2) + "\n";
   }
  QString parser::make_asm_1i(inst_info& info){
-  return QString::number(info.op1) + "\n";
+  return QString::number(info.op1);
   }
 
 
@@ -193,6 +193,13 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       inst_mem[index].assm = "bgt\t" + make_asm_2r1i(inst_mem[index]);
     }
+    else if(inst=="XXBGTF"){ // bgtf
+      cout << "BGTF\n";
+      inst_mem[index].opcode=BGTF;
+      fill_2reg_1imm(inst_mem,index,str);
+      inst_mem[index].assm = "bgtf\t" + make_asm_2r1i(inst_mem[index]);
+    }
+
     else if(inst=="010101"){ // jump
       cout << "JUMP\n";
       inst_mem[index].opcode=JUMP;

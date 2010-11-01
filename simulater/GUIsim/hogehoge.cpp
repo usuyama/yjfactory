@@ -210,6 +210,13 @@ hogehoge::~hogehoge()
         else
           pc++;
         break;
+      case BGTF :
+        ui->instruction->appendPlainText(iinfo.assm);
+        if(fpr[iinfo.op1] > fpr[iinfo.op2])
+          pc +=iinfo.op3;
+        else
+          pc++;
+        break;
       case JAL :
         ui->instruction->appendPlainText(iinfo.assm);
         regs[31] = pc+1;

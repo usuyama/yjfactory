@@ -31,6 +31,7 @@ enum {
   JALR,
   JR,
   BGT,
+  BGTF,
   BEQ,
   LLI,
   LHIF,
