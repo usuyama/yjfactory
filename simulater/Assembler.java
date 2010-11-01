@@ -265,6 +265,11 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
 			}
+			else if(inst[0].equals("bgtf")){
+			    code.append("XXBGTF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
 			else if(inst[0].equals("jal")){
 			    code.append("010110");
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
