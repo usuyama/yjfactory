@@ -292,6 +292,10 @@ public class Assembler {
 			else if(inst[0].equals("nop")){
 			    code.append("00000000000000000000000000000000");
 			}
+			else if(inst[0].equals("break")){
+			    code.append("XBREAK");
+			    code.append("00000000000000000000000000");
+			}
 			else if(inst[0].equals("halt")){
 			    code.append("110000");
 			    code.append("00000000000000000000000000");
