@@ -217,6 +217,20 @@ hogehoge::~hogehoge()
         else
           pc++;
         break;
+      case FABS :
+        ui->instruction->appendPlainText(iinfo.assm);
+        tmp_union.myfloat = fpr[iinfo.op1];
+        tmp_union.myint &= 0x7FFFFFFF;
+        fpr[iinfo.op1] = tmp_union.myfloat;
+        pc++;
+        break;
+      case FNEG :
+        ui->instruction->appendPlainText(iinfo.assm);
+        tmp_union.myfloat = fpr[iinfo.op1];
+        tmp_union.myint ^= 0x80000000;
+        fpr[iinfo.op1] = tmp_union.myfloat;
+        pc++;
+        break;
       case JAL :
         ui->instruction->appendPlainText(iinfo.assm);
         regs[31] = pc+1;
