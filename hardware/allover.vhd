@@ -102,6 +102,7 @@ end component;
 
 component IR
   port (
+    clk:in std_logic;
     in_instruction  : in  std_logic_vector(31 downto 0);
     we              : in  std_logic;
     out_instruciton : out std_logic_vector(31 downto 0));
@@ -115,11 +116,24 @@ component PROM
     dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
+
+component PC
+
+  port (
+    clk    : in  std_logic;
+    in_PC  : in  std_logic_vector(31 downto 0);
+    out_PC : out std_logic_vector(31 downto 0);
+        ALU_b_out: in std_logic;
+    PC_Write : in std_logic;
+    PC_write_b: in std_logic
+);
+end component;
+
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
 signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out : std_logic;
 signal ALUSrcB : std_logic_vector(1 downto 0);
-signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_out,Mem_Data,w_r_data: std_logic_vector(31 downto 0);
+signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_a_a,data_b_a,data_out,Mem_Data,w_r_data,PC_PR: std_logic_vector(31 downto 0);
 signal p_we : std_logic_vector(0 downto 0) := "0";
 signal p_in : std_logic_vector(31 downto 0) := (others=>'0');
 signal PROM_out : std_logic_vector(31 downto 0);
@@ -157,7 +171,7 @@ I_F:IF_stage port map (
     ALU_PC=>ALU_PC,
     PC_out=>PC_out);
   DC:DC_stage port map(
-Instruciton=>IR_out,
+Instruciton=>PROM_out,                  --
 opcode=>opcode,
 op_a=>op_r_a,
 op_b=>op_r_b,
@@ -169,7 +183,7 @@ EX:EX_stage port map (
     ALU_ctrl => IR_out(31 downto 26),
     Alu_src_b => ALUSrcB,
     Alu_src_a => ALUSrcA,
-    PC => PC_out,
+    PC => PC_PR,
     data_a=>data_a,
     data_b=>data_b,
     data_imm=>op_imm,
@@ -210,17 +224,69 @@ mem_Address=>Mem_Addr_out
 );
 
   I_R : IR port map (
+    clk=>mclk,
     in_instruction  =>  PROM_out,
     we              =>  IR_Write,
     out_instruciton =>  IR_out);
   PR:PROM port map (
     clka => mclk,
     wea => p_we,
-    addra => PC_out,
+    addra => PC_PR,
     dina => p_in,
     douta => PROM_out);
+PrC : PC port map (
+  clk    => mclk,
+  in_PC  => PC_out,
+  out_PC => PC_PR,
+  ALU_b_out => Alu_Br_out,
+  PC_Write =>PCwrite,
+  PC_write_b=>PC_write_b
+);
+
+process (mclk)
+begin  -- process
+  if (mclk'event and mclk='1') then
+--    data_a_a<=data_a;
+--    data_b_a<=data_b;
+  end if;
+end process;
 end a_l_l;
 
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+
+entity PC is
+  
+  port (
+    clk    : in  std_logic;
+    in_PC  : in  std_logic_vector(31 downto 0);
+    out_PC : out std_logic_vector(31 downto 0);
+    ALU_b_out: in std_logic;
+    PC_Write : in std_logic;
+    PC_write_b: in std_logic);
+
+end PC;
+architecture Programcounter of PC is
+signal Pr : std_logic_vector(31 downto 0):=(others=>'0');
+signal We1,We2 : std_logic;
+begin  -- Programcounter
+out_PC<=Pr;
+
+  We1<= (PC_write_b and ALU_b_out);
+  We2<=(PC_Write or We1);
+process(clk)
+  begin
+   if (clk'event and clk='1') then
+     if (We2='1') then
+    Pr<=in_PC;       
+     end if;
+  end if;
+end process;
+  
+
+end Programcounter;
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -228,17 +294,25 @@ use ieee.std_logic_arith.all;
 entity IR is
   
   port (
+    clk : in std_logic;
     in_instruction : in  std_logic_vector(31 downto 0);
     we             : in  std_logic;
     out_instruciton: out std_logic_vector(31 downto 0));
-signal instruction : std_logic_vector(31 downto 0);
+
 end IR;
 
 architecture InstructionRegister of IR is
-
+signal instruction : std_logic_vector(31 downto 0);
 begin  -- InstructionRegister
 out_instruciton<=instruction;
-  instruction<=in_instruction when we='1' else
-                instruction;
+  process (clk)
+  begin  -- process
+    if (clk'event and clk='1') then
+      case we is
+        when '1' => instruction<=in_instruction;
+        when others => null;
+      end case;
+     end if;
+  end process;
 
 end InstructionRegister;

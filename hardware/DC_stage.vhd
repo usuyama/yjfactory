@@ -24,7 +24,7 @@ begin  -- Decoder
   op_b<=Instruciton(20 downto 16);
   op_c<=Instruciton(15 downto 11);
   op_imm(15 downto 0)<=Instruciton(15 downto 0);
-  op_imm(31 downto 26)<=(others=>'1') when Instruciton(15)='1' else (others=>'0');
+  op_imm(31 downto 16)<=(others=>'1') when Instruciton(15)='1' else (others=>'0');
   op_j(25 downto 0)<=Instruciton(25 downto 0);
   op_j(31 downto 26)<=(others=>'0');
 end Decoder;

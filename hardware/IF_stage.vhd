@@ -22,10 +22,8 @@ signal We1,We2 : std_logic := '0';
 begin  -- IF
   
   PC_out<=PC;
-  We1<= (PC_write_b and ALU_b_out);
-  We2<=(PC_Write or We1);
-  PC<=ALU_PC when PC_source= '0' and We2='1' else
-           ALU_out when PC_source='1' and We2='1' else
+    PC<=ALU_PC when PC_source= '0'  else
+           ALU_out when PC_source='1' else
        PC;
            
 end I_F;

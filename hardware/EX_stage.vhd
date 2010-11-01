@@ -36,7 +36,7 @@ begin  -- ex
     op1    => op_a,
     op2    => op_b,
     ans    => data_out);
-  op_a<=data_a when Alu_src_a='1' else
+  op_a<=data_a when Alu_src_a='0' else
          PC;
   op_b<=data_b when Alu_src_b="00" else
          "00000000000000000000000000000001" when  Alu_src_b="01" else
