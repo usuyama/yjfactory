@@ -78,7 +78,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), Div(y, z) -> print_int_ope oc "div" x y z
   | NonTail(x), Mul(y, z) -> print_int_ope oc "mul" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
-  | NonTail(x), Neg(y) -> fprintf oc "\tneg\t%s, %s\n" x y
+  | NonTail(x), Neg(y) -> fprintf oc "\tsub\t%s, %%r0, %s\n" x y
   | NonTail(x), FNeg(y) -> fprintf oc "\tfneg\t%s, %s\n" x y
   | NonTail(x), Ld(y, z) -> fprintf oc "\tlw\t%s, [%s + %d]\n" x y z
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
@@ -110,10 +110,10 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (Set _ | (* SetL _ |*) Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ as exp) ->
+  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | Div _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ as exp) ->
       g' oc (NonTail(regs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (FMov _ | FAdd _ | FMul _ | FDiv _ as exp) ->
+  | Tail, (LdF _ | FSub _ | FNeg _ | FMov _ | FAdd _ | FMul _ | FDiv _ | SetF _ as exp) ->
       g' oc (NonTail(fregs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
   | Tail, (Restore(x) as exp) ->
@@ -135,6 +135,11 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       g'_non_tail_if oc (NonTail(z)) e1 e2 "bgt" y x
   | NonTail(z), IfGE(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" x y
+(* float if *)
+  | Tail, IfFLE(x, y, e1, e2) -> (* x <= y *)
+      g'_tail_if oc e1 e2 "bgtf" x y
+  | NonTail(z), IfFLE(x, y, e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "bgtf" y x
 (* 関数呼び出しの仮想命令の実装 (caml2html: emit_call) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;

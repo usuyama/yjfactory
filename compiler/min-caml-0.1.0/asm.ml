@@ -37,7 +37,6 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | IfEq of Id.t * Id.t * t * t
   | IfLE of Id.t * Id.t * t * t
   | IfGE of Id.t * Id.t * t * t (* 左右対称ではないので必要 *)
-  | IfFEq of Id.t * Id.t * t * t
   | IfFLE of Id.t * Id.t * t * t
   (* closure address, integer arguments, and float arguments *)
   | CallCls of Id.t * Id.t list * Id.t list
@@ -78,7 +77,7 @@ let rec fv_exp = function
   | St(x, y, _) | StF(x, y, _) -> [x; y]
   | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) -> [x; y]
   | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: y' :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
-  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
+  | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
   | CallCls(x, ys, zs) -> x :: ys @ zs
   | CallDir(_, ys, zs) -> ys @ zs
 and fv = function
@@ -134,6 +133,7 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | IfEq(t1, t2, t3, t4) -> printf "IF %s = %s THEN\n" t1  t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | IfGE(t1, t2, t3, t4) -> printf "IF %s >= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
+       | IfFLE(t1, t2, t3, t4) -> printf "Float: IF %s <= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | CallCls(t1, int_args, float_args) -> (printf "Callcls %s\n" t1;
 				   pi ();printf "int args:";List.iter (fun t -> printf "  %s" t) int_args;printf "\n";
 				   pi ();printf "float args:";List.iter (fun t -> printf "  %s" t) float_args;printf "\n")

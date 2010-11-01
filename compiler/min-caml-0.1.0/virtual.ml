@@ -48,8 +48,8 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.IfEq(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
-	 | Type.Float -> Ans(IfFEq(x, y, g env e1, g env e2))
-	 | _ -> failwith "equality supported only for bool, int, and float")
+	 | Type.Float -> failwith "equality dosen't support float"
+	 | _ -> failwith "equality supported only for bool, int")
   | Closure.IfLE(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfLE(x, y, g env e1, g env e2))
