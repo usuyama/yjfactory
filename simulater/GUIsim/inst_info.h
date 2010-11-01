@@ -24,8 +24,11 @@ enum {
   SUBI,
   LW,
   SW,
+  LF,
+  SF,
   JUMP,
   JAL,
+  JALR,
   JR,
   BGT,
   BEQ,
@@ -33,8 +36,6 @@ enum {
   LHIF,
   LLIF,
   NOP,
-  LF,
-  SF,
   ADDF,
   SUBF,
   MULF,
@@ -44,6 +45,7 @@ enum {
   SENDW,
   SENDC,
   RECVF,
+  BREAK,
   HALT
 };
 

@@ -9,10 +9,12 @@ hogehoge::hogehoge(QWidget *parent) :
     ui(new Ui::hogehoge)
 {
     ui->setupUi(this);
+    ui->instruction->setMaximumBlockCount(100);
 }
 
 hogehoge::~hogehoge()
 {
+
     delete ui;
 }
 
@@ -32,7 +34,7 @@ hogehoge::~hogehoge()
     int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
 
     for(int i=start;i<end;i++){
-    std::cout << i << ": " << data_mem[i] << std::endl;
+    std::cout << i << ": " << data_mem[i].myfloat << std::endl;
     }
   }
 
@@ -51,6 +53,7 @@ hogehoge::~hogehoge()
   void hogehoge::setPC(int address){
     pc=address;
   }
+
   /*
   int hogehoge::get_steps(){
     return steps;
@@ -65,150 +68,194 @@ hogehoge::~hogehoge()
   //}
 
    void hogehoge::doInst(int steps){
+    std::ofstream os("outputfile");
     int opcode;
     int tmp;
     float_int tmp_union;
 
     for(int count=0; runall || count<steps; count++){
-      opcode = inst_mem[pc].opcode;
+      inst_info iinfo = inst_mem[pc];
+      opcode = iinfo.opcode;
+
       switch (opcode){
       case ADD :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + regs[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[iinfo.op1] = regs[iinfo.op2] + regs[iinfo.op3];
         pc++;
         break;
       case SUB :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] - regs[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[iinfo.op1] = regs[iinfo.op2] - regs[iinfo.op3];
         pc++;
         break;
       case ADDI :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] + inst_mem[pc].op3;
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[iinfo.op1] = regs[iinfo.op2] + iinfo.op3;
         pc++;
         break;
       case SUBI :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        regs[inst_mem[pc].op1] = regs[inst_mem[pc].op2] - inst_mem[pc].op3;
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[iinfo.op1] = regs[iinfo.op2] - iinfo.op3;
         pc++;
         break;
       case ADDF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] + fpr[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        fpr[iinfo.op1] = fpr[iinfo.op2] + fpr[iinfo.op3];
         pc++;
         break;
       case MULF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] * fpr[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        fpr[iinfo.op1] = fpr[iinfo.op2] * fpr[iinfo.op3];
         pc++;
         break;
       case SUBF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] - fpr[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        fpr[iinfo.op1] = fpr[iinfo.op2] - fpr[iinfo.op3];
         pc++;
         break;
       case DIVF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        fpr[inst_mem[pc].op1] = fpr[inst_mem[pc].op2] / fpr[inst_mem[pc].op3];
+        ui->instruction->appendPlainText(iinfo.assm);
+        fpr[iinfo.op1] = fpr[iinfo.op2] / fpr[iinfo.op3];
         pc++;
         break;
       case LLIF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        std::cout << "llif\n";
-	tmp_union.myint = inst_mem[pc].op2;
-	fpr[inst_mem[pc].op1] = tmp_union.myfloat;
+        ui->instruction->appendPlainText(iinfo.assm);
+	//        std::cout << "llif\n";
+	tmp_union.myint = iinfo.op2;
+	fpr[iinfo.op1] = tmp_union.myfloat;
         pc++;
         //std::cout << "llif done\n";
         break;
       case LHIF :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-	tmp_union.myfloat = fpr[inst_mem[pc].op1];
-	tmp_union.myint = tmp_union.myint + (((unsigned int)inst_mem[pc].op2) << 16);
-	fpr[inst_mem[pc].op1] = tmp_union.myfloat;
-        std::cout << fpr[inst_mem[pc].op1] << std::endl;
+        ui->instruction->appendPlainText(iinfo.assm);
+	tmp_union.myfloat = fpr[iinfo.op1];
+	tmp_union.myint = tmp_union.myint + (((unsigned int)iinfo.op2) << 16);
+	fpr[iinfo.op1] = tmp_union.myfloat;
+	//        std::cout << fpr[iinfo.op1] << std::endl;
         pc++;
         break;
       case JR :
-        ui->instruction->insertPlainText( "jr");
-        pc = regs[inst_mem[pc].op1];
+        ui->instruction->appendPlainText(iinfo.assm);
+        pc = regs[iinfo.op1];
         break;
       case JUMP :
-        ui->instruction->insertPlainText( "jump");
-        pc = inst_mem[pc].op1;
-        //	ui->instruction->insertPlainText( inst_mem[pc].op1 << endl;
+        ui->instruction->appendPlainText(iinfo.assm);
+        pc = iinfo.op1;
+        //	ui->instruction->appendPlainText( iinfo.op1 << endl;
         break;
       case BEQ :
-        ui->instruction->insertPlainText( "beq");
-        if(regs[inst_mem[pc].op1]==regs[inst_mem[pc].op2])
-          pc += inst_mem[pc].op3;
+        ui->instruction->appendPlainText(iinfo.assm);
+        if(regs[iinfo.op1]==regs[iinfo.op2])
+          pc += iinfo.op3;
         else
           pc++;
         break;
       case LW :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;
+        ui->instruction->appendPlainText(iinfo.assm);
+        tmp=regs[iinfo.op2]+iinfo.op3;
         if ((tmp >= MEMSIZE) || tmp < 0){
-          ui->instruction->insertPlainText( "exceed memory\n");
+          ui->instruction->appendPlainText( "exceed memory\n");
           exit(1);
         }
-        regs[inst_mem[pc].op1] = data_mem[tmp];
+        regs[iinfo.op1] = data_mem[tmp].myint;
         pc++;
         break;
+      case LF :
+            ui->instruction->appendPlainText(iinfo.assm);
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+            ui->instruction->appendPlainText( "exceed memory\n");
+            exit(1);
+        }
+            fpr[iinfo.op1] = data_mem[tmp].myfloat;
+            pc++;
+            break;
       case SW :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        tmp=regs[inst_mem[pc].op2]+inst_mem[pc].op3;
-        if ((tmp >= MEMSIZE) || tmp < 0){
-          ui->instruction->insertPlainText( "exceed memory\n");
-          exit(1);
-        }
-        data_mem[tmp] = regs[inst_mem[pc].op1];
-        //ui->instruction->insertPlainText( tmp << " " << regs[inst_mem[pc].op1] << endl;
-        pc++;
-        break;
+            ui->instruction->appendPlainText(iinfo.assm);
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+              ui->instruction->appendPlainText( "exceed memory\n");
+              exit(1);
+            }
+            data_mem[tmp].myint = regs[iinfo.op1];
+            //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
+            pc++;
+            break;
+      case SF :
+            ui->instruction->appendPlainText(iinfo.assm);
+            ui->instruction->appendPlainText(QString::number(fpr[iinfo.op1]));
+            tmp=regs[iinfo.op2]+iinfo.op3;
+            if ((tmp >= MEMSIZE) || tmp < 0){
+              ui->instruction->appendPlainText( "exceed memory\n");
+              exit(1);
+            }
+            std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+            data_mem[tmp].myfloat = fpr[iinfo.op1];
+            std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+    //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
+            pc++;
+            break;
+
       case LLI :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        regs[inst_mem[pc].op1] = inst_mem[pc].op2;
-        std::cout << regs[1] << std::endl;
-        std::cout << regs[2] << std::endl;
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[iinfo.op1] = iinfo.op2;
+	//        std::cout << regs[1] << std::endl;
+	//        std::cout << regs[2] << std::endl;
         pc++;
         break;
       case BGT :
-        ui->instruction->insertPlainText( "bgt");
-        if(regs[inst_mem[pc].op1] > regs[inst_mem[pc].op2])
-          pc +=inst_mem[pc].op3;
+        ui->instruction->appendPlainText(iinfo.assm);
+        if(regs[iinfo.op1] > regs[iinfo.op2])
+          pc +=iinfo.op3;
         else
           pc++;
         break;
       case JAL :
-        ui->instruction->insertPlainText("jal");
+        ui->instruction->appendPlainText(iinfo.assm);
         regs[31] = pc+1;
-                                               //        ui->instruction->insertPlainText( inst_mem[pc].op1 << " <- jals dest");
-        pc = inst_mem[pc].op1 ;
-                                               //        ui->instruction->insertPlainText( pc << "pc after");
+                                               //        ui->instruction->appendPlainText( iinfo.op1 << " <- jals dest");
+        pc = iinfo.op1 ;
+                                               //        ui->instruction->appendPlainText( pc << "pc after");
+        break;
+      case JALR :
+        ui->instruction->appendPlainText(iinfo.assm);
+        regs[31] = pc+1;
+        pc = regs[iinfo.op1];
         break;
       case MVF2I :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        tmp_union.myfloat = fpr[inst_mem[pc].op2];
-        regs[inst_mem[pc].op1] = tmp_union.myint;
+        ui->instruction->appendPlainText(iinfo.assm);
+        tmp_union.myfloat = fpr[iinfo.op2];
+        regs[iinfo.op1] = tmp_union.myint;
         pc++;
         break;
       case SENDW :
-        ui->instruction->insertPlainText(inst_mem[pc].assm);
-        std::cout << regs[inst_mem[pc].op1] << std::endl;
+       // ui->instruction->appendPlainText("sendw called");
+        ui->instruction->appendPlainText(iinfo.assm);
+        std::cout << regs[iinfo.op1] << std::endl;
+        pc++;
+        break;
+      case SENDC :
+        //os << (char)regs[iinfo.op1];
+        std::cout << (char)regs[iinfo.op1] << std::endl;
+        ui->instruction->appendPlainText("sendc called");
         pc++;
         break;
       case NOP :
-        ui->instruction->insertPlainText("nop");
+        ui->instruction->appendPlainText("nop");
         pc++;
         break;
+      case BREAK :
+        pc++;
+        return;
       case HALT :
-        ui->instruction->insertPlainText("\nprogram end\n");
+        ui->instruction->appendPlainText("\nprogram end\n");
         return;
       default :
         std::cerr << "undefined instruction: opcode = " << opcode << std::endl;
         return;
       }
      }
+     os.close();
     }
 
 

@@ -11,12 +11,6 @@ let save x =
   stackset := S.add x !stackset;
   if not (List.mem x !stackmap) then
     stackmap := !stackmap @ [x]
-let savef x =
-  stackset := S.add x !stackset;
-  if not (List.mem x !stackmap) then
-    (let pad =
-      if List.length !stackmap mod 2 = 0 then [] else [Id.gentmp Type.Int] in
-    stackmap := !stackmap @ pad @ [x; x])
 let locate x =
   let rec loc = function
     | [] -> []
@@ -48,7 +42,10 @@ let rec shuffle sw xys =
 let print_int_ope oc ope rd arg0 arg1 =
   match arg1 with
     | V(z) -> fprintf oc "\t%s\t%s, %s, %s\n" ope rd arg0 z
-    | C(z) -> fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+    | C(z) -> (if z <= 65536 then 
+		 fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
+	       else
+		 assert false) (* [XXX] fix later *)
 
 let print_li oc rd imm =
   fprintf oc "\tlli\t%s, %d\n" rd imm; (* 即値が16bitに収まればlliのみ *)
@@ -72,13 +69,15 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   (* 末尾でなかったら計算結果をdestにセット (caml2html: emit_nontail) *)
   | NonTail(_), Nop -> ()
   | NonTail(x), Set(i) -> print_li oc x i
-  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\tset\t%s, %s\n" y x (* XXX *)
+  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\tlli\t%s\t%s\n" x y (* XXX *)
   | NonTail(x), SetF(f) -> print_lif oc x f
   | NonTail(x), Mov(y) when x = y -> ()
   | NonTail(x), Mov(y) -> print_mov oc x y
   | NonTail(x), Add(y, z) -> print_int_ope oc "add" x y z
   | NonTail(x), Sub(y, z) -> print_int_ope oc "sub" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
+  | NonTail(x), Neg(y) -> fprintf oc "\tneg\t%s, %s\n" x y
+  | NonTail(x), FNeg(y) -> fprintf oc "\tfneg\t%s, %s\n" x y
   | NonTail(x), Ld(y, z) -> fprintf oc "\tlw\t%s, [%s + %d]\n" x y z
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
   | NonTail(_), Comment(s) -> fprintf oc "\t# %s\n" s
@@ -92,13 +91,19 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), FMov(y) when x = y -> ()
   | NonTail(x), FMov(y) -> fprintf oc "\tfmov\t%s, %s\n" x y
   (* 退避の仮想命令の実装 (caml2html: emit_save) *)
-  | NonTail(_), Save(x, y) when List.mem x allregs && not (S.mem y !stackset) ->
+  | NonTail(_), Save(x, y) when List.mem x allregs  && not (S.mem y !stackset) ->
       save y;
       fprintf oc "\tsw\t%s, [%s + %d]\n" x reg_sp (offset y)
+  | NonTail(_), Save(x, y) when List.mem x allfregs  && not (S.mem y !stackset) ->
+      save y;
+      fprintf oc "\tsf\t%s, [%s + %d]\n" x reg_sp (offset y)
   | NonTail(_), Save(x, y) -> assert (S.mem y !stackset); ()
   (* 復帰の仮想命令の実装 (caml2html: emit_restore) *)
   | NonTail(x), Restore(y) when List.mem x allregs ->
       fprintf oc "\tlw\t%s, [%s + %d]\n" x reg_sp (offset y)
+  | NonTail(x), Restore(y) when List.mem x allfregs ->
+      fprintf oc "\tlf\t%s, [%s + %d]\n" x reg_sp (offset y)
+  | NonTail(x), Restore(y) -> assert false
   (* 末尾だったら計算結果を第一レジスタにセットしてret (caml2html: emit_tailret) *)
   | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
@@ -132,7 +137,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
-      fprintf oc "\tjr\t%s\n" reg_sw;
+      fprintf oc "\tjalr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
       fprintf oc "\tjal\t%s\n" x;
@@ -142,7 +147,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tjalr\t%s\n" reg_sw;
       print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
       fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       if List.mem a allregs && a <> regs.(0) then
@@ -205,6 +210,7 @@ let f oc (Prog(fundefs, e)) =
   fprintf oc "entry:\n";
   print_li oc reg_sp 0;
   print_li oc reg_ra 0;
+  print_li oc reg_hp 10000;
   stackset := S.empty;
   stackmap := [];
   g oc (Tail, e);

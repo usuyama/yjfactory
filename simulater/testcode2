@@ -1,3 +1,0 @@
-	lli	%r1, 20
-	sendw	%r1
-	halt
