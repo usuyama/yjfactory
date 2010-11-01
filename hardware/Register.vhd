@@ -14,7 +14,7 @@ entity Rgstr is
     in_a : in std_logic_vector(4 downto 0);
     spo : out std_logic_vector(31 downto 0);
     dpo : out std_logic_vector(31 downto 0));
-end Register;
+end Rgstr;
  architecture Reg of Rgstr is
 type ram_type is array (31 downto 0) of std_logic_vector(31 downto 0);
  signal RAM : ram_type := (others=>(others=>'0'));

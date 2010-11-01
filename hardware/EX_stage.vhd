@@ -14,7 +14,9 @@ entity EX_stage is
     data_b    : in  std_logic_vector(31 downto 0);
     data_imm  : in  std_logic_vector(31 downto 0);
     data_j    : in  std_logic_vector(31 downto 0);
-    data_out  : out std_logic_vector(31 downto 0));
+    data_out  : out std_logic_vector(31 downto 0);
+    PC_out    : out std_logic_vector(31 downto 0);
+    Alu_Br_out: out std_logic);
 
 end EX_stage;
 architecture ex of EX_stage is
@@ -40,6 +42,7 @@ begin  -- ex
          "00000000000000000000000000000001" when  Alu_src_b="01" else
          data_imm when Alu_src_b="10" else
          data_j when Alu_src_b="11";
+  PC_out<=PC+1;
 end ex;
 
 -------------------------------------------------------------------------------
