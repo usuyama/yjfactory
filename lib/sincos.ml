@@ -23,7 +23,7 @@ let rec sinf__ x =
 
 let rec sinf x = 
   if x >= 0.0 then sinf__ x else (-.sinf__ (-.x)) in
-  print_float(sinf 3.14)
+  print_float(sinf 1.0)
 (*
 let c1  =  4.16666666666666019037e-02 in
 let c2  = -1.38888888888741095749e-03 in

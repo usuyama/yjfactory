@@ -84,14 +84,14 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
   | NonTail(_), Comment(s) -> fprintf oc "\t# %s\n" s
 (* float *)
-  | NonTail(x), FAdd(y, z) -> fprintf oc "\tfadd\t%s, %s, %s\n" x y z
-  | NonTail(x), FSub(y, z) -> fprintf oc "\tfsub\t%s, %s, %s\n" x y z
-  | NonTail(x), FMul(y, z) -> fprintf oc "\tfmul\t%s, %s, %s\n" x y z
-  | NonTail(x), FDiv(y, z) -> fprintf oc "\tfdiv\t%s, %s, %s\n" x y z
+  | NonTail(x), FAdd(y, z) -> fprintf oc "\taddf\t%s, %s, %s\n" x y z
+  | NonTail(x), FSub(y, z) -> fprintf oc "\tsubf\t%s, %s, %s\n" x y z
+  | NonTail(x), FMul(y, z) -> fprintf oc "\tmulf\t%s, %s, %s\n" x y z
+  | NonTail(x), FDiv(y, z) -> fprintf oc "\tdivf\t%s, %s, %s\n" x y z
   | NonTail(x), LdF(y, z) -> fprintf oc "\tlf\t%s, [%s + %d]\n" x y z
   | NonTail(_), StF(x, y, z) -> fprintf oc "\tsf\t%s, [%s + %d]\n" x y z
   | NonTail(x), FMov(y) when x = y -> ()
-  | NonTail(x), FMov(y) -> fprintf oc "\tfmov\t%s, %s\n" x y
+  | NonTail(x), FMov(y) -> fprintf oc "\tmovf\t%s, %s\n" x y
   (* 退避の仮想命令の実装 (caml2html: emit_save) *)
   | NonTail(_), Save(x, y) when List.mem x allregs  && not (S.mem y !stackset) ->
       save y;

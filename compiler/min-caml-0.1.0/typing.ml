@@ -4,7 +4,7 @@
 open Syntax
 
 exception Unify of Type.t * Type.t
-exception Error of t * Type.t * Type.t
+exception Error of t * string * string
 
 let extenv = ref M.empty
 
@@ -151,7 +151,7 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
 	unify (Type.Array(t)) (g env e1);
 	unify Type.Int (g env e2);
 	Type.Unit
-  with Unify(t1, t2) -> raise (Error(deref_term e, deref_typ t1, deref_typ t2))
+  with Unify(t1, t2) -> raise (Error(deref_term e, Type.str_of_t (deref_typ t1), Type.str_of_t(deref_typ t2)))
 
 let f e =
   extenv := M.empty;

@@ -10,11 +10,16 @@ hogehoge::hogehoge(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->instruction->setMaximumBlockCount(100);
+    outf = fopen("outlog", "w");
+    if(!outf){
+        std::cout << "cannot open logfile" << std::endl;
+        exit(1);
+        }
 }
 
 hogehoge::~hogehoge()
 {
-
+    fclose(outf);
     delete ui;
 }
 
@@ -252,12 +257,14 @@ hogehoge::~hogehoge()
       case SENDW :
        // ui->instruction->appendPlainText("sendw called");
         ui->instruction->appendPlainText(iinfo.assm);
-        std::cout << regs[iinfo.op1] << std::endl;
+        fprintf(outf, "%d\n", regs[iinfo.op1]);
+        //std::cout << regs[iinfo.op1] << std::endl;
         pc++;
         break;
       case SENDC :
         //os << (char)regs[iinfo.op1];
-        std::cout << (char)regs[iinfo.op1] << std::endl;
+        //std::cout << (char)regs[iinfo.op1] << std::endl;
+        fprintf(outf, "%c\n", (char)regs[iinfo.op1]);
         ui->instruction->appendPlainText("sendc called");
         pc++;
         break;
