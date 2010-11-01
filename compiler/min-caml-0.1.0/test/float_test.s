@@ -1,6 +1,7 @@
 entry:
 	lli	%sp, 0
 	lli	%ra, 0
+	lli	%hp, 10000
 	llif	%f0, 1.000000
 	lhif	%f0, 1.000000
 	llif	%f1, 2.000000

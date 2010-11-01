@@ -12,5 +12,5 @@ entry:
 	subi	%sp, %sp, 2
 	lw	%ra, [%sp + 1]
 	lf	%f0, [%sp + 0]
-	j	yj_print_float
+	jal	yj_print_float
 	halt

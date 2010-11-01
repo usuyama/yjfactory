@@ -2,13 +2,13 @@ entry:
 	lli	%sp, 0
 	lli	%ra, 0
 	lli	%hp, 10000
-	lli	%r1, 5
+	lli	%r1, 30
 	sw	%ra, [%sp + 0]
 	addi	%sp, %sp, 1
 	jal	fib.10
 	subi	%sp, %sp, 1
 	lw	%ra, [%sp + 0]
-	j	yj_print_int
+	jal	yj_print_int
 	halt
 fib.10:
 	lli	%r2, 1
