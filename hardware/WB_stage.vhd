@@ -13,7 +13,7 @@ entity WB_stage is
     rt       : in  std_logic_vector(4 downto 0);
     rd       : in  std_logic_vector(4 downto 0);
     r_out    : out std_logic_vector(4 downto 0);
-    data_out : out std_logic_vector(4 downto 0));
+    data_out : out std_logic_vector(31 downto 0));
 
 end WB_stage;
 
