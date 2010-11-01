@@ -41,6 +41,8 @@ enum {
   SUBF,
   MULF,
   DIVF,
+  FABS,
+  FNEG,
   SQRT,
   MVF2I,
   SENDW,

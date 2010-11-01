@@ -221,6 +221,20 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
+    else if(inst=="XXFABS"){ // jr
+      cout << "fabs\n";
+      inst_mem[index].opcode=FABS;
+      fill_3reg(inst_mem,index,str);
+      inst_mem[index].assm = "fabs\tf" + QString::number(inst_mem[index].op1);
+      //      cout << inst_mem[index].op1;
+    }
+    else if(inst=="XXFNEG"){ // jr
+      cout << "fneg\n";
+      inst_mem[index].opcode=FNEG;
+      fill_3reg(inst_mem,index,str);
+      inst_mem[index].assm = "fneg\tf" + QString::number(inst_mem[index].op1);
+      //      cout << inst_mem[index].op1;
+    }
     else if(inst=="010100"){
         cout << "jalr\n";
         inst_mem[index].opcode=JALR;
