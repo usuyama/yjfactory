@@ -11,6 +11,9 @@ let addtyp x = (x, Type.gentyp ())
 %token NOT
 %token MINUS
 %token PLUS
+%token MUL
+%token DIV
+%token PLUS
 %token MINUS_DOT
 %token PLUS_DOT
 %token AST_DOT
@@ -85,6 +88,10 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     { Add($1, $3) }
 | exp MINUS exp
     { Sub($1, $3) }
+| exp MUL exp /* 足し算を構文解析するルール (caml2html: parser_add) */
+    { Mul($1, $3) }
+| exp DIV exp
+    { Div($1, $3) }
 | exp EQUAL exp
     { Eq($1, $3) }
 | exp LESS_GREATER exp

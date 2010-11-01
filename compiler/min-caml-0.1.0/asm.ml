@@ -19,6 +19,8 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | Neg of Id.t
   | Add of Id.t * id_or_imm
   | Sub of Id.t * id_or_imm
+  | Div of Id.t * id_or_imm
+  | Mul of Id.t * id_or_imm
   | SLL of Id.t * int
   | Ld of Id.t * int
   | St of Id.t * Id.t * int
@@ -72,7 +74,7 @@ let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
   | Nop | Set(_) | SetL(_) | SetF(_) | Comment(_) | Restore(_) -> []
   | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) -> [x]
-  | Add(x, y') | Sub(x, y') -> x :: fv_id_or_imm y'
+  | Add(x, y') | Sub(x, y') | Div(x, y') | Mul(x, y') -> x :: fv_id_or_imm y'
   | St(x, y, _) | StF(x, y, _) -> [x; y]
   | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) -> [x; y]
   | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: y' :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
@@ -113,8 +115,10 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | SetL l -> printf "SetL(%s)\n" (Id.str_of_l l)
        | Mov t -> printf "Mov(%s)\n" t
        | Neg t -> printf "Neg %s\n" t;
-       | Add(t1, t2) -> printf "Add %s + %s\n" t1 (str_of_ioi t2)
-       | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 (str_of_ioi t2)
+       | Add(t1, t2) -> printf "Add %s %s\n" t1 (str_of_ioi t2)
+       | Sub(t1, t2) -> printf "Sub %s %s\n" t1 (str_of_ioi t2)
+       | Div(t1, t2) -> printf "Div %s %s\n" t1 (str_of_ioi t2)
+       | Mul(t1, t2) -> printf "Mul %s %s\n" t1 (str_of_ioi t2)
        | SLL(t1, t2) -> printf "SLL %s %d\n" t1 t2
        | Ld(t1, t2) -> printf "Ld [%s + %d]\n" t1 t2
        | St(t1, t2, t3) -> printf "St %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)

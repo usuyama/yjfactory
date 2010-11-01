@@ -75,6 +75,8 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), Mov(y) -> print_mov oc x y
   | NonTail(x), Add(y, z) -> print_int_ope oc "add" x y z
   | NonTail(x), Sub(y, z) -> print_int_ope oc "sub" x y z
+  | NonTail(x), Div(y, z) -> print_int_ope oc "div" x y z
+  | NonTail(x), Mul(y, z) -> print_int_ope oc "mul" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
   | NonTail(x), Neg(y) -> fprintf oc "\tneg\t%s, %s\n" x y
   | NonTail(x), FNeg(y) -> fprintf oc "\tfneg\t%s, %s\n" x y
