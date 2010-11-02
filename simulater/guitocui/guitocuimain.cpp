@@ -79,13 +79,6 @@ int main(int argc, char* argv[]){
     }
 }
 
-  /*
-    if(argc < 3){
-    cout << sim.get_instnum() << endl;
-    sim.doInst(sim.get_instnum());
-    sim.print_regs();
-    }
-  */
   return 0;
 }
     

@@ -58,6 +58,7 @@ void hogehoge::doInst(int steps){
   float_int tmp_union;
 
   for(int count=0; runall || count<steps; count++){
+    //    std::cout << "exec" << std::endl;
     inst_info iinfo = inst_mem[pc];
     opcode = iinfo.opcode;
 
@@ -183,7 +184,6 @@ void hogehoge::doInst(int steps){
     case LLI :
       //        ui->instruction->appendPlainText(iinfo.assm);
       regs[iinfo.op1] = iinfo.op2;
-      std::cout << iinfo.op2 << " op2" << std::endl;
       //        std::cout << regs[1] << std::endl;
       //        std::cout << regs[2] << std::endl;
       pc++;
@@ -264,6 +264,7 @@ void hogehoge::doInst(int steps){
       return;
     case HALT :
       //        ui->instruction->appendPlainText("\nprogram end\n");
+      std::cout << "end program" << std::endl;
       return;
     default :
       std::cerr << "undefined instruction: opcode = " << opcode << std::endl;

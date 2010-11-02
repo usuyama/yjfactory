@@ -222,7 +222,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      cout << inst_mem[index].op1;
     }
     else if(inst=="010011"){ // jr
-      cout << "jr\n";
+      cout << "JR\n";
       inst_mem[index].opcode=JR;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
@@ -236,14 +236,14 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      cout << inst_mem[index].op1;
     }
     else if(inst=="XXFNEG"){ // jr
-      cout << "fneg\n";
+      cout << "FNEG\n";
       inst_mem[index].opcode=FNEG;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm = "fneg\tf" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
     else if(inst=="010100"){
-        cout << "jalr\n";
+        cout << "JALR\n";
         inst_mem[index].opcode=JALR;
         fill_3reg(inst_mem,index,str);
 	//        inst_mem[index].assm = "jalr\tr" + QString::number(inst_mem[index].op1);

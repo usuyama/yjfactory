@@ -2,7 +2,6 @@
 #define INCLUDED_PARSER
 
 #include <iostream>
-
 #include "inst_info.h"
 
 class parser{
