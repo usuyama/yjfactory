@@ -111,9 +111,9 @@ end component;
 component PROM
   port (
     clka : in std_logic;
-    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(31 downto 0);
-    dina : in std_logic_vector(31 downto 0);
+--    wea : in std_logic_vector(0 downto 0);
+    addra : in std_logic_vector(4 downto 0);
+--    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
 
@@ -134,6 +134,7 @@ signal IR_out : std_logic_vector(31 downto 0);
 signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out : std_logic;
 signal ALUSrcB : std_logic_vector(1 downto 0);
 signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_a_a,data_b_a,data_out,Mem_Data,w_r_data,PC_PR: std_logic_vector(31 downto 0);
+signal data_o : std_logic_vector(31 downto 0):=(others=>'0');
 signal p_we : std_logic_vector(0 downto 0) := "0";
 signal p_in : std_logic_vector(31 downto 0) := (others=>'0');
 signal PROM_out : std_logic_vector(31 downto 0);
@@ -167,11 +168,11 @@ I_F:IF_stage port map (
     PC_write_b => PC_write_b,
     ALU_b_out => Alu_Br_out,
     PC_source => PC_Source,
-    ALU_out=>ALUout,
+    ALU_out=>data_out,
     ALU_PC=>ALU_PC,
     PC_out=>PC_out);
   DC:DC_stage port map(
-Instruciton=>PROM_out,                  --
+Instruciton=>IR_out,                  --
 opcode=>opcode,
 op_a=>op_r_a,
 op_b=>op_r_b,
@@ -188,7 +189,7 @@ EX:EX_stage port map (
     data_b=>data_b,
     data_imm=>op_imm,
     data_j=>op_j,
-    data_out=>data_out,
+    data_out=>data_o,
     PC_out=>ALU_PC,
     Alu_Br_out=>Alu_Br_out);
   MA:MA_stage port map(
@@ -209,8 +210,7 @@ mem_Address=>Mem_Addr_out
     RegDst=>Reg_dist,
     rt=>op_r_b,
     rd=>op_r_c,
-    r_out=>w_r_addr,
-    data_out=>w_r_data
+    r_out=>w_r_addr,    data_out=>w_r_data
     );
   RG:Rgstr port map(
     clk=>mclk,
@@ -230,9 +230,9 @@ mem_Address=>Mem_Addr_out
     out_instruciton =>  IR_out);
   PR:PROM port map (
     clka => mclk,
-    wea => p_we,
-    addra => PC_PR,
-    dina => p_in,
+--    wea => p_we,
+    addra => PC_PR(4 downto 0),
+--    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
   clk    => mclk,
@@ -248,6 +248,7 @@ begin  -- process
   if (mclk'event and mclk='1') then
 --    data_a_a<=data_a;
 --    data_b_a<=data_b;
+    data_out<=data_o;
   end if;
 end process;
 end a_l_l;
@@ -276,11 +277,12 @@ out_PC<=Pr;
 
   We1<= (PC_write_b and ALU_b_out);
   We2<=(PC_Write or We1);
+--Pr<=in_PC when We2='1';
 process(clk)
   begin
    if (clk'event and clk='1') then
      if (We2='1') then
-    Pr<=in_PC;       
+    Pr<=in_PC;
      end if;
   end if;
 end process;

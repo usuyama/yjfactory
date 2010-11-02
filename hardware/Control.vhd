@@ -22,12 +22,12 @@ entity Control is
 end Control;
 
 architecture Con of Control is
-signal State : std_logic_vector(5 downto 0):=(others=>'0');
+signal State : std_logic_vector(5 downto 0):=(others=>'1');
 begin  -- Con
 make_signal:process(State)
   begin
     case State is
-      when "000000" => 
+      when "111111" => 
           ALUSrcA<='0';
           ALUSrcB<="01";
           PCSource<='0';
@@ -38,10 +38,22 @@ make_signal:process(State)
           MemWrite<='0';
           PCwrite<='1';
           PC_write_b<='0';
+      when "000000"=>
+          ALUSrcA<='0';
+          ALUSrcB<="01";
+          Reg_write<='0';
+          Reg_dist<='0';
+          IR_Write<='1';
+          MemtoReg<='0';
+          MemWrite<='0';
+          PCwrite<='1';
       when "000001" =>
           ALUSrcA<='0';
           ALUSrcB<="11";
           PCwrite<='0';
+          PCSource<='0';
+          IR_Write<='0';
+          PC_write_b<='0';
       when "000010" =>
         ALUSrcA<='1';
         ALUSrcB<="10";
@@ -60,9 +72,10 @@ make_signal:process(State)
           Reg_dist<='1';
           MemtoReg<='0';
       when "001000" =>
-          ALUSrcA<='1';
-          ALUSrcB<="00";
-          PCSource<='1';        
+          ALUSrcA<='0';
+          ALUSrcB<="10";
+          PCSource<='0';
+          PC_write_b<='1';
       when "001010"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
@@ -77,6 +90,7 @@ make_signal:process(State)
   begin  -- process Statemachine
     if (clk'event and clk = '1') then  -- rising clock edge
       case State is
+        when "111111"=>State<="000001";
         when "000000" =>
           State<="000001";
         when "000001" => 
