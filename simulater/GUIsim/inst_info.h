@@ -34,6 +34,7 @@ enum {
   BGTF,
   BEQ,
   LLI,
+  LHI,
   LHIF,
   LLIF,
   NOP,

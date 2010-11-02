@@ -143,8 +143,16 @@ int parser::parse(inst_info* inst_mem, const char* program){
     else if(inst=="110010"){ // lli
       cout << "LLI\n";
       inst_mem[index].opcode= LLI;
-      fill_1reg_1imm(inst_mem,index,str);
+      //      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
       //      inst_mem[index].assm = "lli\t" + make_asm_1r1i(inst_mem[index]);
+    }
+    else if(inst=="110011"){ //lhi
+      cout << "LHI\n";
+      inst_mem[index].opcode=LHI;
+      inst_mem[index].op1=ext_op1(str);      
+      inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
     }
     else if(inst=="XXADDF"){ // addf
       cout << "ADDF\n";

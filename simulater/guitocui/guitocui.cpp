@@ -183,8 +183,14 @@ void hogehoge::doInst(int steps){
     case LLI :
       //        ui->instruction->appendPlainText(iinfo.assm);
       regs[iinfo.op1] = iinfo.op2;
+      std::cout << iinfo.op2 << " op2" << std::endl;
       //        std::cout << regs[1] << std::endl;
       //        std::cout << regs[2] << std::endl;
+      pc++;
+      break;
+    case LHI :
+      regs[iinfo.op1] |= iinfo.op2 << 16;
+      std::cout << "hogehoge" << (iinfo.op2 << 16) << std::endl;
       pc++;
       break;
     case BGT :
