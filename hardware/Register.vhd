@@ -33,7 +33,6 @@ type ram_type is array (31 downto 0) of std_logic_vector(31 downto 0);
           else
           RAM(conv_integer(a)) <= di;
         end if;
-
       end if;
     end if;
   end process;
