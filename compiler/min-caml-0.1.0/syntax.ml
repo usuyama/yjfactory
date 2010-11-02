@@ -2,6 +2,7 @@
 open Printf
 
 let count_line = ref 1 (* for parse error message *)
+let symbol_start = ref 0 (* for parse error message *)
 
 type t = (* MinCamlの構文を表現するデータ型 (caml2html: syntax_t) *)
   | Unit
@@ -12,6 +13,8 @@ type t = (* MinCamlの構文を表現するデータ型 (caml2html: syntax_t) *)
   | Neg of t
   | Add of t * t
   | Sub of t * t
+  | Mul of t * t
+  | Div of t * t
   | FNeg of t
   | FAdd of t * t
   | FSub of t * t
@@ -51,6 +54,8 @@ let print t = (* Syntax.t -> Syntax.t *)
 	 | Neg t -> printf "Neg\n";pt i t
 	 | Add(t1, t2) -> printf "Add\n";pt i t1;pt i t2
 	 | Sub(t1, t2) -> printf "Sub\n";pt i t1;pt i t2
+	 | Mul(t1, t2) -> printf "Mul\n";pt i t1;pt i t2
+	 | Div(t1, t2) -> printf "Div\n";pt i t1;pt i t2
 	 | FNeg t -> printf "FNeg\n";pt i t
 	 | FAdd(t1, t2) -> printf "FAdd\n";pt i t1;pt i t2
 	 | FSub(t1, t2) -> printf "FSub\n";pt i t1;pt i t2

@@ -6,11 +6,13 @@ let addtyp x = (x, Type.gentyp ())
 %}
 
 /* 字句を表すデータ型の定義 (caml2html: parser_token) */
-%token <bool> BOOL
 %token <int> INT
 %token <float> FLOAT
 %token NOT
 %token MINUS
+%token PLUS
+%token MUL
+%token DIV
 %token PLUS
 %token MINUS_DOT
 %token PLUS_DOT
@@ -62,8 +64,6 @@ simple_exp: /* 括弧をつけなくても関数の引数になれる式 (caml2html: parser_simple)
     { $2 }
 | LPAREN RPAREN
     { Unit }
-| BOOL
-    { Bool($1) }
 | INT
     { Int($1) }
 | FLOAT
@@ -88,6 +88,10 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     { Add($1, $3) }
 | exp MINUS exp
     { Sub($1, $3) }
+| exp MUL exp /* 足し算を構文解析するルール (caml2html: parser_add) */
+    { Mul($1, $3) }
+| exp DIV exp
+    { Div($1, $3) }
 | exp EQUAL exp
     { Eq($1, $3) }
 | exp LESS_GREATER exp
@@ -136,10 +140,11 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     { Array($2, $3) }
 | error
 	{ failwith
-	(Printf.sprintf "parse error near characters %d-%d, L: %d"
+	(Printf.sprintf "parse error near characters %d-%d, L: %d, R: %d"
 	   (Parsing.symbol_start ())
 	   (Parsing.symbol_end ())
-	(!Syntax.count_line)) }
+	(!Syntax.count_line)
+	((Parsing.symbol_start ()) - !Syntax.symbol_start)) }
 
 fundef:
 | IDENT formal_args EQUAL exp

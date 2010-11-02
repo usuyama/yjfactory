@@ -115,6 +115,44 @@ begin  -- cpu
 
 end cpu;
 
+-------------------------------------------------------------------------------
+-- Control --
+-------------------------------------------------------------------------------
+entity controller is
+  
+end controller;
+
+architecture Ctrl of controller is
+
+begin  -- Ctrl
+
+  
+
+end Ctrl;
+
+
+-------------------------------------------------------------------------------
+-- Instruction Register--
+-------------------------------------------------------------------------------
+entity IR is
+  
+  port (
+    IR_we           : in  std_logic;
+    instruction_in  : in  std_logic_vector(31 downto 0);
+    instruction_out : out std_logic_vector(31 downto 0));
+
+end IR;
+architecture InstReg of IR is
+signal instruction : std_logic_vector(31 downto 0);
+begin  -- InstReg
+instruciton_out<=instruciton;
+Inst: process(clk)
+begin  -- process Inst
+  if (clk'event and clk='1' and IR_we='1') then
+    instruction<=instruction_in;
+  end if;
+end process Inst;
+end InstReg;
 
 -------------------------------------------------------------------------------
 -- IF Stage --
@@ -255,7 +293,7 @@ use ieee.std_logic_unsigned.all;
 entity Reg is
   port (clk : in std_logic;
         we    : in std_logic;
-        out_a     : in std_logic_vector(4 downto 0);
+        out_a  : in std_logic_vector(4 downto 0);
         dpra : in std_logic_vector(4 downto 0);
         di    : in std_logic_vector(31 downto 0);
         in_a : in std_logic_vector(4 downto 0); 

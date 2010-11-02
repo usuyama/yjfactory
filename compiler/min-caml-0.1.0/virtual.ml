@@ -38,6 +38,8 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.Neg(x) -> Ans(Neg(x))
   | Closure.Add(x, y) -> Ans(Add(x, V(y)))
   | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
+  | Closure.Div(x, y) -> Ans(Div(x, V(y)))
+  | Closure.Mul(x, y) -> Ans(Mul(x, V(y)))
   | Closure.FNeg(x) -> Ans(FNeg(x))
   | Closure.FAdd(x, y) -> Ans(FAdd(x, y))
   | Closure.FSub(x, y) -> Ans(FSub(x, y))
@@ -46,8 +48,8 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.IfEq(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
-	 | Type.Float -> Ans(IfFEq(x, y, g env e1, g env e2))
-	 | _ -> failwith "equality supported only for bool, int, and float")
+	 | Type.Float -> failwith "equality dosen't support float"
+	 | _ -> failwith "equality supported only for bool, int")
   | Closure.IfLE(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfLE(x, y, g env e1, g env e2))
@@ -61,8 +63,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       (match M.find x env with
 	 | Type.Unit -> Ans(Nop)
 	 | Type.Float -> Ans(FMov(x))
-	 | Type.Int -> Ans(Mov(x))
-	 | _ -> assert false)
+	 | _ -> Ans(Mov(x)))
   | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
       (* Closureのアドレスをセットしてから、自由変数の値をストア *)
       let e2' = g (M.add x t env) e2 in
@@ -115,7 +116,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       | Type.Array(Type.Float) ->
 	  Let((addr, Type.Int), Add(x, V(y)), Ans(LdF(addr, 0)))
       | Type.Array(_) ->
-	  Let((addr, Type.Int), Add(x, V(y)), Ans(LdF(addr, 0)))
+	  Let((addr, Type.Int), Add(x, V(y)), Ans(Ld(addr, 0)))
       | _ -> assert false)
   | Closure.Put(x, y, z) -> 
       let addr = Id.genid "t" in

@@ -4,3 +4,4 @@ min-caml.top
 min-caml
 *.o
 *._*
+*.mli

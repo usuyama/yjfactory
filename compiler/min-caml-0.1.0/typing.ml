@@ -1,4 +1,3 @@
-(*-*- coding:euc-jp -*-*)
 (* type inference/reconstruction *)
 
 open Syntax
@@ -94,7 +93,7 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
     | Neg(e) ->
 	unify Type.Int (g env e);
 	Type.Int
-    | Add(e1, e2) | Sub(e1, e2) -> (* 足し算（と引き算）の型推論 (caml2html: typing_add) *)
+    | Add(e1, e2) | Sub(e1, e2) | Div(e1, e2) | Mul(e1, e2) -> (* 足し算（と引き算）の型推論 (caml2html: typing_add) *)
 	unify Type.Int (g env e1);
 	unify Type.Int (g env e2);
 	Type.Int
@@ -158,7 +157,6 @@ let f e =
   | Type.Unit -> ()
   | _ -> Format.eprintf "warning: final result does not have type unit@.");
 *)
-  (try unify Type.Unit (g M.empty e)
-  with Unify _ -> failwith "top level does not have type unit");
+  ignore(g M.empty e);
   extenv := M.map deref_typ !extenv;
   deref_term e

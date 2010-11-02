@@ -40,8 +40,7 @@ let rec deref_term = function
       LetRec({ name = deref_id_typ xt;
 	       args = List.map deref_id_typ yts;
 	       body = deref_term e1 },
-	     deref_term e2)
-  | App(e, es) -> App(deref_term e, List.map deref_term es)
+	     deref_term e2)  | App(e, es) -> App(deref_term e, List.map deref_term es)
   | Tuple(es) -> Tuple(List.map deref_term es)
   | LetTuple(xts, e1, e2) -> LetTuple(List.map deref_id_typ xts, deref_term e1, deref_term e2)
   | Array(e1, e2) -> Array(deref_term e1, deref_term e2)

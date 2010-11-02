@@ -1,0 +1,2 @@
+compilerがmakeされていることを確認してから
+ruby update.rbすると生成

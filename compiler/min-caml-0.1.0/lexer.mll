@@ -15,7 +15,7 @@ rule token = parse
 | space+
     { token lexbuf }
 | '\n'
-    { Syntax.count_line := 1 + !Syntax.count_line;token lexbuf}
+    { Syntax.count_line := 1 + !Syntax.count_line;Syntax.symbol_start := Lexing.lexeme_start lexbuf;token lexbuf}
 | "(*"
     { comment lexbuf; (* ネストしたコメントのためのトリック *)
       token lexbuf }
@@ -23,10 +23,6 @@ rule token = parse
     { LPAREN }
 | ')'
     { RPAREN }
-| "true"
-    { BOOL(true) }
-| "false"
-    { BOOL(false) }
 | "not"
     { NOT }
 | digit+ (* 整数を字句解析するルール (caml2html: lexer_int) *)
@@ -36,6 +32,10 @@ rule token = parse
 | '-' (* -.より後回しにしなくても良い? 最長一致? *)
     { MINUS }
 | '+' (* +.より後回しにしなくても良い? 最長一致? *)
+    { MUL }
+| '*' 
+    { DIV }
+| '/' 
     { PLUS }
 | "-."
     { MINUS_DOT }
@@ -87,12 +87,15 @@ rule token = parse
     { IDENT(Lexing.lexeme lexbuf) }
 | _
     { failwith
-	(Printf.sprintf "unknown token %s near characters %d-%d, L:%d"
+	(Printf.sprintf "unknown token %s near characters %d-%d, L:%d, R:%d"
 	   (Lexing.lexeme lexbuf)
 	   (Lexing.lexeme_start lexbuf)
 	   (Lexing.lexeme_end lexbuf)
-	   (!Syntax.count_line)) }
+	   (!Syntax.count_line)
+	   (Lexing.lexeme_start lexbuf - !Syntax.symbol_start)) }
 and comment = parse
+| '\n'
+    { Syntax.count_line := 1 + !Syntax.count_line;Syntax.symbol_start := Lexing.lexeme_start lexbuf;comment lexbuf}
 | "*)"
     { () }
 | "(*"

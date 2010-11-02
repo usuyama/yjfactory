@@ -10,6 +10,8 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | Neg of Id.t
   | Add of Id.t * Id.t
   | Sub of Id.t * Id.t
+  | Div of Id.t * Id.t
+  | Mul of Id.t * Id.t
   | FNeg of Id.t
   | FAdd of Id.t * Id.t
   | FSub of Id.t * Id.t
@@ -36,7 +38,7 @@ type prog = Prog of fundef list * t
 let rec fv = function (* 自由変数のリスト *)
   | Unit | Int(_) | Float(_) | ExtArray(_) -> S.empty
   | Neg(x) | FNeg(x) | Get(x, _) -> S.singleton x
-  | Add(x, y) | Sub(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Put(x, y, _) -> S.of_list [x; y]
+  | Add(x, y) | Sub(x, y) | Div(x, y) | Mul(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) | Put(x, y, _) -> S.of_list [x; y]
   | IfEq(x, y, e1, e2)| IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
@@ -55,6 +57,8 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
   | KNormal.Neg(x) -> Neg(x)
   | KNormal.Add(x, y) -> Add(x, y)
   | KNormal.Sub(x, y) -> Sub(x, y)
+  | KNormal.Div(x, y) -> Div(x, y)
+  | KNormal.Mul(x, y) -> Mul(x, y)
   | KNormal.FNeg(x) -> FNeg(x)
   | KNormal.FAdd(x, y) -> FAdd(x, y)
   | KNormal.FSub(x, y) -> FSub(x, y)
@@ -127,6 +131,8 @@ let print_t t = (* Closure.t -> Closure.t *)
 	 | Neg t -> printf "Neg %s\n" t;
 	 | Add(t1, t2) -> printf "Add %s + %s\n" t1 t2
 	 | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 t2
+	 | Mul(t1, t2) -> printf "Mul %s + %s\n" t1 t2
+	 | Div(t1, t2) -> printf "Mul %s - %s\n" t1 t2
 	 | FNeg t -> printf "FNeg %s\n" t
 	 | FAdd(t1, t2) -> printf "FAdd %s +. %s\n" t1 t2
 	 | FSub(t1, t2) -> printf "FSub %s -. %s\n" t1 t2
@@ -145,7 +151,7 @@ let print_t t = (* Closure.t -> Closure.t *)
 	 | ExtArray(Id.L(t)) -> printf "ExtArray %s\n" t
 	 | Get(t1, t2) -> printf "GET %s %s\n" t1 t2
 	 | Put(t1, t2, t3) -> printf "PUT %s %s %s\n" t1 t2 t3
-	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s/n" t1;
+	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s\n" t1;
 					    pi ();printf "entry: %s\n" (Id.str_of_l clo.entry))
 	 | AppCls(t, tl) -> (printf "AppCls %s\n" t;
 			     pi ();List.iter (fun t -> printf "  %s" t) tl;printf "\n")
