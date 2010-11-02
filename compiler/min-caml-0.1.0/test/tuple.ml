@@ -1,1 +1,1 @@
-let (x, y) = (1, 2.0) in print_int x;print_float y
+let (x, y, z) = (1, 1.0, 1) in print_int x;print_float y;print_int z
