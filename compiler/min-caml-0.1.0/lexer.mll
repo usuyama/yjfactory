@@ -31,11 +31,11 @@ rule token = parse
     { FLOAT(float_of_string (Lexing.lexeme lexbuf)) }
 | '-' (* -.より後回しにしなくても良い? 最長一致? *)
     { MINUS }
-| '+' (* +.より後回しにしなくても良い? 最長一致? *)
+| '*' (* +.より後回しにしなくても良い? 最長一致? *)
     { MUL }
-| '*' 
-    { DIV }
 | '/' 
+    { DIV }
+| '+' 
     { PLUS }
 | "-."
     { MINUS_DOT }
