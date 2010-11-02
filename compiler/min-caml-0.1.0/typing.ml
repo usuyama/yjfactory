@@ -1,10 +1,9 @@
-(*-*- coding:euc-jp -*-*)
 (* type inference/reconstruction *)
 
 open Syntax
 
 exception Unify of Type.t * Type.t
-exception Error of t * string * string
+exception Error of t * Type.t * Type.t
 
 let extenv = ref M.empty
 
@@ -28,8 +27,6 @@ let rec deref_term = function
   | Neg(e) -> Neg(deref_term e)
   | Add(e1, e2) -> Add(deref_term e1, deref_term e2)
   | Sub(e1, e2) -> Sub(deref_term e1, deref_term e2)
-  | Div(e1, e2) -> Div(deref_term e1, deref_term e2)
-  | Mul(e1, e2) -> Mul(deref_term e1, deref_term e2)
   | Eq(e1, e2) -> Eq(deref_term e1, deref_term e2)
   | LE(e1, e2) -> LE(deref_term e1, deref_term e2)
   | FNeg(e) -> FNeg(deref_term e)
@@ -96,7 +93,7 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
     | Neg(e) ->
 	unify Type.Int (g env e);
 	Type.Int
-    | Add(e1, e2) | Sub(e1, e2) | Mul(e1, e2) | Div(e1, e2) -> (* 足し算（と引き算）の型推論 (caml2html: typing_add) *)
+    | Add(e1, e2) | Sub(e1, e2) | Div(e1, e2) | Mul(e1, e2) -> (* 足し算（と引き算）の型推論 (caml2html: typing_add) *)
 	unify Type.Int (g env e1);
 	unify Type.Int (g env e2);
 	Type.Int
@@ -151,7 +148,7 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
 	unify (Type.Array(t)) (g env e1);
 	unify Type.Int (g env e2);
 	Type.Unit
-  with Unify(t1, t2) -> raise (Error(deref_term e, Type.str_of_t (deref_typ t1), Type.str_of_t(deref_typ t2)))
+  with Unify(t1, t2) -> raise (Error(deref_term e, deref_typ t1, deref_typ t2))
 
 let f e =
   extenv := M.empty;
@@ -160,7 +157,6 @@ let f e =
   | Type.Unit -> ()
   | _ -> Format.eprintf "warning: final result does not have type unit@.");
 *)
-  (try unify Type.Unit (g M.empty e)
-  with Unify _ -> failwith "top level does not have type unit");
+  ignore(g M.empty e);
   extenv := M.map deref_typ !extenv;
   deref_term e
