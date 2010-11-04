@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <fstream>
 
 #include "parser.h"
 #include "inst_info.h"
@@ -24,12 +25,11 @@ class hogehoge
  public:
   ~hogehoge();
 
-
 private:
   int pc;
     //int steps;
   bool runall;
-
+  std::ifstream ifs;
 
 public:
   int regs[32];
@@ -39,10 +39,11 @@ public:
   bool ready;
   FILE* outf;
 
-  hogehoge();
+  hogehoge(const char*);
   void print_mem(int address);
   void print_regs();
   void print_regs(int index);
+  void print_fpr();
   void setPC(int address);
   int get_regcont(int index);
   bool get_runall();

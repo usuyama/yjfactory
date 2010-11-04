@@ -314,6 +314,9 @@ int parser::parse(inst_info* inst_mem, const char* program){
     else if(inst=="XXXCOS"){
       inst_mem[index].opcode=COS;
     }
+    else if(inst=="XXATAN"){
+      inst_mem[index].opcode=ATAN;
+    }
     else if(inst=="XFLOOR"){
       inst_mem[index].opcode=FLOOR;
     }
@@ -322,6 +325,12 @@ int parser::parse(inst_info* inst_mem, const char* program){
     }
     else if(inst=="XXFTOI"){
       inst_mem[index].opcode=FTOI;
+    }
+    else if(inst=="XRDINT"){
+      inst_mem[index].opcode=RDINT;
+    }
+    else if(inst=="XRDFLT"){
+      inst_mem[index].opcode=RDFLT;
     }
     else if(inst=="XPRFLT"){
       inst_mem[index].opcode=PRFLT;

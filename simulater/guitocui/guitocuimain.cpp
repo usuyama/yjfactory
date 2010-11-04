@@ -11,22 +11,26 @@
 using namespace std;
 
 int main(int argc, char* argv[]){
-  if(argc < 2){
-    cout << "enter input machine code\n";
+  if(argc < 3){
+    cout << "enter input machine code and sldfile\n";
     return 0;
   }
 
-  hogehoge sim;
   parser par;
-  if(strcmp(argv[1],"o")==0){
-    if(par.parse(sim.inst_mem, argv[2]) == -1)
-      exit(1);
-    sim.doInst(0);
+
+  if(argc==4){
+    hogehoge sim(argv[3]);
+    if(strcmp(argv[1],"o")==0){
+      if(par.parse(sim.inst_mem, argv[2]) == -1)
+	exit(1);
+      sim.doInst(0);
+    }
   }
 
   else{
     int c = 1;
     string option;
+    hogehoge sim(argv[2]);
 
     if(par.parse(sim.inst_mem, argv[1]) == -1)
       exit(1);
@@ -58,6 +62,9 @@ int main(int argc, char* argv[]){
       }*/
     else if(option == "r"){
       sim.print_regs();
+    }
+    else if(option == "f"){
+      sim.print_fpr();
     }
     else if(option == "m"){
       int n;

@@ -338,6 +338,10 @@ public class Assembler {
 			    code.append("XXXCOS");
 			    code.append("00000000000000000000000000");
 			}
+			else if(inst[0].equals("atan")){
+			    code.append("XXATAN");
+			    code.append("00000000000000000000000000");
+			}
 			else if(inst[0].equals("floor")){
 			    code.append("XFLOOR");
 			    code.append("00000000000000000000000000");
@@ -354,6 +358,15 @@ public class Assembler {
 			    code.append("XPRFLT");
 			    code.append("00000000000000000000000000");
 			}
+			else if(inst[0].equals("read_int")){
+			    code.append("XRDINT");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("read_float")){
+			    code.append("XRDFLT");
+			    code.append("00000000000000000000000000");
+			}
+
 			//
 			// 疑似命令
 			//

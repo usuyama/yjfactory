@@ -2,11 +2,17 @@
 #include <math.h>
 
 
-hogehoge::hogehoge()
+hogehoge::hogehoge(const char* input_sld)
 {
   pc=0;
   ready = false;
   runall = true;
+
+  ifs.open(input_sld);
+  if(ifs.fail()){
+    std::cout << "cannnot open sld file" << std::endl;
+    exit(1);
+  }
 
   outf = fopen("outlog", "w");
   if(!outf){
@@ -28,9 +34,15 @@ void hogehoge::print_regs(){
   for(int i=0;i<32;i++)
     std::cout << "r" << i << ": " << get_regcont(i) << std::endl;
 }
+
 void hogehoge::print_regs(int i){
   std::cout << "r" << i << " " << get_regcont(i) << std::endl;
 }
+void hogehoge::print_fpr(){
+  for(int i=0;i<32;i++)
+    std::cout << "f" << i << ": " << fpr[i] << std::endl;
+}
+
 void hogehoge::print_mem(int address){
   int start = (address - MSCOPE) < 0 ? 0 : address - MSCOPE;
   int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
@@ -277,6 +289,9 @@ void hogehoge::doInst(int steps){
     case COS :
       fpr[0] = cos(fpr[0]);
       pc++; break;
+    case ATAN :
+      fpr[0] = atan(fpr[0]);
+      pc++; break;
     case FLOOR :
       fpr[0] = floor(fpr[0]);
       pc++; break;
@@ -285,6 +300,12 @@ void hogehoge::doInst(int steps){
       pc++; break;
     case FTOI :
       regs[1]=(int)fpr[0];
+      pc++; break;
+    case RDINT :
+      ifs >> regs[1];
+      pc++; break;
+    case RDFLT :
+      ifs >> fpr[0];
       pc++; break;
     case PRFLT:
       fprintf(outf, "%f\n", fpr[0]);

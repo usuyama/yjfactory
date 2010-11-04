@@ -53,9 +53,12 @@ enum {
   SQRT,
   SIN,
   COS,
+  ATAN,
   FLOOR,
   ITOF,
   FTOI,
+  RDINT,
+  RDFLT,
   PRFLT
 };
 
