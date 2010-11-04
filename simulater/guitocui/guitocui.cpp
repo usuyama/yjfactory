@@ -61,11 +61,14 @@ void hogehoge::set_runall(bool flag){
 void hogehoge::setPC(int address){
   pc=address;
 }
+void hogehoge::getPC(){
+  std::cout << "pc = "<< pc << std::endl;
+}
 
 void hogehoge::doInst(int steps){
   std::ofstream os("outputfile");
   int opcode;
-  int tmp;
+  int tmp,count2=0;
   float_int tmp_union;
 
   for(int count=0; runall || count<steps; count++){
@@ -94,6 +97,12 @@ void hogehoge::doInst(int steps){
       regs[iinfo.op1] = regs[iinfo.op2] - iinfo.op3;
       pc++;
       break;
+    case MUL :
+      regs[iinfo.op1] = regs[iinfo.op2] * regs[iinfo.op3];
+      pc++; break;
+    case SRA :
+      regs[iinfo.op1] = regs[iinfo.op2] >> iinfo.op3;
+      pc++; break;
     case ADDF :
       //        ui->instruction->appendPlainText(iinfo.assm);
       fpr[iinfo.op1] = fpr[iinfo.op2] + fpr[iinfo.op3];
@@ -214,6 +223,12 @@ void hogehoge::doInst(int steps){
       else
 	pc++;
       break;
+    case BNEQ :
+      if(regs[iinfo.op1] != regs[iinfo.op2])
+	pc +=iinfo.op3;
+      else
+	pc++;
+      break;
     case BGTF :
       //        ui->instruction->appendPlainText(iinfo.assm);
       if(fpr[iinfo.op1] > fpr[iinfo.op2])
@@ -319,6 +334,11 @@ void hogehoge::doInst(int steps){
     default :
       std::cerr << "undefined instruction: opcode = " << opcode << std::endl;
       return;
+    }
+    count2++;
+    if(count2 > 10000000){
+      count2=0;
+      std::cout << " * " << pc << std::endl;
     }
   }
   os.close();

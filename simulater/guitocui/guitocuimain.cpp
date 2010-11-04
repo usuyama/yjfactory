@@ -62,6 +62,7 @@ int main(int argc, char* argv[]){
       }*/
     else if(option == "r"){
       sim.print_regs();
+      sim.getPC();
     }
     else if(option == "f"){
       sim.print_fpr();

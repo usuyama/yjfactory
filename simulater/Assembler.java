@@ -72,7 +72,7 @@ class GetReg{
     }
 
     public StringBuffer getRelate(String s){
-	System.out.println(s.substring(1,s.length()-1));
+	//	System.out.println(s.substring(1,s.length()-1));
 
 	String[] str = (s.substring(1,s.length()-1)).split(" \\+ ");
 	//	System.out.println(s);
@@ -137,7 +137,7 @@ public class Assembler {
 			    code.append("101001");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
-			    System.out.println(inst[3]);
+			    //			    System.out.println(inst[3]);
 			    if(inst[3].matches("[1-9][0-9]*"))
 				code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			    else
@@ -165,6 +165,12 @@ public class Assembler {
 			}
 			else if(inst[0].equals("muli")){
 			    code.append("101011");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			}
+			else if(inst[0].equals("sra")){
+			    code.append("XXXSRA");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
@@ -296,7 +302,7 @@ public class Assembler {
 			}
 			else if(inst[0].equals("jal")){
 			    code.append("010110");
-			    System.out.println(inst[1]); // print tag
+			    //			    System.out.println(inst[1]); // print tag
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
 			}
 			else if(inst[0].equals("j")){
@@ -372,6 +378,16 @@ public class Assembler {
 			else if(inst[0].equals("read_float")){
 			    code.append("XRDFLT");
 			    code.append("00000000000000000000000000");
+			}
+
+			//
+			// 要修正！！！！！！！！！！！！！！！！！！！！
+			//
+			else if(inst[0].equals("div")){
+			    code.append("XXXSRA");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(2, 16));
 			}
 
 			//

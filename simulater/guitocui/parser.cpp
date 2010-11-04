@@ -140,6 +140,16 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "subi\t" + make_asm_2r1i(inst_mem[index]);
     }
+  else if(inst=="100011"){ //mul
+     cout << "MUL\n";
+     inst_mem[index].opcode= MUL;
+     fill_3reg(inst_mem,index,str);
+    }
+    else if(inst=="XXXSRA"){
+      cout << "SRA\n";
+      inst_mem[index].opcode = SRA;
+      fill_2reg_1imm(inst_mem, index,str);
+    }
     else if(inst=="110010"){ // lli
       cout << "LLI\n";
       inst_mem[index].opcode= LLI;
@@ -205,6 +215,16 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode=BGT;
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "bgt\t" + make_asm_2r1i(inst_mem[index]);
+    }
+    else if(inst=="001001"){
+      cout << "BEQ\n";
+      inst_mem[index].opcode=BGT;
+      fill_2reg_1imm(inst_mem,index,str);
+    }
+    else if(inst=="001010"){
+      cout << "BNEQ\n";
+      inst_mem[index].opcode=BGT;
+      fill_2reg_1imm(inst_mem,index,str);
     }
     else if(inst=="XXBGTF"){ // bgtf
       cout << "BGTF\n";

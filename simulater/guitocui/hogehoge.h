@@ -45,6 +45,7 @@ public:
   void print_regs(int index);
   void print_fpr();
   void setPC(int address);
+  void getPC();
   int get_regcont(int index);
   bool get_runall();
   void set_runall(bool flag);
