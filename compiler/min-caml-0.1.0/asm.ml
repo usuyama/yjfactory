@@ -30,6 +30,7 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | FSub of Id.t * Id.t
   | FMul of Id.t * Id.t
   | FDiv of Id.t * Id.t
+  | MovFToI of Id.t
   | LdF of Id.t * int
   | StF of Id.t * Id.t * int
   | Comment of string
@@ -38,6 +39,7 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | IfLE of Id.t * Id.t * t * t
   | IfGE of Id.t * Id.t * t * t (* 左右対称ではないので必要 *)
   | IfFLE of Id.t * Id.t * t * t
+(*  | IfFEq of Id.t * Id.t * t * t *)
   (* closure address, integer arguments, and float arguments *)
   | CallCls of Id.t * Id.t list * Id.t list
   | CallDir of Id.l * Id.t list * Id.t list
@@ -72,7 +74,7 @@ let rec remove_and_uniq xs = function
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
   | Nop | Set(_) | SetL(_) | SetF(_) | Comment(_) | Restore(_) -> []
-  | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) -> [x]
+  | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) | MovFToI x -> [x]
   | Add(x, y') | Sub(x, y') | Div(x, y') | Mul(x, y') -> x :: fv_id_or_imm y'
   | St(x, y, _) | StF(x, y, _) -> [x; y]
   | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) -> [x; y]
@@ -120,6 +122,7 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | Mul(t1, t2) -> printf "Mul %s %s\n" t1 (str_of_ioi t2)
        | SLL(t1, t2) -> printf "SLL %s %d\n" t1 t2
        | Ld(t1, t2) -> printf "Ld [%s + %d]\n" t1 t2
+       | MovFToI(t) -> printf "MovFToI %s\n" t
        | St(t1, t2, t3) -> printf "St %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)
        | FMov t -> printf "FMov %s\n" t
        | FNeg t -> printf "FNeg %s\n" t
@@ -134,6 +137,7 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | IfGE(t1, t2, t3, t4) -> printf "IF %s >= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
        | IfFLE(t1, t2, t3, t4) -> printf "Float: IF %s <= %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i
+       (* | IfFEq(t1, t2, t3, t4) -> printf "Float: IF %s == %s THEN\n" t1 t2;print_t t3 i;pi ();printf "ELSE\n";print_t t4 i *)
        | CallCls(t1, int_args, float_args) -> (printf "Callcls %s\n" t1;
 				   pi ();printf "int args:";List.iter (fun t -> printf "  %s" t) int_args;printf "\n";
 				   pi ();printf "float args:";List.iter (fun t -> printf "  %s" t) float_args;printf "\n")

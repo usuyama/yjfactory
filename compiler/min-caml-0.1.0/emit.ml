@@ -51,8 +51,7 @@ let print_li oc rd imm =
   fprintf oc "\tlli\t%s, %d\n" rd imm; (* 即値が16bitに収まればlliのみ *)
   if imm > 65536 then fprintf oc "\tlhi\t%s, %d\n" rd imm else ()
 
-let print_lif oc fd imm =
-  fprintf oc "\tllif\t%s, %f\n" fd imm;
+let print_lif oc fd imm =  fprintf oc "\tllif\t%s, %f\n" fd imm;
   fprintf oc "\tlhif\t%s, %f\n" fd imm
 
 let print_mov oc rd rs =
@@ -69,7 +68,8 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   (* 末尾でなかったら計算結果をdestにセット (caml2html: emit_nontail) *)
   | NonTail(_), Nop -> ()
   | NonTail(x), Set(i) -> print_li oc x i
-  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\taddi\t%s, %%r0, %s\n" x y (* XXX *)
+  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\taddi\t%s, %%r0, %s\n" x y 
+  | NonTail(x), MovFToI(y) -> fprintf oc "\tmovf2i\t%s, %s\n" x y
   | NonTail(x), SetF(f) -> print_lif oc x f
   | NonTail(x), Mov(y) when x = y -> ()
   | NonTail(x), Mov(y) -> print_mov oc x y
@@ -110,7 +110,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | Div _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ as exp) ->
+  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | Div _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ | MovFToI _ as exp) ->
       g' oc (NonTail(regs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
   | Tail, (LdF _ | FSub _ | FNeg _ | FMov _ | FAdd _ | FMul _ | FDiv _ | SetF _ as exp) ->
@@ -141,6 +141,11 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       g'_tail_if oc e1 e2 "bgtf" x y
   | NonTail(z), IfFLE(x, y, e1, e2) ->
       g'_non_tail_if oc (NonTail(z)) e1 e2 "bgtf" y x
+(*  | Tail, IfFEq(x, y, e1, e2) ->
+      failtwith "iffeq tail";
+      g'_tail_if oc e1 e2 "bneqf" x y
+  | NonTail(z), IfFEq(x, y, e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "beqf" x y *)
 (* 関数呼び出しの仮想命令の実装 (caml2html: emit_call) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
