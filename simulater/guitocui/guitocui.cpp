@@ -7,6 +7,7 @@ hogehoge::hogehoge(const char* input_sld)
   pc=0;
   ready = false;
   runall = true;
+  maxsp=0;
 
   ifs.open(input_sld);
   if(ifs.fail()){
@@ -33,6 +34,9 @@ int hogehoge::get_regcont(int index){
 void hogehoge::print_regs(){
   for(int i=0;i<32;i++)
     std::cout << "r" << i << ": " << get_regcont(i) << std::endl;
+}
+void hogehoge::print_maxsp(){
+  std::cout << "maxsp" << maxsp << std::endl;
 }
 
 void hogehoge::print_regs(int i){
@@ -334,6 +338,10 @@ void hogehoge::doInst(int steps){
     default :
       std::cerr << "undefined instruction: opcode = " << opcode << std::endl;
       return;
+    }
+
+    if(regs[30]>maxsp){
+      maxsp = regs[30];
     }
     count2++;
     if(count2 > 10000000){
