@@ -114,6 +114,9 @@ void hogehoge::doInst(int steps){
       fpr[iinfo.op1] = fpr[iinfo.op2] / fpr[iinfo.op3];
       pc++;
       break;
+    case MOVF :
+      fpr[iinfo.op1] = fpr[iinfo.op2];
+      pc++; break;
     case LLIF :
       //        ui->instruction->appendPlainText(iinfo.assm);
       //        std::cout << "llif\n";

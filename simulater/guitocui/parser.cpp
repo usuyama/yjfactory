@@ -178,6 +178,12 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
     }
+    else if(inst=="XXMOVF"){ // divf
+      cout << "MOVF\n";
+      inst_mem[index].opcode= MOVF;
+      fill_3reg(inst_mem,index,str);
+      //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
+    }
     else if(inst=="XXLLIF"){ // llif
       cout << "LLIF\n";
       inst_mem[index].opcode= LLIF;

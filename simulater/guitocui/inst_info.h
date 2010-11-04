@@ -41,6 +41,7 @@ enum {
   SUBF,
   MULF,
   DIVF,
+  MOVF,
   FABS,
   FNEG,
   MVF2I,

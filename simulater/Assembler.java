@@ -210,6 +210,12 @@ public class Assembler {
 			    code.append(gr.getFnum(inst[3]));
 			    code.append("00000000000");
 			}
+			else if(inst[0].equals("movf")){
+			    code.append("XXMOVF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append("0000000000000000");
+			}
 			else if(inst[0].equals("lhif")){
 			    System.out.println("hoge");
 			    code.append("XXLHIF");
