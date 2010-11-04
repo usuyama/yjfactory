@@ -1,7 +1,6 @@
 entry:
 	lli	%sp, 0
 	lli	%ra, 0
-	lli	%hp, 10000
 	lli	%r1, 2
 	lli	%r2, 0
 	sw	%ra, [%sp + 0]
@@ -31,5 +30,26 @@ entry:
 	lw	%r2, [%sp + 0]
 	add	%r1, %r2, %r1
 	lw	%r1, [%r1 + 0]
-	j	yj_print_int
+	jal	yj_print_int
 	halt
+yj_create_array:
+	addi	%r3, %r0, 0
+yj_create.loop:
+	add	%r4, %hp, %r3
+	sw	%r2, [%r4, 0]
+	addi	%r3, %r3, 1
+	bge	%r3, %r1, yj_create.loop
+yj_create.exit:
+	add	%r1, %r0, %hp
+	add	%hp, %hp, %r3
+	jr
+yj_print_int:
+	sendw	%r1
+	jr	%ra
+yj_print_float:
+	movf2i	%r1, %f0
+	sendw	%r1
+	jr	%ra
+yj_print_char:
+	sendc	%r1
+	jr	%ra

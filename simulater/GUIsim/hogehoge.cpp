@@ -200,14 +200,20 @@ hogehoge::~hogehoge()
     //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
             pc++;
             break;
-
-      case LLI :
-        ui->instruction->appendPlainText(iinfo.assm);
-        regs[iinfo.op1] = iinfo.op2;
-	//        std::cout << regs[1] << std::endl;
-	//        std::cout << regs[2] << std::endl;
-        pc++;
-        break;
+    case LLI :
+      ui->instruction->appendPlainText(iinfo.assm);
+      regs[iinfo.op1] = iinfo.op2;
+      //std::cout << iinfo.op2 << " op2" << std::endl;
+      //        std::cout << regs[1] << std::endl;
+      //        std::cout << regs[2] << std::endl;
+      pc++;
+      break;
+    case LHI :
+      ui->instruction->appendPlainText(iinfo.assm);
+      regs[iinfo.op1] |= iinfo.op2 << 16;
+      //std::cout << "hogehoge" << (iinfo.op2 << 16) << std::endl;
+      pc++;
+      break;
       case BGT :
         ui->instruction->appendPlainText(iinfo.assm);
         if(regs[iinfo.op1] > regs[iinfo.op2])
@@ -258,6 +264,7 @@ hogehoge::~hogehoge()
        // ui->instruction->appendPlainText("sendw called");
         ui->instruction->appendPlainText(iinfo.assm);
         fprintf(outf, "%d\n", regs[iinfo.op1]);
+        fflush(outf);
         //std::cout << regs[iinfo.op1] << std::endl;
         pc++;
         break;
@@ -265,6 +272,7 @@ hogehoge::~hogehoge()
         //os << (char)regs[iinfo.op1];
         //std::cout << (char)regs[iinfo.op1] << std::endl;
         fprintf(outf, "%c\n", (char)regs[iinfo.op1]);
+        fflush(outf);
         ui->instruction->appendPlainText("sendc called");
         pc++;
         break;

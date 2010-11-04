@@ -9,7 +9,7 @@ NCSUFFIX = .opt
 CC = gcc
 CFLAGS = -g -O2 -Wall
 
-default: debug-code top $(RESULT) fib_test
+default: debug-code top $(RESULT)
 ## [自分（住井）用の注]
 ## ・makeコマンドはdebug-codeでmin-camlが作られることを知らない(?)ので、
 ##   $(RESULT)を入れておかないとdo_testで「min-camlがない」というエラーになる

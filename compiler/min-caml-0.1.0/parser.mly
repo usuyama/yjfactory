@@ -6,6 +6,7 @@ let addtyp x = (x, Type.gentyp ())
 %}
 
 /* 字句を表すデータ型の定義 (caml2html: parser_token) */
+%token <bool> BOOL
 %token <int> INT
 %token <float> FLOAT
 %token NOT
@@ -48,7 +49,7 @@ let addtyp x = (x, Type.gentyp ())
 %left COMMA
 %left EQUAL LESS_GREATER LESS GREATER LESS_EQUAL GREATER_EQUAL
 %left PLUS MINUS PLUS_DOT MINUS_DOT
-%left AST_DOT SLASH_DOT
+%left DIV MUL AST_DOT SLASH_DOT
 %right prec_unary_minus
 %left prec_app
 %left DOT
@@ -64,6 +65,8 @@ simple_exp: /* 括弧をつけなくても関数の引数になれる式 (caml2html: parser_simple)
     { $2 }
 | LPAREN RPAREN
     { Unit }
+| BOOL
+    { Bool($1) }
 | INT
     { Int($1) }
 | FLOAT

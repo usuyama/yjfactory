@@ -23,6 +23,10 @@ rule token = parse
     { LPAREN }
 | ')'
     { RPAREN }
+| "true"
+    { BOOL(true) }
+| "false"
+    { BOOL(false) }
 | "not"
     { NOT }
 | digit+ (* 整数を字句解析するルール (caml2html: lexer_int) *)
@@ -31,11 +35,11 @@ rule token = parse
     { FLOAT(float_of_string (Lexing.lexeme lexbuf)) }
 | '-' (* -.より後回しにしなくても良い? 最長一致? *)
     { MINUS }
-| '+' (* +.より後回しにしなくても良い? 最長一致? *)
+| '*' (* +.より後回しにしなくても良い? 最長一致? *)
     { MUL }
-| '*' 
-    { DIV }
 | '/' 
+    { DIV }
+| '+' 
     { PLUS }
 | "-."
     { MINUS_DOT }

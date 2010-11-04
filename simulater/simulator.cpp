@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define MEMSIZE 10000
+#define MEMSIZE 100000
 #define INSTSIZE 10000
 #define MSCOPE 10
 

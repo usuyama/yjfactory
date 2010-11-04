@@ -79,7 +79,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), Mul(y, z) -> print_int_ope oc "mul" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
   | NonTail(x), Neg(y) -> fprintf oc "\tsub\t%s, %%r0, %s\n" x y
-  | NonTail(x), FNeg(y) -> fprintf oc "\tfneg\t%s, %s\n" x y
+  | NonTail(x), FNeg(y) -> fprintf oc "\tnegf\t%s, %s\n" x y
   | NonTail(x), Ld(y, z) -> fprintf oc "\tlw\t%s, [%s + %d]\n" x y z
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
   | NonTail(_), Comment(s) -> fprintf oc "\t# %s\n" s
@@ -145,7 +145,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
-      fprintf oc "\tjalr\t%s\n" reg_sw;
+      fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
       fprintf oc "\tjal\t%s\n" x;
@@ -218,7 +218,7 @@ let f oc (Prog(fundefs, e)) =
   fprintf oc "entry:\n";
   print_li oc reg_sp 0;
   print_li oc reg_ra 0;
-  print_li oc reg_hp 10000;
+  print_li oc reg_hp 50000;
   stackset := S.empty;
   stackmap := [];
   g oc (Tail, e);

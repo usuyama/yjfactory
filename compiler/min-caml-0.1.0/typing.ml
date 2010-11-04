@@ -3,7 +3,7 @@
 open Syntax
 
 exception Unify of Type.t * Type.t
-exception Error of t * Type.t * Type.t
+exception Error of t * string * string
 
 let extenv = ref M.empty
 
@@ -12,10 +12,10 @@ let rec deref_typ = function (* 型変数を中身でおきかえる関数 (caml2html: typing_
   | Type.Fun(t1s, t2) -> Type.Fun(List.map deref_typ t1s, deref_typ t2)
   | Type.Tuple(ts) -> Type.Tuple(List.map deref_typ ts)
   | Type.Array(t) -> Type.Array(deref_typ t)
-  | Type.Var({ contents = None } as r) ->
+(*  | Type.Var({ contents = None } as r) ->
       Format.eprintf "uninstantiated type variable detected; assuming int@.";
       r := Some(Type.Int);
-      Type.Int
+      Type.Int *)
   | Type.Var({ contents = Some(t) } as r) ->
       let t' = deref_typ t in
       r := Some(t');
@@ -63,20 +63,20 @@ let rec unify t1 t2 = (* 型が合うように、型変数への代入をする (caml2html: typing
   | Type.Unit, Type.Unit | Type.Bool, Type.Bool | Type.Int, Type.Int | Type.Float, Type.Float -> ()
   | Type.Fun(t1s, t1'), Type.Fun(t2s, t2') ->
       (try List.iter2 unify t1s t2s
-      with Invalid_argument("List.iter2") -> raise (Unify(t1, t2)));
+      with Invalid_argument("List.iter2") -> Format.eprintf "invaild argument";raise (Unify(t1, t2)));
       unify t1' t2'
   | Type.Tuple(t1s), Type.Tuple(t2s) ->
       (try List.iter2 unify t1s t2s
-      with Invalid_argument("List.iter2") -> raise (Unify(t1, t2)))
+      with Invalid_argument("List.iter2") -> Format.eprintf "invaild tuple";raise (Unify(t1, t2)))
   | Type.Array(t1), Type.Array(t2) -> unify t1 t2
   | Type.Var(r1), Type.Var(r2) when r1 == r2 -> ()
   | Type.Var({ contents = Some(t1') }), _ -> unify t1' t2
   | _, Type.Var({ contents = Some(t2') }) -> unify t1 t2'
   | Type.Var({ contents = None } as r1), _ -> (* 一方が未定義の型変数の場合 (caml2html: typing_undef) *)
-      if occur r1 t2 then raise (Unify(t1, t2));
+      if occur r1 t2 then raise (Unify(t1, t2));(* [XXX] *)
       r1 := Some(t2)
   | _, Type.Var({ contents = None } as r2) ->
-      if occur r2 t1 then raise (Unify(t1, t2));
+      if occur r2 t1 then raise (Unify(t1, t2));(* [XXX] *)
       r2 := Some(t1)
   | _, _ -> raise (Unify(t1, t2))
 
@@ -93,7 +93,7 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
     | Neg(e) ->
 	unify Type.Int (g env e);
 	Type.Int
-    | Add(e1, e2) | Sub(e1, e2) | Div(e1, e2) | Mul(e1, e2) -> (* 足し算（と引き算）の型推論 (caml2html: typing_add) *)
+    | Add(e1, e2) | Sub(e1, e2) | Div(e1, e2) | Mul(e1, e2) ->
 	unify Type.Int (g env e1);
 	unify Type.Int (g env e2);
 	Type.Int
@@ -148,15 +148,12 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
 	unify (Type.Array(t)) (g env e1);
 	unify Type.Int (g env e2);
 	Type.Unit
-  with Unify(t1, t2) -> raise (Error(deref_term e, deref_typ t1, deref_typ t2))
+  with Unify(t1, t2) -> raise (Error(deref_term e, Type.str_of_t (deref_typ t1), Type.str_of_t (deref_typ t2)))
 
 let f e =
   extenv := M.empty;
-(*
   (match deref_typ (g M.empty e) with
   | Type.Unit -> ()
   | _ -> Format.eprintf "warning: final result does not have type unit@.");
-*)
-  ignore(g M.empty e);
   extenv := M.map deref_typ !extenv;
   deref_term e

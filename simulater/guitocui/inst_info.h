@@ -1,7 +1,6 @@
 #ifndef INCLUDED_INST_INFO
 #define INCLUDED_INST_INFO
 
-#include <QString>
 
 union float_int{
   unsigned int myint;
@@ -14,7 +13,7 @@ class inst_info{
   int op1;
   int op2;
   int op3;
-  QString assm;
+  //  QString assm;
 };
 
 enum { 
@@ -34,6 +33,7 @@ enum {
   BGTF,
   BEQ,
   LLI,
+  LHI,
   LHIF,
   LLIF,
   NOP,
