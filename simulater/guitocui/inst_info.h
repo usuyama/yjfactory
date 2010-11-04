@@ -43,13 +43,20 @@ enum {
   DIVF,
   FABS,
   FNEG,
-  SQRT,
   MVF2I,
   SENDW,
   SENDC,
   RECVF,
   BREAK,
-  HALT
+  HALT,
+
+  SQRT,
+  SIN,
+  COS,
+  FLOOR,
+  ITOF,
+  FTOI,
+  PRFLT
 };
 
 #endif

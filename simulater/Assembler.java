@@ -323,6 +323,40 @@ public class Assembler {
 			    code.append("110000");
 			    code.append("00000000000000000000000000");
 			}
+			//
+			// 疑似命令
+			//
+			else if(inst[0].equals("sqrt")){
+			    code.append("XXSQRT");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("sin")){
+			    code.append("XXXSIN");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("cos")){
+			    code.append("XXXCOS");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("floor")){
+			    code.append("XFLOOR");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("itof")){
+			    code.append("XXITOF");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("ftoi")){
+			    code.append("XXFTOI");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("print_float")){
+			    code.append("XPRFLT");
+			    code.append("00000000000000000000000000");
+			}
+			//
+			// 疑似命令
+			//
 			else{
 			    System.out.println(inst[0]+" is not defined");
 			    System.exit(1);

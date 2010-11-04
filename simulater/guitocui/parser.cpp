@@ -303,6 +303,30 @@ int parser::parse(inst_info* inst_mem, const char* program){
       cout << "HALT\n";
       inst_mem[index].opcode=HALT;
     }
+
+    /* 擬似命令 */
+    else if(inst=="XXSQRT"){
+      inst_mem[index].opcode=SQRT;
+    }
+    else if(inst=="XXXSIN"){
+      inst_mem[index].opcode=SIN;
+    }
+    else if(inst=="XXXCOS"){
+      inst_mem[index].opcode=COS;
+    }
+    else if(inst=="XFLOOR"){
+      inst_mem[index].opcode=FLOOR;
+    }
+    else if(inst=="XXITOF"){
+      inst_mem[index].opcode=ITOF;
+    }
+    else if(inst=="XXFTOI"){
+      inst_mem[index].opcode=FTOI;
+    }
+    else if(inst=="XPRFLT"){
+      inst_mem[index].opcode=PRFLT;
+    }
+    /* 疑似命令 終了*/
     else{
       cout << "unknown opcode" << inst << endl;
       return -2;

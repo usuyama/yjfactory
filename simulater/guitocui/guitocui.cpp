@@ -1,6 +1,5 @@
 #include "hogehoge.h"
-
-#include "hogehoge.h"
+#include <math.h>
 
 
 hogehoge::hogehoge()
@@ -266,6 +265,33 @@ void hogehoge::doInst(int steps){
       //        ui->instruction->appendPlainText("\nprogram end\n");
       std::cout << "end program" << std::endl;
       return;
+
+/* 擬似命令s */
+    case SQRT :
+      fpr[0] = sqrt(fpr[0]);
+      pc++;
+      break;
+    case SIN :
+      fpr[0] = sin(fpr[0]);
+      pc++; break;
+    case COS :
+      fpr[0] = cos(fpr[0]);
+      pc++; break;
+    case FLOOR :
+      fpr[0] = floor(fpr[0]);
+      pc++; break;
+    case ITOF :
+      fpr[0]=(float)regs[1];
+      pc++; break;
+    case FTOI :
+      regs[1]=(int)fpr[0];
+      pc++; break;
+    case PRFLT:
+      fprintf(outf, "%f\n", fpr[0]);
+      fflush(outf);
+      pc++; break;
+/* 擬似命令s */
+
     default :
       std::cerr << "undefined instruction: opcode = " << opcode << std::endl;
       return;
@@ -273,4 +299,3 @@ void hogehoge::doInst(int steps){
   }
   os.close();
 }
-
