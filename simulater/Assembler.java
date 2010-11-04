@@ -102,6 +102,7 @@ public class Assembler {
 		/* タグと行の対応関係をマップするとともに、命令をarrayにロード */
 		while((str=br.readLine()) != null){
 			if(str.charAt(str.length()-1)==':'){
+			    System.out.println(str);
 			    tagmap.put(str.substring(0,str.length()-1), count);
 			}
 			else{
