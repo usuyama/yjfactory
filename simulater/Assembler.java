@@ -102,7 +102,6 @@ public class Assembler {
 		/* タグと行の対応関係をマップするとともに、命令をarrayにロード */
 		while((str=br.readLine()) != null){
 			if(str.charAt(str.length()-1)==':'){
-			    System.out.println(str);
 			    tagmap.put(str.substring(0,str.length()-1), count);
 			}
 			else{
@@ -291,6 +290,7 @@ public class Assembler {
 			}
 			else if(inst[0].equals("jal")){
 			    code.append("010110");
+			    System.out.println(inst[1]); // print tag
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
 			}
 			else if(inst[0].equals("j")){
