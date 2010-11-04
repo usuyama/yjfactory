@@ -166,7 +166,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0) (* a <- regs.(0) *)
       else if List.mem a allfregs && a <> fregs.(0) then
-	fprintf oc "\tfmov\t%s, %s\n" a fregs.(0)
+	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)
   | NonTail(a), CallDir(Id.L(x), ys, zs) ->
       g'_args oc [] ys zs;
       let ss = stacksize () in
@@ -178,7 +178,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0)
       else if List.mem a allfregs && a <> fregs.(0) then
-	fprintf oc "\tfmov\t%s, %s\n" a fregs.(0)	
+	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)	
 and g'_tail_if oc e1 e2 ope r1 r2 =
   let b_else = Id.genid (ope ^ "_else") in
     fprintf oc "\t%s\t%s, %s, %s\n" ope r1 r2 b_else;

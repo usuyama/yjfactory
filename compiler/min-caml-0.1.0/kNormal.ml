@@ -172,10 +172,7 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	  let _, t2 as g_e2 = g env e2 in
 	  insert_let g_e2
 	    (fun y ->
-	      let l =
-		match t2 with
-		| Type.Float -> "create_float_array"
-		| _ -> "create_array" in
+	      let l = "create_array" in
 	      ExtFunApp(l, [x; y]), Type.Array(t2)))
   | Syntax.Get(e1, e2) -> (* e1.(e2) *)
       (match g env e1 with
