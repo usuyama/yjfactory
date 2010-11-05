@@ -48,8 +48,9 @@ let print_int_ope oc ope rd arg0 arg1 =
 		 assert false) (* [XXX] fix later *)
 
 let print_li oc rd imm =
-  fprintf oc "\tlli\t%s, %d\n" rd imm; (* 即値が16bitに収まればlliのみ *)
-  if imm > 65536 then fprintf oc "\tlhi\t%s, %d\n" rd imm else ()
+  fprintf oc "\tlli\t%s, %d\n" rd imm;
+  if imm < 65536 && imm >= 0 then () else
+    fprintf oc "\tlhi\t%s, %d\n" rd imm
 
 let print_lif oc fd imm =  fprintf oc "\tllif\t%s, %f\n" fd imm;
   fprintf oc "\tlhif\t%s, %f\n" fd imm
@@ -131,21 +132,16 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       failwith "ifge" (* XXX *)
       (* g'_tail_if oc e1 e2 "bgt" y x *)
   | NonTail(z), IfEq(x, y, e1, e2) ->
-      g'_non_tail_if oc (NonTail(z)) e1 e2 "beq" x y
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "bneq" x y
   | NonTail(z), IfLE(x, y, e1, e2) ->
-      g'_non_tail_if oc (NonTail(z)) e1 e2 "bgt" y x
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "bgt" x y
   | NonTail(z), IfGE(x, y, e1, e2) -> (* XXX ここには来ない *)
       failwith "ifge" (* g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" x y *)
 (* float if *)
   | Tail, IfFLE(x, y, e1, e2) -> (* x <= y *)
       g'_tail_if oc e1 e2 "bgtf" x y
   | NonTail(z), IfFLE(x, y, e1, e2) ->
-      g'_non_tail_if oc (NonTail(z)) e1 e2 "bgtf" y x
-(*  | Tail, IfFEq(x, y, e1, e2) ->
-      failtwith "iffeq tail";
-      g'_tail_if oc e1 e2 "bneqf" x y
-  | NonTail(z), IfFEq(x, y, e1, e2) ->
-      g'_non_tail_if oc (NonTail(z)) e1 e2 "beqf" x y *)
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "bgtf" x y
 (* 関数呼び出しの仮想命令の実装 (caml2html: emit_call) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *) (* clo addr, int args, float args *)
       g'_args oc [(x, reg_cl)] ys zs;
@@ -153,7 +149,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tjr\t%s\n" reg_sw;
   | Tail, CallDir(Id.L(x), ys, zs) -> (* 末尾呼び出し *)
       g'_args oc [] ys zs;
-      fprintf oc "\tjal\t%s\n" x;
+      fprintf oc "\tj\t%s\n" x;
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
@@ -222,10 +218,11 @@ let f oc (Prog(fundefs, e)) =
   Format.eprintf "generating assembly...@.";
   fprintf oc "entry:\n";
   print_li oc reg_sp 0;
-  print_li oc reg_ra 0;
+  fprintf oc "\taddi\t%s, %%r0, halt\n" reg_ra;
   print_li oc reg_hp 50000;
   stackset := S.empty;
   stackmap := [];
   g oc (Tail, e);
+  fprintf oc "halt:\n";
   fprintf oc "\thalt\n";
   List.iter (fun fundef -> h oc fundef) fundefs;
