@@ -201,9 +201,9 @@ void hogehoge::doInst(int steps){
 	//              ui->instruction->appendPlainText( "exceed memory\n");
 	exit(1);
       }
-      std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+      //      std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
       data_mem[tmp].myfloat = fpr[iinfo.op1];
-      std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
+      //      std :: cout << fpr[iinfo.op1] << "hogehoge" << std :: endl;
       //    //ui->instruction->appendPlainText( tmp << " " << regs[iinfo.op1] << endl;
 	pc++;
 	break;
@@ -217,7 +217,7 @@ void hogehoge::doInst(int steps){
       break;
     case LHI :
       regs[iinfo.op1] |= iinfo.op2 << 16;
-      std::cout << "hogehoge" << (iinfo.op2 << 16) << std::endl;
+      //      std::cout << "hogehoge" << (iinfo.op2 << 16) << std::endl;
       pc++;
       break;
     case BGT :
