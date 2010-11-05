@@ -29,6 +29,7 @@ private:
   int pc;
     //int steps;
   bool runall;
+
   std::ifstream ifs;
 
 public:
@@ -38,12 +39,14 @@ public:
   float_int data_mem[MEMSIZE];
   bool ready;
   FILE* outf;
+  int maxsp;
 
   hogehoge(const char*);
   void print_mem(int address);
   void print_regs();
   void print_regs(int index);
   void print_fpr();
+  void print_maxsp();
   void setPC(int address);
   void getPC();
   int get_regcont(int index);

@@ -63,6 +63,7 @@ int main(int argc, char* argv[]){
     else if(option == "r"){
       sim.print_regs();
       sim.getPC();
+      sim.print_maxsp();
     }
     else if(option == "f"){
       sim.print_fpr();
