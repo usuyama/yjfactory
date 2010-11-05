@@ -223,7 +223,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
     }
     else if(inst=="001010"){
       cout << "BNEQ\n";
-      inst_mem[index].opcode=BGT;
+      inst_mem[index].opcode=BNEQ;
       fill_2reg_1imm(inst_mem,index,str);
     }
     else if(inst=="XXBGTF"){ // bgtf
