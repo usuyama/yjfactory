@@ -275,7 +275,7 @@ void hogehoge::doInst(int steps){
     case SENDW :
       //       // ui->instruction->appendPlainText("sendw called");
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fprintf(outf, "%d\n", regs[iinfo.op1]);
+      fprintf(outf, "%d", regs[iinfo.op1]);
       fflush(outf);
       //std::cout << regs[iinfo.op1] << std::endl;
       pc++;
@@ -283,7 +283,7 @@ void hogehoge::doInst(int steps){
     case SENDC :
       //os << (char)regs[iinfo.op1];
       //std::cout << (char)regs[iinfo.op1] << std::endl;
-      fprintf(outf, "%c\n", (char)regs[iinfo.op1]);
+      fprintf(outf, "%c", (char)regs[iinfo.op1]);
       fflush(outf);
       //        ui->instruction->appendPlainText("sendc called");
       pc++;

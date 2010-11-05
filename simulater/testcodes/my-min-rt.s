@@ -9725,7 +9725,6 @@ init_line_elements.2906:
 	add	%r1, %r0, %r3
 	jal	init_line_elements.2906
 bgt_else.9041:
-	break
 	jr	%ra
 create_pixelline.2909:
 	lw	%r1, [%r27 + 1]
