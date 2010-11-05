@@ -37,7 +37,7 @@ yj_sqrt:
 	sqrt	%f0, %f0
 	jr	%ra
 yj_floor:
-	sqrt	%f0, %f0
+	floor	%f0, %f0
 	jr	%ra
 yj_read_int:
 	read_int	%r1
