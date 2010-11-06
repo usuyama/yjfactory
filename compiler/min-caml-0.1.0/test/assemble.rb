@@ -17,7 +17,7 @@ else
     print "XXX assemle failed\n"
   else
     print "###simulater###\n"
-    system "rm outlog"
+    system "rm -f outlog"
     unless system "../../../simulater/guitocui/simulator o ../../../simulater/" + program_name + " sld/base.sld"
       print "XXX simulate failed\n"
     else

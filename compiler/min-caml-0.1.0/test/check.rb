@@ -30,7 +30,7 @@ Dir::glob("testcodes/*.ml").each do |fullname|
   sh = Shell.cd "."
   display "### " + program_name + " => "
   unless system "../min-caml --noprint " + without_ext
-    display "compile error"
+    display "compile error\n"
   else
     unless system "cat " + "../../../lib/libmin.s >> " + without_ext + ".s"
       display "cat error"
@@ -39,7 +39,7 @@ Dir::glob("testcodes/*.ml").each do |fullname|
       system "mv " + without_ext + ".s asm/"
       sh.cd "../../../simulater/"
       unless (sh.transact{system "java", "Assembler", program_name + ".s", program_name})
-        display "assemler error"
+        display "assemler error\n"
       else
         system "rm -f outlog"
         if system "../../../simulater/guitocui/simulator o ../../../simulater/" + program_name + " sld/base.sld"
