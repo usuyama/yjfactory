@@ -203,9 +203,19 @@ and g'_args oc x_reg_cl ys zs =
       (fun (i, yrs) y -> (i + 1, (y, regs.(i)) :: yrs))
       (0, x_reg_cl)
       ys in
-  List.iter
-    (fun (y, r) -> print_mov oc r y)
-    (shuffle reg_sw yrs)
+    List.iter
+      (fun (y, r) -> print_mov oc r y)
+      (shuffle reg_sw yrs);
+    let (d, zfrs) =
+      List.fold_left
+	(fun (d, zfrs) z -> (d + 1, (z, fregs.(d)) :: zfrs))
+	(0, [])
+	zs in
+      List.iter
+	(fun (z, fr) ->
+	   Printf.fprintf oc "\tmovf\t%s, %s\n" fr z)
+	(shuffle reg_fsw zfrs)
+
   
 
 let h oc { name = Id.L(x); args = _; fargs = _; body = e; ret = _ } =

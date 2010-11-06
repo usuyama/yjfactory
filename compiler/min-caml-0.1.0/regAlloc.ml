@@ -169,7 +169,7 @@ and g'_call dest cont regenv exp constr ys zs = (* ´Ø¿ô¸Æ¤Ó½Ð¤·¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤
   (List.fold_left
      (fun e x ->
        if x = fst dest || not (M.mem x regenv) then e else
-       seq(Save(M.find x regenv, x), e))
+	 seq(Save(M.find x regenv, x), e))
      (Ans(constr
 	    (List.map (fun y -> find y Type.Int regenv) ys)
 	    (List.map (fun z -> find z Type.Float regenv) zs)))
