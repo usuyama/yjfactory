@@ -140,15 +140,26 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "subi\t" + make_asm_2r1i(inst_mem[index]);
     }
-  else if(inst=="100011"){ //mul
-     cout << "MUL\n";
-     inst_mem[index].opcode= MUL;
-     fill_3reg(inst_mem,index,str);
+    else if(inst=="100011"){ //mul
+      cout << "MUL\n";
+      inst_mem[index].opcode= MUL;
+      fill_3reg(inst_mem,index,str);
     }
     else if(inst=="XXXSRA"){
       cout << "SRA\n";
       inst_mem[index].opcode = SRA;
       fill_2reg_1imm(inst_mem, index,str);
+    }
+    else if(inst=="XXXXOR"){ //mul
+      cout << "XOR\n";
+      inst_mem[index].opcode= XOR;
+      fill_3reg(inst_mem,index,str);
+    }
+    else if(inst=="XXXORI"){ // xori
+      cout << "XORI\n";
+      inst_mem[index].opcode= XORI;
+      fill_2reg_1imm(inst_mem,index,str);
+      //      inst_mem[index].assm = "subi\t" + make_asm_2r1i(inst_mem[index]);
     }
     else if(inst=="110010"){ // lli
       cout << "LLI\n";
@@ -232,7 +243,6 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "bgtf\t" + make_asm_2r1i(inst_mem[index]);
     }
-
     else if(inst=="010101"){ // jump
       cout << "JUMP\n";
       inst_mem[index].opcode=JUMP;
@@ -254,14 +264,14 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFABS"){ // jr
+    else if(inst=="XXFABS"){ // fabs
       cout << "fabs\n";
       inst_mem[index].opcode=FABS;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm = "fabs\tf" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFNEG"){ // jr
+    else if(inst=="XXFNEG"){ // xneg
       cout << "FNEG\n";
       inst_mem[index].opcode=FNEG;
       fill_3reg(inst_mem,index,str);

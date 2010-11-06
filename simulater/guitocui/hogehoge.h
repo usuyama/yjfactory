@@ -14,7 +14,7 @@
 #include "parser.h"
 #include "inst_info.h"
 
-#define MEMSIZE 100000
+#define MEMSIZE 300000
 #define INSTSIZE 20000
 #define MSCOPE 10
 

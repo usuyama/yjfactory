@@ -107,6 +107,12 @@ void hogehoge::doInst(int steps){
     case SRA :
       regs[iinfo.op1] = regs[iinfo.op2] >> iinfo.op3;
       pc++; break;
+    case XOR :
+      regs[iinfo.op1] = regs[iinfo.op2]^regs[iinfo.op3];
+      pc++; break;
+    case XORI :
+      regs[iinfo.op1] = regs[iinfo.op2]^iinfo.op3;
+      pc++; break;
     case ADDF :
       //        ui->instruction->appendPlainText(iinfo.assm);
       fpr[iinfo.op1] = fpr[iinfo.op2] + fpr[iinfo.op3];

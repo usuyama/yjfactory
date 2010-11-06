@@ -23,6 +23,8 @@ enum {
   SUBI,
   MUL,
   SRA,
+  XOR,
+  XORI,
   LW,
   SW,
   LF,
