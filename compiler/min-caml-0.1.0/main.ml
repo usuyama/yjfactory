@@ -64,3 +64,4 @@ let () = (* ここからコンパイラの実行が開始される (caml2html: main_entry) *)
     List.iter
       (fun f -> ignore (file f))
       !files
+

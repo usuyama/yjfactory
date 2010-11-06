@@ -124,7 +124,7 @@ and g' dest cont regenv = function (* 各命令のレジスタ割り当て (caml2html: regal
   | Add(x, y') -> (Ans(Add(find x Type.Int regenv, find' y' regenv)), regenv)
   | Sub(x, y') -> (Ans(Sub(find x Type.Int regenv, find' y' regenv)), regenv)
   | Mul(x, y') -> (Ans(Mul(find x Type.Int regenv, find' y' regenv)), regenv)
-  | Div(x, y') -> (Ans(Div(find x Type.Int regenv, find' y' regenv)), regenv)
+  | SRA(x, i) -> (Ans(SRA(find x Type.Int regenv, i)), regenv)
   | SLL(x, y) -> (Ans(SLL(find x Type.Int regenv, y)), regenv)
   | Ld(x, y) -> (Ans(Ld(find x Type.Int regenv, y)), regenv)
   | St(x, y, z) -> (Ans(St(find x Type.Int regenv, find y Type.Int regenv, z)), regenv)
@@ -200,11 +200,11 @@ let h { name = Id.L(x); args = ys; fargs = zs; body = e; ret = t } = (* 関数のレ
       zs in
   let a =
     match t with
-    | Type.Unit -> Id.gentmp Type.Unit
-    | Type.Float -> fregs.(0)
-    | _ -> regs.(0) in
+      | Type.Unit -> Id.gentmp Type.Unit
+      | Type.Float -> fregs.(0)
+      | _ -> regs.(0) in
   let (e', regenv') = g (a, t) (Ans(Mov(a))) regenv e in
-  { name = Id.L(x); args = arg_regs; fargs = farg_regs; body = e'; ret = t }
+     { name = Id.L(x); args = arg_regs; fargs = farg_regs; body = e'; ret = t }
 
 let f (Prog(fundefs, e)) = (* プログラム全体のレジスタ割り当て (caml2html: regalloc_f) *)
   Format.eprintf "register allocation: may take some time (up to a few minutes, depending on the size of functions)@.";

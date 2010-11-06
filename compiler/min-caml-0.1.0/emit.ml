@@ -18,7 +18,7 @@ let locate x =
     | y :: zs -> List.map succ (loc zs) in
   loc !stackmap
 let offset x = List.hd (locate x)
-let stacksize () = List.length !stackmap + 1 (* align 消した。float対応時要注意 *)
+let stacksize () = List.length !stackmap + 1
 
 let pp_id_or_imm = function
   | V(x) -> x
@@ -45,7 +45,7 @@ let print_int_ope oc ope rd arg0 arg1 =
     | C(z) -> (if z <= 65536 then 
 		 fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
 	       else
-		 assert false) (* [XXX] fix later *)
+		 failwith "intope") (* [XXX] fix later *)
 
 let print_li oc rd imm =
   fprintf oc "\tlli\t%s, %d\n" rd imm;
@@ -76,7 +76,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), Mov(y) -> print_mov oc x y
   | NonTail(x), Add(y, z) -> print_int_ope oc "add" x y z
   | NonTail(x), Sub(y, z) -> print_int_ope oc "sub" x y z
-  | NonTail(x), Div(y, z) -> print_int_ope oc "div" x y z
+  | NonTail(x), SRA(y, i) -> fprintf oc "\tsra\t%s, %s, %d\n" x y i
   | NonTail(x), Mul(y, z) -> print_int_ope oc "mul" x y z
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
   | NonTail(x), Neg(y) -> fprintf oc "\tsub\t%s, %%r0, %s\n" x y
@@ -106,12 +106,12 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tlw\t%s, [%s + %d]\n" x reg_sp (offset y)
   | NonTail(x), Restore(y) when List.mem x allfregs ->
       fprintf oc "\tlf\t%s, [%s + %d]\n" x reg_sp (offset y)
-  | NonTail(x), Restore(y) -> assert false
+  | NonTail(x), Restore(y) -> failwith "restore fail"
   (* 末尾だったら計算結果を第一レジスタにセットしてret (caml2html: emit_tailret) *)
   | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | Div _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ | MovFToI _ as exp) ->
+  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | SRA _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ | MovFToI _ as exp) ->
       g' oc (NonTail(regs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
   | Tail, (LdF _ | FSub _ | FNeg _ | FMov _ | FAdd _ | FMul _ | FDiv _ | SetF _ as exp) ->
@@ -121,7 +121,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       (match locate x with
       | [i] -> g' oc (NonTail(regs.(0)), exp)
       | [i; j] when i + 1 = j -> g' oc (NonTail(fregs.(0)), exp)
-      | _ -> assert false);
+      | _ -> failwith "locate fail");
       fprintf oc "\tjr\t%sl\n" reg_ra
 (* if *)
   | Tail, IfEq(x, y, e1, e2) ->
