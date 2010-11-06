@@ -5,10 +5,12 @@ STDERR.reopen("output/errlog", "w")
 STDOUT.reopen("output/tmplog", "w")
 
 def check(program_name)
-  open("output/" + program_name + ".output") {|file|
+  open("output/" + program_name + ".output") { |file|
     while l = file.gets
-      if l.to_i != 1
-        return false
+      l.each_byte do |c|
+        unless c = '1'[0] then
+          return false
+        end
       end
     end
   }
@@ -21,26 +23,27 @@ def display(str)
   STDOUT.reopen("output/tmplog", "a")       # STDOUT を /tmp/foo にリダイレクト
 end
 
+Dir::glob("testcodes/*.ml").each do |fullname|
+  program_name = File::basename(fullname, '.ml')
+  without_ext = fullname[0..fullname.length-4]
 
-ARGV.each do |fullname| 
-  program_name = fullname[0..fullname.length-4]
   sh = Shell.cd "."
   display "### " + program_name + " => "
-  unless system "../min-caml --noprint " + program_name
+  unless system "../min-caml --noprint " + without_ext
     display "compile error"
   else
-    unless system "cat " + "../../../lib/libmin.s >> " + program_name + ".s"
+    unless system "cat " + "../../../lib/libmin.s >> " + without_ext + ".s"
       display "cat error"
     else
-      system "cp " + program_name + ".s ../../../simulater/"
+      system "cp " + without_ext + ".s ../../../simulater/"
+      system "mv " + without_ext + ".s asm/"
       sh.cd "../../../simulater/"
       unless (sh.transact{system "java", "Assembler", program_name + ".s", program_name})
         display "assemler error"
       else
         system "rm -f outlog"
-        system "touch dummy"
-        if system "../../../simulater/guitocui/simulator o ../../../simulater/" + program_name + " dummy"
-          system "cp outlog output/" + program_name + ".output"
+        if system "../../../simulater/guitocui/simulator o ../../../simulater/" + program_name + " sld/base.sld"
+          system "mv outlog output/" + program_name + ".output"
           if check program_name
             display "sucess!\n"
           else
