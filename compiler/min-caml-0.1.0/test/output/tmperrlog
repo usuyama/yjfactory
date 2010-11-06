@@ -1,0 +1,6 @@
+free variable print_int assumed as external
+iteration 1000
+directly applying f.24
+eliminating closure(s) f.24
+register allocation: may take some time (up to a few minutes, depending on the size of functions)
+generating assembly...

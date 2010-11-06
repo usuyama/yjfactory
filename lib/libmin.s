@@ -2,8 +2,7 @@ yj_print_int:
 	sendw	%r1
 	jr	%ra
 yj_print_float:
-	movf2i	%r1, %f0
-	sendw	%r1
+	print_float	%f0
 	jr	%ra
 yj_print_char:
 	sendc	%r1
@@ -15,6 +14,16 @@ yj_create.loop:
 	sw	%r2, [%r4 + 0]
 	addi	%r3, %r3, 1
 	bgt	%r1, %r3, yj_create.loop
+	add	%r1, %r0, %hp
+	add	%hp, %hp, %r3
+	jr	%ra
+yj_create_float_array:
+	lli	%r3, 0
+yj_create_float.loop:
+	add	%r4, %hp, %r3
+	sf	%f0, [%r4 + 0]
+	addi	%r3, %r3, 1
+	bgt	%r1, %r3, yj_create_float.loop
 	add	%r1, %r0, %hp
 	add	%hp, %hp, %r3
 	jr	%ra
