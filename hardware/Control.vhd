@@ -88,6 +88,9 @@ make_signal:process(State)
           Reg_write<='1';
           Reg_dist<='0';
           MemtoReg<='0';
+      when "100001"=>
+        ALUSrcA<='1';
+        ALUSrcB<="10";
       when others => null;
     end case;
   end process make_signal;
@@ -102,9 +105,10 @@ make_signal:process(State)
           case op is
             when "001110"|"001111" => State<="000010";  --LW/SW
             when "100001"|"100010"|"100011"|"100100"|"100101"|"100110"|"100111" =>State<="000110"; --R
-            when "101001"|"101010"|"101011"|"101100"|"101101"|"101110"|"101111" => State<="001010";--R_imm
+            when "101001"|"101010"|"101011"|"101100"|"101101"|"101110"|"101111"|"110011"|"110010" => State<="001010";--R_imm
             when "001001"|"001011"|"001010"|"001100" => State<="001000";  --B
             when "010101"|"010110" => State<="001001";  --J
+            when "010011"=>State<="100000";--Jr
             when others => State<="000000";
           end case;
         when "000010" =>                --LW/SW
@@ -113,6 +117,8 @@ make_signal:process(State)
             when "001111"=> State<="010000";  --SW
             when others => State<="000001";
           end case;
+        when "100000"=>
+          State<="100001";
         when "011000"=>
           State<="011001";
         when "011001"=>
@@ -145,7 +151,6 @@ make_signal:process(State)
           State<="000000";
         when "001010"=>
           State<="001011";
-        
         when others => State<="000000";  
       end case;
     end if;
