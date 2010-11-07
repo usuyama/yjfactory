@@ -8,9 +8,9 @@ entity PROM is
   
   port (
     clka  : in  std_logic;
-    wea   : in  std_logic_vector(0 downto 0);
+--    wea   : in  std_logic_vector(0 downto 0);
     addra : in  std_logic_vector(31 downto 0);
-    dina  : in  std_logic_vector(31 downto 0);
+--    dina  : in  std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 
 end PROM;
@@ -45,7 +45,7 @@ constant rom : rom_type:= (
 "10101000011000110000000000000001",--subi r3 r3 1       8
 "10000100001000100001000000000000",--add r1 r2 r2       7
 "10000100001000100000100000000000",--add r1 r2 r1       6
-"10100100000000110000000000001010",--addi r0 r3 2       5
+"10100100000000110000000000000101",--addi r0 r3 2       5
 "10100100000000100000000000000001",--addi r0 r2 1       4
 "10100100000000010000000000000001",--addi r0 r1 1       3
 "10100100000000010000000000000001",--addi r0 r1 1       2

@@ -128,7 +128,7 @@ component PROM
   port (
     clka : in std_logic;
 --    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(4 downto 0);
+    addra : in std_logic_vector(31 downto 0);
 --    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -211,7 +211,7 @@ I_F:IF_stage port map (
     PC_write_b => PC_write_b,
     ALU_b_out => Alu_Br_out,
     PC_source => PC_Source,
-    ALU_out=>data_out,
+    ALU_out=>data_o,
     ALU_PC=>ALU_PC,
     PC_out=>PC_out);
   DC:DC_stage port map(
@@ -275,7 +275,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
 --    wea => p_we,
-    addra => PC_PR(4 downto 0),
+    addra => PC_PR,
 --    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (

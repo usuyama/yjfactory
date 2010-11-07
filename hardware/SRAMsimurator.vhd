@@ -16,7 +16,11 @@ entity SRAM is
     XGA   : in    std_logic;
     XWA   : in    std_logic;
     XZCKE : in    std_logic;
-    ZCLKA : in    std_logic_vector(1 downto 0));
+    ZCLKA : in    std_logic_vector(1 downto 0);
+    ADVA : out std_logic;
+    XFT : out std_logic;
+    XLBO : out std_logic;
+    ZZA : out std_logic);
 
 end SRAM;
 
@@ -43,19 +47,18 @@ begin  -- SR
         XCKE<=XZCKE;
         XWE_b<=XWE_a;
         XWE_c<=XWE_b;
-        if XWE_b='0' then
+        if XWE_c='0' then
           ZD<=(others=>'Z');
           ZDP<=(others=>'Z');
-          RAM(conv_integer(addr_keep(5 downto 0)))<=ZD;
+          RAM(conv_integer(addr_keep_c(5 downto 0)))(31 downto 0)<=ZD;
         else
-          data_out_a<=RAM(conv_integer(addr_keep(5 downto 0)));
-          ZD<=data_out_c;
+          data_out_a<=RAM(conv_integer(addr_keep_c(5 downto 0)));
+          ZD<=data_out_c(31 downto 0);
         end if;
         data_out_b<=data_out_a;
         data_out_c<=data_out_b;
         data_in_b<=data_in_a;
         data_in_c<=data_in_b;
-        ZD<=
       end if;
     end process;
 end SR;
