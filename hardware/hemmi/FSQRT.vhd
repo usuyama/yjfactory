@@ -4,7 +4,7 @@ use IEEE.std_logic_arith.all;
 use IEEE.std_logic_unsigned.all;
 
 entity FSQRT is
-  port(clk,enable : in std_logic;
+  port(clk,ready : in std_logic;
        A : in std_logic_vector(31 downto 0);
        R : out std_logic_vector(31 downto 0));
 end entity FSQRT;
@@ -18,24 +18,28 @@ component FMUL is
   port (A,B : in std_logic_vector(31 downto 0);
         P : out std_logic_vector(31 downto 0));
 end component FMUL;
-signal rt,irt,irt2,irt3,irt4,irt5,NA,AP : std_logic_vector(31 downto 0);
+signal rt,irt,irt2,irt3,irt4,irt5,NA : std_logic_vector(31 downto 0);
 begin
-p0 : process(clk,A) is
+p0 : process(clk) is
 begin
   if (rising_edge(clk)) then
-    if (enable = '1') then
+    if (ready = '1') then
       NA(31) <= not A(31);
       NA(30 downto 23) <= A(30 downto 23) - "00000001";
       NA(22 downto 0) <= A(22 downto 0);
       irt(31) <= A(31);
-      irt(30 downto 23) <= "10111110" - ('0' & A(30 downto 24));
+      case A(30 downto 23) is
+        when "00000000" => irt(30 downto 23) <= "00000000";
+        when "11111111" => irt(30 downto 23) <= "11111111";
+        when others => irt(30 downto 23) <= "10111110" - ('0' & A(30 downto 24));
+      end case;
       if (A(23) = '1') then
         irt(22) <= '0';
       else
         irt(22) <= '1';
       end if;
       irt(21 downto 0) <= "0000000000000000000000";
-    else
+	else
       irt <= irt5;
     end if;
   end if;
