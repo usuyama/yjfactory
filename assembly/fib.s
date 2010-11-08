@@ -8,7 +8,6 @@ entry:
 	jal	fib.10
 	subi	%sp, %sp, 1
 	lw	%ra, [%sp + 0]
-	jal	yj_print_int
 	halt
 fib.10:
 	lli	%r2, 1

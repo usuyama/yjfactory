@@ -13,8 +13,8 @@
 #include "parser.h"
 #include "inst_info.h"
 
-#define MEMSIZE 100000
-#define INSTSIZE 10000
+#define MEMSIZE 300000
+#define INSTSIZE 20000
 #define MSCOPE 10
 
 
@@ -31,8 +31,8 @@ private:
   bool runall;
 
   void print_mem(int address);
-  void print_regs();
   void print_regs(int index);
+  void print_regs();
 
 public:
   int regs[32];

@@ -12,10 +12,10 @@ let rec deref_typ = function (* 型変数を中身でおきかえる関数 (caml2html: typing_
   | Type.Fun(t1s, t2) -> Type.Fun(List.map deref_typ t1s, deref_typ t2)
   | Type.Tuple(ts) -> Type.Tuple(List.map deref_typ ts)
   | Type.Array(t) -> Type.Array(deref_typ t)
-(*  | Type.Var({ contents = None } as r) ->
+  | Type.Var({ contents = None } as r) ->
       Format.eprintf "uninstantiated type variable detected; assuming int@.";
       r := Some(Type.Int);
-      Type.Int *)
+      Type.Int
   | Type.Var({ contents = Some(t) } as r) ->
       let t' = deref_typ t in
       r := Some(t');

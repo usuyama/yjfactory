@@ -21,6 +21,10 @@ enum {
   ADDI,
   SUB,
   SUBI,
+  MUL,
+  SRA,
+  XOR,
+  XORI,
   LW,
   SW,
   LF,
@@ -32,6 +36,7 @@ enum {
   BGT,
   BGTF,
   BEQ,
+  BNEQ,
   LLI,
   LHI,
   LHIF,
@@ -41,15 +46,26 @@ enum {
   SUBF,
   MULF,
   DIVF,
+  MOVF,
   FABS,
   FNEG,
-  SQRT,
   MVF2I,
   SENDW,
   SENDC,
   RECVF,
   BREAK,
-  HALT
+  HALT,
+
+  SQRT,
+  SIN,
+  COS,
+  ATAN,
+  FLOOR,
+  ITOF,
+  FTOI,
+  RDINT,
+  RDFLT,
+  PRFLT
 };
 
 #endif

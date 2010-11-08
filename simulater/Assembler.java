@@ -72,7 +72,7 @@ class GetReg{
     }
 
     public StringBuffer getRelate(String s){
-	System.out.println(s.substring(1,s.length()-1));
+	//	System.out.println(s.substring(1,s.length()-1));
 
 	String[] str = (s.substring(1,s.length()-1)).split(" \\+ ");
 	//	System.out.println(s);
@@ -137,7 +137,7 @@ public class Assembler {
 			    code.append("101001");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
-			    System.out.println(inst[3]);
+			    //			    System.out.println(inst[3]);
 			    if(inst[3].matches("[1-9][0-9]*"))
 				code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			    else
@@ -165,6 +165,26 @@ public class Assembler {
 			}
 			else if(inst[0].equals("muli")){
 			    code.append("101011");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			}
+			else if(inst[0].equals("xor")){
+			    code.append("XXXXOR");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[3]));
+			    code.append("00000000000");
+			}
+			else if(inst[0].equals("xori")){
+			    code.append("XXXORI");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
+			}
+
+			else if(inst[0].equals("sra")){
+			    code.append("XXXSRA");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
@@ -209,6 +229,12 @@ public class Assembler {
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
 			    code.append("00000000000");
+			}
+			else if(inst[0].equals("movf")){
+			    code.append("XXMOVF");
+			    code.append(gr.getFnum(inst[1]));
+			    code.append(gr.getFnum(inst[2]));
+			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("lhif")){
 			    System.out.println("hoge");
@@ -290,6 +316,7 @@ public class Assembler {
 			}
 			else if(inst[0].equals("jal")){
 			    code.append("010110");
+			    //			    System.out.println(inst[1]); // print tag
 			    code.append(gr.toStr_nlen(tagmap.get(inst[1]), 26));
 			}
 			else if(inst[0].equals("j")){
@@ -323,6 +350,63 @@ public class Assembler {
 			    code.append("110000");
 			    code.append("00000000000000000000000000");
 			}
+			//
+			// 疑似命令
+			//
+			else if(inst[0].equals("sqrt")){
+			    code.append("XXSQRT");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("sin")){
+			    code.append("XXXSIN");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("cos")){
+			    code.append("XXXCOS");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("atan")){
+			    code.append("XXATAN");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("floor")){
+			    code.append("XFLOOR");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("itof")){
+			    code.append("XXITOF");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("ftoi")){
+			    code.append("XXFTOI");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("print_float")){
+			    code.append("XPRFLT");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("read_int")){
+			    code.append("XRDINT");
+			    code.append("00000000000000000000000000");
+			}
+			else if(inst[0].equals("read_float")){
+			    code.append("XRDFLT");
+			    code.append("00000000000000000000000000");
+			}
+
+			//
+			// 要修正！！！！！！！！！！！！！！！！！！！！
+			//
+			else if(inst[0].equals("div")){
+			    code.append("XXXSRA");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.signInt_toStr_nlen(2, 16));
+			}
+
+			//
+			// 疑似命令
+			//
 			else{
 			    System.out.println(inst[0]+" is not defined");
 			    System.exit(1);

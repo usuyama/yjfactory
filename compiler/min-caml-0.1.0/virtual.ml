@@ -38,7 +38,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.Neg(x) -> Ans(Neg(x))
   | Closure.Add(x, y) -> Ans(Add(x, V(y)))
   | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
-  | Closure.Div(x, y) -> Ans(Div(x, V(y)))
+  | Closure.SRA(x, y) -> Ans(SRA(x, y))
   | Closure.Mul(x, y) -> Ans(Mul(x, V(y)))
   | Closure.FNeg(x) -> Ans(FNeg(x))
   | Closure.FAdd(x, y) -> Ans(FAdd(x, y))
@@ -48,8 +48,11 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.IfEq(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
-	 | Type.Float -> failwith "equality dosen't support float"
-	 | _ -> failwith "equality supported only for bool, int")
+	 | Type.Float -> 
+	     (let f1 = Id.genid "t" in
+	      let f2 = Id.genid "t" in
+		Let((f1, Type.Int), MovFToI(x), Let((f2, Type.Int), MovFToI(y), Ans(IfEq(f1, f2, g env e1, g env e2)))))
+	 | _ -> failwith "equality supported only for bool, int and float")
   | Closure.IfLE(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfLE(x, y, g env e1, g env e2))

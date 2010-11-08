@@ -1,19 +1,28 @@
 require "shell"
 
 fullname = ARGV[0]
-program_name = fullname[0..fullname.length-4]
+program_name = File::basename(fullname, '.ml')
 sh = Shell.cd "."
-
-system "../min-caml " + program_name
-system "cat " + "../../../lib/lib.s ../../../lib/io.s >> " + program_name + ".s"
-system "cp " + program_name + ".s ../../../simulater/"
-sh.cd "../../../simulater/"
-print "###assembly###\n"
-p sh.cat program_name + ".s"
-print "###assembler###\n"
-p sh.transact{system "java", "Assembler", program_name + ".s", program_name}
-print "###simulater###\n"
-system "rm outlog"
-system "../../../simulater/guitocui/simulater o ../../../simulater/" + program_name
-print "###output###\n"
-system "cat outlog"
+without_ext = fullname[0..fullname.length-4]
+unless ARGV[1] || system "../min-caml --noprint " + without_ext
+  print "XXX compile failed\n"
+else
+  system "cat " + "../../../lib/libmin.s >> " + without_ext + ".s"
+  system "cp " + without_ext + ".s ../../../simulater/"
+  print "###assembly###\n"
+  p sh.cat without_ext + ".s"
+  sh.cd "../../../simulater/"
+  print "###assembler###\n"
+  unless sh.transact{system "java", "Assembler", program_name + ".s", program_name}
+    print "XXX assemle failed\n"
+  else
+    print "###simulater###\n"
+    system "rm -f outlog"
+    unless system "../../../simulater/guitocui/simulator o ../../../simulater/" + program_name + " sld/contest.sld"
+      print "XXX simulate failed\n"
+    else
+      print "###output###\n"
+      system "cat outlog"
+    end
+  end
+end

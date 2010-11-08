@@ -1,0 +1,103 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+
+entity top is
+  
+end top;
+
+architecture tp of top is
+
+  component SRAM
+    
+  port (
+    ZD    : inout std_logic_vector(31 downto 0);
+    ZDP   : inout std_logic_vector(3 downto 0);
+    ZA    : in    std_logic_vector(19 downto 0);
+    XE1   : in    std_logic;
+    E2A   : in    std_logic;
+    XE3   : in    std_logic;
+    XZBE  : in    std_logic_vector(3 downto 0);
+    XGA   : in    std_logic;
+    XWA   : in    std_logic;
+    XZCKE : in    std_logic;
+    ZCLKA : in    std_logic_vector(1 downto 0);
+    ADVA : out std_logic;
+    XFT : out std_logic;
+    XLBO : out std_logic;
+    ZZA : out std_logic);
+
+  end component;
+
+  component Allover
+      port (
+    MCLK1 : in std_logic;
+  ZD: inout std_logic_vector(31 downto 0);
+  ZDP: inout std_logic_vector(3 downto 0);
+  ZA:out std_logic_vector(19 downto 0);
+  XE1 : out std_logic;
+  E2A: out std_logic;
+  XE3 : out std_logic;
+  XZBE : out std_logic_vector(3 downto 0);
+  XGA : out std_logic;
+  XWA : out std_logic;
+  XZCKE : out std_logic;
+  ZCLKMA : out std_logic_vector(1 downto 0);
+  ADVA : out std_logic;
+  XFT : out std_logic;
+  XLBO : out std_logic;
+  ZZA : out std_logic
+);
+  end component;
+  signal clk : std_logic;
+  signal ZD : std_logic_vector(31 downto 0);
+  signal ZDP : std_logic_vector(3 downto 0);
+  signal ZA : std_logic_vector(19 downto 0);
+  signal XE1 : std_logic;
+  signal E2A : std_logic;
+  signal XE3 : std_logic;
+  signal XZBE : std_logic_vector(3 downto 0);
+  signal XGA : std_logic;
+  signal XWA : std_logic;
+  signal XZCKE : std_logic;
+  signal ADVA:std_logic;
+  signal XFT : std_logic;
+  signal XLBO : std_logic;
+  signal ZZA : std_logic;
+  
+begin  -- tp
+AL:Allover port map(
+  MCLK1=>clk,
+   ZD  =>ZD,
+    ZDP =>ZDP,
+    ZA   =>ZA,
+    XE1 => XE1,
+    E2A  =>E2A,
+    XE3  =>XE3,
+    XZBE =>XZBE,
+    XGA  =>XGA,
+    XWA  =>XWA,
+    XZCKE=>XZCKE,
+    ADVA =>ADVA,
+    XFT =>XFT,
+    XLBO =>XLBO,
+    ZZA =>ZZA);
+SR:SRAM port map( 
+   ZD  =>ZD,
+    ZDP =>ZDP,
+    ZA   =>ZA,
+    XE1 => XE1,
+    E2A  =>E2A,
+    XE3  =>XE3,
+    XZBE =>XZBE,
+    XGA  =>XGA,
+    XWA  =>XWA,
+    XZCKE=>XZCKE,
+    ZCLKA(0)=>clk,
+  ZCLKA(1)=>clk,
+    ADVA =>ADVA,
+    XFT =>XFT,
+    XLBO =>XLBO,
+    ZZA =>ZZA);
+
+end tp;

@@ -286,6 +286,24 @@ hogehoge::~hogehoge()
       case HALT :
         ui->instruction->appendPlainText("\nprogram end\n");
         return;
+
+/* 擬似命令s */
+    case SIN :
+      pc++; break;
+    case COS :
+      pc++; break;
+    case FLOOR :
+      pc++; break;
+    case ITOF :
+      pc++; break;
+    case FTOI :
+      pc++; break;
+    case PRFLT:
+      fprintf(outf, "%f\n", fpr[0]);
+      fflush(outf);
+      pc++; break;
+/* 擬似命令s */
+
       default :
         std::cerr << "undefined instruction: opcode = " << opcode << std::endl;
         return;

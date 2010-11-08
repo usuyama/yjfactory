@@ -50,7 +50,14 @@ enum {
   SENDC,
   RECVF,
   BREAK,
-  HALT
+  HALT,
+
+  SIN,
+  COS,
+  FLOOR,
+  ITOF,
+  FTOI,
+  PRFLT
 };
 
 #endif

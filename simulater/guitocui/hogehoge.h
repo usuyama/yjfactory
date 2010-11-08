@@ -9,12 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <fstream>
 
 #include "parser.h"
 #include "inst_info.h"
 
-#define MEMSIZE 100000
-#define INSTSIZE 10000
+#define MEMSIZE 300000
+#define INSTSIZE 20000
 #define MSCOPE 10
 
 
@@ -24,12 +25,12 @@ class hogehoge
  public:
   ~hogehoge();
 
-
 private:
   int pc;
     //int steps;
   bool runall;
 
+  std::ifstream ifs;
 
 public:
   int regs[32];
@@ -38,12 +39,16 @@ public:
   float_int data_mem[MEMSIZE];
   bool ready;
   FILE* outf;
+  int maxsp;
 
-  hogehoge();
+  hogehoge(const char*);
   void print_mem(int address);
   void print_regs();
   void print_regs(int index);
+  void print_fpr();
+  void print_maxsp();
   void setPC(int address);
+  void getPC();
   int get_regcont(int index);
   bool get_runall();
   void set_runall(bool flag);

@@ -5,7 +5,23 @@ use ieee.std_logic_arith.all;
 entity Allover is
   
   port (
-    MCLK1 : in std_logic);
+    MCLK1 : in std_logic;
+  ZD: inout std_logic_vector(31 downto 0);
+  ZDP: inout std_logic_vector(3 downto 0);
+  ZA:out std_logic_vector(19 downto 0);
+  XE1 : out std_logic;
+  E2A: out std_logic;
+  XE3 : out std_logic;
+  XZBE : out std_logic_vector(3 downto 0);
+  XGA : out std_logic;
+  XWA : out std_logic;
+  XZCKE : out std_logic;
+  ZCLKMA : out std_logic_vector(1 downto 0);
+  ADVA : out std_logic;
+  XFT : out std_logic;
+  XLBO : out std_logic;
+  ZZA : out std_logic
+);
 
 end Allover;
 
@@ -112,7 +128,7 @@ component PROM
   port (
     clka : in std_logic;
 --    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(4 downto 0);
+    addra : in std_logic_vector(31 downto 0);
 --    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -129,6 +145,32 @@ component PC
 );
 end component;
 
+component Driver
+  Port( clk: in  STD_LOGIC;
+        data : inout std_logic_vector(31 downto 0);
+        parity : inout std_logic_vector(3 downto 0);
+        address: out std_logic_vector(19 downto 0);
+        in_addr: in std_logic_vector(19 downto 0);
+        in_data : in std_logic_vector(31 downto 0);
+        out_data: out std_logic_vector(31 downto 0);
+        in_par: in std_logic_vector(3 downto 0);
+	out_par: out std_logic_vector(3 downto 0);
+	RAM_ready: out std_logic;
+        SXE1 : out STD_LOGIC;
+        SE2 : out STD_LOGIC;
+        SXE3 : out STD_LOGIC;
+        SXZBE : out std_logic_vector(3 downto 0);
+        SXGA : out std_logic;
+        SXWA : out std_logic;
+        SXZCKE: out std_logic;
+        SZCLKMA : out std_logic_vector(1 downto 0);
+        SADVA : out std_logic;
+        SXFT : out std_logic;
+        SXLBO : out std_logic;
+        Mode_Read : in std_logic;
+        SZZA : out std_logic);
+end component;
+
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
 signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out : std_logic;
@@ -142,8 +184,9 @@ signal op_r_a,op_r_b,op_r_c,w_r_addr  : std_logic_vector(4 downto 0);
 signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
+signal dev_null_a : std_logic_vector(3 downto 0);
 begin  -- all
-
+mclk<=MCLK1;
 --  ib: IBUFG port map (
 --    i=>MCLK1,
 --    o=>iclk);
@@ -168,7 +211,7 @@ I_F:IF_stage port map (
     PC_write_b => PC_write_b,
     ALU_b_out => Alu_Br_out,
     PC_source => PC_Source,
-    ALU_out=>data_out,
+    ALU_out=>data_o,
     ALU_PC=>ALU_PC,
     PC_out=>PC_out);
   DC:DC_stage port map(
@@ -204,13 +247,14 @@ mem_Address=>Mem_Addr_out
 );
 
   WB : WB_stage port map (
-    MemtoReg =>MemtoReg,
-    Mem_data=>Mem_Data,
-    ALU_data=>data_out,
-    RegDst=>Reg_dist,
-    rt=>op_r_b,
-    rd=>op_r_c,
-    r_out=>w_r_addr,    data_out=>w_r_data
+    MemtoReg =>MemtoReg,                --in
+    Mem_data=>Mem_Data,                 --in
+    ALU_data=>data_out,                 --in
+    RegDst=>Reg_dist,                   --in
+    rt=>op_r_b,                         --in
+    rd=>op_r_c,                         --in
+    r_out=>w_r_addr,                    --out
+    data_out=>w_r_data                  --out
     );
   RG:Rgstr port map(
     clk=>mclk,
@@ -231,7 +275,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
 --    wea => p_we,
-    addra => PC_PR(4 downto 0),
+    addra => PC_PR,
 --    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
@@ -242,6 +286,30 @@ PrC : PC port map (
   PC_Write =>PCwrite,
   PC_write_b=>PC_write_b
 );
+
+Dr:Driver port map(
+  clk=>mclk,
+  data=>ZD,
+  parity=>ZDP,
+  address=>ZA,
+  in_addr=>data_o(19 downto 0),
+  in_data=>data_a,
+  out_data=>Mem_Data,
+  in_par=>(others=>'0'),
+  out_par=>dev_null_a,
+  SXE1=>XE1,
+  SE2 =>E2A,
+  SXE3 =>XE3,
+  SXZBE =>XZBE,
+  SXGA =>XGA,
+  SXWA =>XWA,
+  SXZCKE=>XZCKE,
+  SZCLKMA =>ZCLKMA,
+  SADVA=>ADVA,
+  SXFT =>XFT,
+  SXLBO =>XLBO,
+  Mode_Read =>MemWrite,
+  SZZA =>ZZA);
 
 process (mclk)
 begin  -- process
