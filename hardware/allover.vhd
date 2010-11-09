@@ -308,7 +308,7 @@ Dr:Driver port map(
   SADVA=>ADVA,
   SXFT =>XFT,
   SXLBO =>XLBO,
-  Mode_Read =>MemWrite,
+  Mode_Read =>Mem_We_out,
   SZZA =>ZZA);
 
 process (mclk)

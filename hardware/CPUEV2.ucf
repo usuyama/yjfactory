@@ -1,0 +1,98 @@
+#-----------------------------------------------------------
+#--  Design Name	 :	CPU Evaluation Boad_2
+#--
+#--  File Name		 :	CPUEV2.ucf
+#--  Function		 :	CPUEV2_Top module
+#--
+#--  HDL			 :	Verilog
+#--  Purpose		 :	Synthesis
+#--  Target Device	 :	Virtex5 XC5VLX50T-1FF1136C
+#--  Creation Date	 :	2008/03/25 Ver.0.10
+#--  Design 		 :	Sansei System Co.,Ltd.
+#--  Auther 		 :	Y.Fujishiro
+#--
+#--  Update 		 :
+#--
+#-----------------------------------------------------------
+
+#-----------------------------------------------------------
+# Target Information
+CONFIG PART=5VLX50TFF1136-1 ;
+
+
+##########################################################
+# Pin Assign
+##########################################################
+
+#////////////////////////////////////////
+#// ZBT-RAM connection.
+#////////////////////////////////////////
+#// = Bus. =
+#// = Inputs. =
+
+
+#NET RS_TX			LOC=K11;
+#NET RS_RX			LOC=J11;
+
+
+#///////////////////////////////////////
+#// Clock connection.
+#///////////////////////////////////////
+#// = Outputs. =
+#NET  DUMY		   LOC=K17;
+
+#// = Inputs. =
+#NET  CLK48M 	   LOC=H17;
+NET  MCLK1		   LOC=J16;
+#NET XRST		   LOC=H18;
+
+#////////////////////////////////////////
+#// UNIVERSAL-I/O connection.
+#////////////////////////////////////////
+#// = Bus. =
+
+
+##########################################################
+# Pin Type Define
+##########################################################
+#////////////////////////////////////////
+#// ZBT-RAM Type Define.
+#////////////////////////////////////////
+#// = Bus. =
+#// = Inputs. =
+#////////////////////////////////////////
+#// UNIVERSAL-I/O Type Define.
+#////////////////////////////////////////
+#// = Bus. =
+#////////////////////////////////////////
+#// UNIVERSAL-I/O Type Define.
+#////////////////////////////////////////
+#// = Bus. =
+
+
+#////////////////////////////////////////
+#// Clock Type Define.
+#////////////////////////////////////////
+#// = Outputs. =
+
+#// = Inputs. =
+#NET  CLK48M 	   IOSTANDARD = LVTTL;
+NET  MCLK1		   IOSTANDARD = LVTTL;
+#NET XRST		   IOSTANDARD = LVTTL;
+#NET RS_TX		   IOSTANDARD = LVTTL;
+#NET RS_RX		   IOSTANDARD = LVTTL;
+
+
+############################################################################
+# Clock constraints                                                        #
+############################################################################
+
+#NET "u_mig/u_infrastructure/sys_clk_ibufg" TNM_NET =  "SYS_CLK";
+NET "MCLK1" TNM_NET = "SYS_CLK";
+TIMESPEC "TS_SYS_CLK" = PERIOD "SYS_CLK" 14.52 ns HIGH 50 %;
+
+###############################################################################
+# Define multicycle paths - these paths may take longer because additional
+# time allowed for logic to settle in calibration/initialization FSM
+###############################################################################
+

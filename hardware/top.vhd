@@ -22,10 +22,10 @@ architecture tp of top is
     XWA   : in    std_logic;
     XZCKE : in    std_logic;
     ZCLKA : in    std_logic_vector(1 downto 0);
-    ADVA : out std_logic;
-    XFT : out std_logic;
-    XLBO : out std_logic;
-    ZZA : out std_logic);
+    ADVA : in std_logic;
+    XFT : in std_logic;
+    XLBO : in std_logic;
+    ZZA : in std_logic);
 
   end component;
 
@@ -49,21 +49,21 @@ architecture tp of top is
   ZZA : out std_logic
 );
   end component;
-  signal clk : std_logic;
-  signal ZD : std_logic_vector(31 downto 0);
-  signal ZDP : std_logic_vector(3 downto 0);
-  signal ZA : std_logic_vector(19 downto 0);
-  signal XE1 : std_logic;
-  signal E2A : std_logic;
-  signal XE3 : std_logic;
-  signal XZBE : std_logic_vector(3 downto 0);
-  signal XGA : std_logic;
-  signal XWA : std_logic;
-  signal XZCKE : std_logic;
-  signal ADVA:std_logic;
-  signal XFT : std_logic;
-  signal XLBO : std_logic;
-  signal ZZA : std_logic;
+  signal clk : std_logic:='0';
+  signal ZD : std_logic_vector(31 downto 0):=(others=>'0');
+  signal ZDP : std_logic_vector(3 downto 0):=(others=>'0');
+  signal ZA : std_logic_vector(19 downto 0):=(others=>'0');
+  signal XE1 : std_logic:='0';
+  signal E2A : std_logic:='0';
+  signal XE3 : std_logic:='0';
+  signal XZBE : std_logic_vector(3 downto 0):=(others=>'0');
+  signal XGA : std_logic:='0';
+  signal XWA : std_logic:='0';
+  signal XZCKE : std_logic:='0';
+  signal ADVA:std_logic:='0';
+  signal XFT : std_logic:='0';
+  signal XLBO : std_logic:='0';
+  signal ZZA : std_logic:='0';
   
 begin  -- tp
 AL:Allover port map(
