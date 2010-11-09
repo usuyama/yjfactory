@@ -20,8 +20,8 @@ entity EX_stage is
 
 end EX_stage;
 architecture ex of EX_stage is
-signal op_a : std_logic_vector(31 downto 0);
-signal op_b : std_logic_vector(31 downto 0);
+signal op_a : std_logic_vector(31 downto 0):=(others=>'0');
+signal op_b : std_logic_vector(31 downto 0):=(others=>'0');
 component alu
   port (
     opcode : in  std_logic_vector(5 downto 0);
@@ -36,7 +36,7 @@ component comper
     op2    : in  std_logic_vector(31 downto 0);
     ans    : out std_logic);
 end component;
-signal data_o : std_logic_vector(31 downto 0);
+signal data_o : std_logic_vector(31 downto 0):=(others=>'0');
 signal alu_Br : std_logic;
 begin  -- ex
 

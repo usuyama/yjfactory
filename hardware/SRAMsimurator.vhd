@@ -17,10 +17,10 @@ entity SRAM is
     XWA   : in    std_logic;
     XZCKE : in    std_logic;
     ZCLKA : in    std_logic_vector(1 downto 0);
-    ADVA : out std_logic;
-    XFT : out std_logic;
-    XLBO : out std_logic;
-    ZZA : out std_logic);
+    ADVA : in std_logic;
+    XFT : in std_logic;
+    XLBO : in std_logic;
+    ZZA : in std_logic);
 
 end SRAM;
 
@@ -32,11 +32,11 @@ signal addr_keep_a,addr_keep_b,addr_keep_c : std_logic_vector(19 downto 0);
 signal XE : std_logic_vector(2 downto 0) :=(others=> '0');
 signal XWE_a,XWE_b,XWE_c : std_logic := '0';
 signal XCKE : std_logic:='0';
-signal data_inout : std_logic_vector(35 downto 0);
-signal data_out_a,data_out_b,data_out_c : std_logic_vector(35 downto 0);
-signal data_in_a,data_in_b,data_in_c : std_logic_vector(35 downto 0);
+signal data_inout : std_logic_vector(35 downto 0):=(others=>'0');
+signal data_out_a,data_out_b,data_out_c : std_logic_vector(35 downto 0):=(others=>'0');
+signal data_in_a,data_in_b,data_in_c : std_logic_vector(35 downto 0):=(others=>'0');
 begin  -- SR
-
+clk<=ZCLKA(0);
   process(clk)
     begin
       if (clk'event and clk='1') then
