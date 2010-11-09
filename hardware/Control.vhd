@@ -79,7 +79,7 @@ make_signal:process(State)
       when "001000" =>
           ALUSrcA<='0';
           ALUSrcB<="10";
-          PCSource<='0';
+          PCSource<='1';
           PC_write_b<='1';
       when "001010"=>
         ALUSrcA<='1';
@@ -91,6 +91,14 @@ make_signal:process(State)
       when "100001"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
+      when "001001"=>
+          ALUSrcA<='0';
+          ALUSrcB<="10";
+          PCSource<='1';
+          PCwrite<='1';
+      when "011100"=>
+        MemtoReg<='1';
+        Reg_write<='1';
       when others => null;
     end case;
   end process make_signal;

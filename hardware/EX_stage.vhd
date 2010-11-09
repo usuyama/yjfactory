@@ -37,7 +37,7 @@ component comper
     ans    : out std_logic);
 end component;
 signal data_o : std_logic_vector(31 downto 0):=(others=>'0');
-signal alu_Br : std_logic;
+signal alu_Br : std_logic:='0';
 begin  -- ex
 
   alu_there : alu port map (
@@ -57,7 +57,7 @@ begin  -- ex
          data_imm when Alu_src_b="10" else
          data_j when Alu_src_b="11";
   
-  PC_out<=data_o when ((ALU_ctrl="001001"and Alu_Br='1')  or (ALU_ctrl="001010" and Alu_Br='1')  or (ALU_ctrl="001011"and Alu_Br='1')  or( ALU_ctrl= "001100"and Alu_Br='1')  or ALU_ctrl="010011" or ALU_ctrl="010100" or ALU_ctrl="010101" or ALU_ctrl="010110")
+  PC_out<=data_o when ((ALU_ctrl="001001"and Alu_Br='1')  or (ALU_ctrl="001010" and Alu_Br='1')  or (ALU_ctrl="001011"and Alu_Br='1')  or( ALU_ctrl= "001100"and Alu_Br='1')  or ALU_ctrl="010011" or ALU_ctrl="010100" or ALU_ctrl="010101" or ALU_ctrl="010110" )
            else PC+1;
   data_out<=data_o;
   Alu_Br_out<=Alu_Br;
@@ -87,9 +87,9 @@ begin  -- EX
 ans<=
   op1 - op2 when (opcode="100010" or opcode="101010")else
   op1 * op2 when (opcode="100011" or opcode="101011")else
-  op1 + op2 when (opcode="100001" or opcode="101001" )else
-  op1 when (opcode="110011" or opcode="010011"  or opcode="010100") else
-  op1 +"1111111111111111" when (opcode="110010") else
+  op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110")else
+  op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
+  op2  when (opcode="110010") else
   op1 - op2;
 --  op1 / op2 when opcode="100100" else
 --  op1 / op2 when opcode="101100" else
