@@ -39,7 +39,8 @@ component Control
     MemtoReg  : out std_logic;
     MemWrite  : out std_logic;
     PCwrite   : out std_logic;
-    PC_write_b: out std_logic);
+    PC_write_b: out std_logic;
+    Reg_source: out std_logic);
 end component;
 
 component IF_stage
@@ -87,7 +88,8 @@ component MA_stage
 --    mem_read  : in  std_logic;
     data_out  : out std_logic_vector(31 downto 0);
     mem_WE    : out std_logic;
-    mem_Data  : inout std_logic_vector(31 downto 0);
+    mem_Data_o  : out std_logic_vector(31 downto 0);
+    mem_data_in :in std_logic_vector(31 downto 0);
     mem_Address : out std_logic_vector(31 downto 0));
 end component;
 
@@ -101,7 +103,9 @@ component WB_stage
     rt       : in  std_logic_vector(4 downto 0);
     rd       : in  std_logic_vector(4 downto 0);
     r_out    : out std_logic_vector(4 downto 0);
-    data_out : out std_logic_vector(31 downto 0));
+    data_out : out std_logic_vector(31 downto 0);
+    Reg_source: in std_logic;
+    PC_in:in std_logic_vector(31 downto 0));
 end component;
 
 component Rgstr
@@ -173,10 +177,10 @@ end component;
 
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
-signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out : std_logic;
+signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source : std_logic;
 signal ALUSrcB : std_logic_vector(1 downto 0);
 signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_a_a,data_b_a,data_out,Mem_Data,w_r_data,PC_PR: std_logic_vector(31 downto 0);
-signal data_o : std_logic_vector(31 downto 0):=(others=>'0');
+signal data_o,data_amd,Mem_data_out_md : std_logic_vector(31 downto 0):=(others=>'0');
 signal p_we : std_logic_vector(0 downto 0) := "0";
 signal p_in : std_logic_vector(31 downto 0) := (others=>'0');
 signal PROM_out : std_logic_vector(31 downto 0);
@@ -205,7 +209,8 @@ Ctrl: Control port map (
   MemtoReg=>MemtoReg,
   MemWrite=>MemWrite,
   PCwrite=>PCwrite,
-  PC_write_b=>PC_write_b);
+  PC_write_b=>PC_write_b,
+  Reg_source=>Reg_source);
 I_F:IF_stage port map (
     PC_Write => PCwrite,
     PC_write_b => PC_write_b,
@@ -242,7 +247,8 @@ data_in=>data_a,
 --mem_read=>
 data_out=>Mem_Data,
 mem_WE=>Mem_We_out,
-mem_data=>Mem_data_out,
+mem_data_o=>data_amd,
+mem_data_in=>Mem_data_out_md,
 mem_Address=>Mem_Addr_out
 );
 
@@ -254,7 +260,9 @@ mem_Address=>Mem_Addr_out
     rt=>op_r_b,                         --in
     rd=>op_r_c,                         --in
     r_out=>w_r_addr,                    --out
-    data_out=>w_r_data                  --out
+    data_out=>w_r_data,                 --out
+    Reg_source=>Reg_source,
+    PC_in=>PC_PR
     );
   RG:Rgstr port map(
     clk=>mclk,
@@ -293,8 +301,8 @@ Dr:Driver port map(
   parity=>ZDP,
   address=>ZA,
   in_addr=>data_o(19 downto 0),
-  in_data=>data_a,
-  out_data=>Mem_Data,
+  in_data=>data_amd,
+  out_data=>Mem_data_out_md,
   in_par=>(others=>'0'),
   out_par=>dev_null_a,
   SXE1=>XE1,

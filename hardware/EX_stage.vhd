@@ -57,9 +57,10 @@ begin  -- ex
          data_imm when Alu_src_b="10" else
          data_j when Alu_src_b="11";
   
-  PC_out<=data_o when ((ALU_ctrl="001001"and Alu_Br='1')  or (ALU_ctrl="001010" and Alu_Br='1')  or (ALU_ctrl="001011"and Alu_Br='1')  or( ALU_ctrl= "001100"and Alu_Br='1')  or ALU_ctrl="010011" or ALU_ctrl="010100" or ALU_ctrl="010101" or ALU_ctrl="010110" )
+  PC_out<=data_imm+PC when ((ALU_ctrl="001001"and Alu_Br='1')  or (ALU_ctrl="001010" and Alu_Br='1')  or (ALU_ctrl="001011"and Alu_Br='1')  or( ALU_ctrl= "001100"and Alu_Br='1'))
+           else data_j when (ALU_ctrl="010011" or ALU_ctrl="010100" or ALU_ctrl="010101" or ALU_ctrl="010110" )
            else PC+1;
-  data_out<=data_o;
+  data_out<= data_o;
   Alu_Br_out<=Alu_Br;
 end ex;
 

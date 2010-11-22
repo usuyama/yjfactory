@@ -12,7 +12,8 @@ entity MA_stage is
 --    mem_read  : in  std_logic;
     data_out  : out std_logic_vector(31 downto 0);
     mem_WE    : out std_logic;
-    mem_Data  : inout std_logic_vector(31 downto 0);
+    mem_Data_o  : out std_logic_vector(31 downto 0);
+    mem_data_in :in std_logic_vector(31 downto 0);
     mem_Address : out std_logic_vector(31 downto 0));
 
 end MA_stage;
@@ -21,9 +22,10 @@ architecture MA of MA_stage is
 
 begin  -- MA
 
-  mem_Data<=data_in;-- when mem_write='1' else
+  mem_Data_o<=data_in;-- when mem_write='1' else
              --(others=>'Z');
-  data_out<=mem_Data;
+  
+  data_out<=mem_Data_in;
   mem_WE<=mem_write;
   mem_Address<=mem_addr;
 
