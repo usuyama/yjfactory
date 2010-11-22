@@ -182,7 +182,6 @@ public class Assembler {
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
-
 			else if(inst[0].equals("sra")){
 			    code.append("XXXSRA");
 			    code.append(gr.getRegnum(inst[1]));
@@ -253,7 +252,7 @@ public class Assembler {
 			else if(inst[0].equals("sw")){
 			    code.append("001111");
 			    code.append(gr.getRegnum(inst[1]));
-			    code.append(gr.getRelate(inst[2]));
+			    code.append(gr.getRelate(inst[2])); //will be changed
 			}
 			else if(inst[0].equals("sf")){
 			    code.append("XXXXSF");
@@ -262,8 +261,12 @@ public class Assembler {
 			}
 			else if(inst[0].equals("lw")){
 			    code.append("001110");
+			    ///			    code.append(gr.getRegnum(inst[1]));
+			    //			    code.append(gr.getRelate(inst[2]));
+			    StringBuffer tmpstr=gr.getRelate(inst[2]);
+			    code.append(tmpstr.substring(0,5));
 			    code.append(gr.getRegnum(inst[1]));
-			    code.append(gr.getRelate(inst[2]));
+			    code.append(tmpstr.substring(5));
 			}
 			else if(inst[0].equals("lf")){
 			    code.append("XXXXLF");

@@ -170,12 +170,14 @@ void hogehoge::doInst(int steps){
       break;
     case LW :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      tmp=regs[iinfo.op2]+iinfo.op3;
+      //      tmp=regs[iinfo.op2]+iinfo.op3;
+      tmp=regs[iinfo.op1]+iinfo.op3;
       if ((tmp >= MEMSIZE) || tmp < 0){
 	//          ui->instruction->appendPlainText( "exceed memory\n");
 	exit(1);
       }
-      regs[iinfo.op1] = data_mem[tmp].myint;
+      //      regs[iinfo.op1] = data_mem[tmp].myint;
+      regs[iinfo.op2] = data_mem[tmp].myint;
       pc++;
       break;
     case LF :
