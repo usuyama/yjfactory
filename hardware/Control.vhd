@@ -41,7 +41,10 @@ make_signal:process(State)
           PC_write_b<='0';
       when "000000"=>
           PCwrite<='1';
-        
+          MemWrite<='0';
+          MemtoReg<='0';
+          Reg_write<='0';
+          Reg_dist<='0';
       when "111110"=>
           Reg_write<='0';
           Reg_dist<='0';
@@ -58,7 +61,9 @@ make_signal:process(State)
           PCSource<='0';
           IR_Write<='0';
           PC_write_b<='0';
-
+          MemtoReg<='0';
+          MemWrite<='0';
+          
       when "000010" =>
         ALUSrcA<='1';
         ALUSrcB<="00";
@@ -90,7 +95,7 @@ make_signal:process(State)
 
       when "001001"=>
         ALUSrcA<='1';
-        ALUSrcB<="00";
+        ALUSrcB<="10";
         
       when "001010"=>
         ALUSrcA<='1';
@@ -121,13 +126,16 @@ make_signal:process(State)
 
       when "010000"=>
         MemWrite<='1';
-
+      when "100000"=>
+        memwrite<='1';
+      when "100001"=>
+        memwrite<='0';
       when "010001"=>null;
       when "010010"=>null;
       when "010011"=>
         MemtoReg<='1';
         Reg_write<='1';
-
+        Reg_dist<='0';
       when others => null;
     end case;
   end process make_signal;
@@ -172,8 +180,16 @@ make_signal:process(State)
           state<="001111";
         when "001001" => 
           State<="010000";
-        when "001010" => 
-          State<="010001";
+        when "001010" =>
+          state<="010100";
+        when "010100"=>
+          state<="010101";
+        when "010101"=>
+          state<="010110";
+        when "010110"=>
+          state<="010111";
+        when "010111"=>
+          State<="010011";
         when "001011"=>                 --SW
           State<="000000";
         when "001100"=>
@@ -185,7 +201,17 @@ make_signal:process(State)
         when "001111"=>
           State<="111110";
         when "010000"=>
-          State<="000000";
+          State<="100000";
+        when "100000"=>
+          state<="100001";
+        when "100001"=>
+          state<="100010";
+        when "100010"=>
+          state<="100011";
+        when "100011"=>
+          state<="100100";
+        when "100100"=>
+          state<="000000";
         when "010001"=>                 --B
           State<="010010";
         when "010010"=>

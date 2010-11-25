@@ -66,7 +66,7 @@ architecture tp of top is
 signal RAM : ram_type := (others=>(others=>'0'));
 signal addr_keep_a,addr_keep_b,addr_keep_c : std_logic_vector(19 downto 0);
 signal XE : std_logic_vector(2 downto 0) :=(others=> '0');
-signal XWE_a,XWE_b,XWE_c : std_logic := '0';
+signal XWE_a,XWE_b,XWE_c : std_logic := '1';
 signal XCKE : std_logic:='0';
 signal data_inout : std_logic_vector(35 downto 0):=(others=>'0');
 signal data_out_a,data_out_b,data_out_c : std_logic_vector(35 downto 0):=(others=>'0');
@@ -99,7 +99,8 @@ AL:Allover port map(
         XCKE<=XZCKE1;
         XWE_b<=XWE_a;
         XWE_c<=XWE_b;
-        if XWE_c='0' then
+
+        if ( XWE_b='0') then
           ZD1<=(others=>'Z');
           ZDP1<=(others=>'Z');
           RAM(conv_integer(addr_keep_c(5 downto 0)))(31 downto 0)<=ZD1;

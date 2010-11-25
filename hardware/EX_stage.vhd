@@ -88,10 +88,10 @@ begin  -- EX
 ans<=
   op1 - op2 when (opcode="100010" or opcode="101010")else
   op1 * op2 when (opcode="100011" or opcode="101011")else
-  op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110")else
+  op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110" or opcode="001111")else
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
-  op2  when (opcode="110010") else
-  op1 - op2;
+  op2  when (opcode="110010" or opcode="001111" or opcode="001110") else
+  op1 + op2;
 --  op1 / op2 when opcode="100100" else
 --  op1 / op2 when opcode="101100" else
 --  (others=>'0');

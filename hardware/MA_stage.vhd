@@ -22,8 +22,8 @@ architecture MA of MA_stage is
 
 begin  -- MA
 
-  mem_Data_o<=data_in;-- when mem_write='1' else
-             --(others=>'Z');
+  mem_Data_o<=data_in when mem_write='1' else
+             (others=>'Z');
   
   data_out<=mem_Data_in;
   mem_WE<=mem_write;
