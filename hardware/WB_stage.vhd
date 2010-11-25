@@ -13,7 +13,10 @@ entity WB_stage is
     rt       : in  std_logic_vector(4 downto 0);
     rd       : in  std_logic_vector(4 downto 0);
     r_out    : out std_logic_vector(4 downto 0);
-    data_out : out std_logic_vector(31 downto 0));
+    data_out : out std_logic_vector(31 downto 0);
+    Reg_source: in std_logic;
+    PC_in:in std_logic_vector(31 downto 0)
+    );
 
 end WB_stage;
 
@@ -22,8 +25,10 @@ architecture WB of WB_stage is
 begin  -- WB
 
   data_out<=Mem_data when MemtoReg='1' else
+             PC_in+1 when Reg_source='1' else
              ALU_data;
   r_out<=rt when RegDst ='0' else
+          "11111" when Reg_source='1' else
           rd;
 
 end WB;

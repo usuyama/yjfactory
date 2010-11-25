@@ -53,7 +53,7 @@ clk<=ZCLKA(0);
           RAM(conv_integer(addr_keep_c(5 downto 0)))(31 downto 0)<=ZD;
         else
           data_out_a<=RAM(conv_integer(addr_keep_c(5 downto 0)));
-          ZD<=data_out_c(31 downto 0);
+          ZD<=data_out_a(31 downto 0);
         end if;
         data_out_b<=data_out_a;
         data_out_c<=data_out_b;

@@ -29,7 +29,7 @@ end Driver;
 
 architecture Dr of Driver is
 signal SXWA_sig:std_logic:='0';
-signal buff:std_logic_vector(31 downto 0);
+signal buff1:std_logic_vector(31 downto 0);
 signal buff2:std_logic_vector(31 downto 0);
 signal par_buff: std_logic_vector(3 downto 0);
 
@@ -47,7 +47,7 @@ begin  -- Dr
   SZZA<='0';
   SADVA<='0';
   address<=in_addr;
-  SXWA<=Mode_read;
+  SXWA<=not(Mode_read);
   out_data<=data;
   out_par<=parity;
     controller:process(clk)
@@ -57,15 +57,17 @@ begin  -- Dr
              data<=(others=>'Z');
              parity<=(others=>'Z');
          else
-           data<=buff;
-           buff<=in_data;
---				data<=in_data;	--pattern1
+           data<=buff2;
+           parity<=par_buff;
+         end if;
+           buff2<=buff1;
+           buff1<=in_data;
+--	   data<=in_data;	--pattern1
 									--pattern1.
            par_buff<=in_par;
-           parity<=par_buff;
+
 --           out_data<=(others=>'Z');
 --           out_par<=(others=>'Z');
-         end if;
        end if;
      end process;
 end Dr;
