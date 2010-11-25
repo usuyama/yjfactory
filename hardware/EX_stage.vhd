@@ -86,15 +86,16 @@ architecture alu_inside of ALU is
 begin  -- EX
 
 ans<=
-  op1 - op2 when (opcode="100010" or opcode="101010")else
+  op2 - op1 when (opcode="100010" or opcode="101010")else
   op1 * op2 when (opcode="100011" or opcode="101011")else
   op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110" or opcode="001111")else
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
   op2  when (opcode="110010" or opcode="001111" or opcode="001110") else
+  (op1 xor op2) when (opcode="100111" or opcode="101111")else
+  (op1 sll op2) when (opcode="010000") else
+  (op1 srl op2) when opcode="010001" else                      
   op1 + op2;
---  op1 / op2 when opcode="100100" else
---  op1 / op2 when opcode="101100" else
---  (others=>'0');
+
 end alu_inside;
 
 library ieee;
