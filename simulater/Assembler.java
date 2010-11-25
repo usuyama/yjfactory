@@ -128,15 +128,15 @@ public class Assembler {
 			System.out.println(inst[0]);
 			if(inst[0].equals("add")){
 			    code.append("100001");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[3]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("addi")){
 			    code.append("101001");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    //			    System.out.println(inst[3]);
 			    if(inst[3].matches("[1-9][0-9]*"))
 				code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
@@ -145,47 +145,47 @@ public class Assembler {
 			}
 			else if(inst[0].equals("sub")){
 			    code.append("100010");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[3]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("subi")){
 			    code.append("101010");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("mul")){
 			    code.append("100011");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[3]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("muli")){
 			    code.append("101011");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("xor")){
 			    code.append("XXXXOR");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[3]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("xori")){
 			    code.append("XXXORI");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("sra")){
 			    code.append("XXXSRA");
-			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("lli")){
@@ -203,36 +203,36 @@ public class Assembler {
 			}
 			else if(inst[0].equals("addf")){
 			    code.append("XXADDF");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("mulf")){
 			    code.append("XXMULF");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("subf")){
 			    code.append("XXSUBF");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("divf")){
 			    code.append("XXDIVF");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("movf")){
 			    code.append("XXMOVF");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("lhif")){
@@ -270,8 +270,10 @@ public class Assembler {
 			}
 			else if(inst[0].equals("lf")){
 			    code.append("XXXXLF");
+			    StringBuffer tmpstr=gr.getRelate(inst[2]);
+			    code.append(tmpstr.substring(0,5));
 			    code.append(gr.getFnum(inst[1]));
-			    code.append(gr.getRelate(inst[2]));
+			    code.append(tmpstr.substring(5));
 			}
 			else if(inst[0].equals("jr")){
 			    code.append("010011");
@@ -338,8 +340,8 @@ public class Assembler {
 			}
 			else if(inst[0].equals("movf2i")){
 			    code.append("MOVF2I");
-			    code.append(gr.getRegnum(inst[1]));
-			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("nop")){
@@ -400,12 +402,12 @@ public class Assembler {
 			//
 			// 要修正！！！！！！！！！！！！！！！！！！！！
 			//
-			else if(inst[0].equals("div")){
-			    code.append("XXXSRA");
-			    code.append(gr.getRegnum(inst[1]));
-			    code.append(gr.getRegnum(inst[2]));
-			    code.append(gr.signInt_toStr_nlen(2, 16));
-			}
+			//			else if(inst[0].equals("div")){
+			//			    code.append("XXXSRA");
+			//			    code.append(gr.getRegnum(inst[1]));
+			//			    code.append(gr.getRegnum(inst[2]));
+			//			    code.append(gr.signInt_toStr_nlen(2, 16));
+			//			}
 
 			//
 			// 疑似命令
