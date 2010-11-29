@@ -106,6 +106,7 @@ make_signal:process(State)
         Reg_source<='0';
         Reg_dist<='1';
         
+        
       when "001100" =>        
         Reg_write<='1';
         Reg_source<='0';
@@ -189,7 +190,7 @@ make_signal:process(State)
         when "010110"=>
           state<="010111";
         when "010111"=>
-          State<="001011";
+          State<="010011";
         when "001011"=>                 --SW
           State<="000000";
         when "001100"=>

@@ -52,7 +52,9 @@ begin  -- ex
     ans    => Alu_Br);
   op_a<=data_a when Alu_src_a='1' else
          PC;
-  op_b<=data_b when Alu_src_b="00" else
+  op_b<=data_a+data_imm when ALU_ctrl="001110" else
+         data_b+data_imm when ALU_ctrl="001111" else
+         data_b when Alu_src_b="00" else
          "00000000000000000000000000000001" when  Alu_src_b="01" else
          data_imm when Alu_src_b="10" else
          data_j when Alu_src_b="11";
@@ -89,9 +91,9 @@ begin  -- EX
 ans<=
   op1 - op2 when (opcode="100010" or opcode="101010")else
   op1 * op2 when (opcode="100011" or opcode="101011")else
-  op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110" or opcode="001111")else
+  op1 + op2 when (opcode="100001" or opcode="101001" )else
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
-  op2  when (opcode="110010" or opcode="001111" or opcode="001110") else
+  op2  when (opcode="110010" or opcode="001110" or opcode="001111") else
   (op1 xor op2) when (opcode="100111" or opcode="101111")else
 --  to_stdLogicVector(to_bitvector(op1) sll to_bitvector(op2)) when (opcode="010000") else
 --  to_stdLogicVector(to_bitvector(op1) srl to_bitvector(op2)) when opcode="010001" else                      
