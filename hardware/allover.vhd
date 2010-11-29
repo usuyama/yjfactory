@@ -177,7 +177,7 @@ end component;
 
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
-signal PC_source,ALUSrcA,Reg_write,Reg_dist,IR_Write,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source : std_logic;
+signal PC_source,ALUSrcA,Reg_write,Reg_dist,IRWrite,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source : std_logic;
 signal ALUSrcB : std_logic_vector(1 downto 0);
 signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_a_a,data_b_a,data_out,Mem_Data,w_r_data,PC_PR: std_logic_vector(31 downto 0);
 signal data_o,data_amd,Mem_data_out_md : std_logic_vector(31 downto 0):=(others=>'0');
@@ -205,7 +205,7 @@ Ctrl: Control port map (
   ALUSrcA=>ALUSrcA,
   Reg_write=>Reg_write,
   Reg_dist=>Reg_dist,
-  IR_Write=>IR_Write,
+  IR_Write=>IRWrite,
   MemtoReg=>MemtoReg,
   MemWrite=>MemWrite,
   PCwrite=>PCwrite,
@@ -278,7 +278,7 @@ mem_Address=>Mem_Addr_out
   I_R : IR port map (
     clk=>mclk,
     in_instruction  =>  PROM_out,
-    we              =>  IR_Write,
+    we              =>  IRWrite,
     out_instruciton =>  IR_out);
   PR:PROM port map (
     clka => mclk,
@@ -352,7 +352,7 @@ begin  -- Programcounter
 out_PC<=Pr;
 
   We1<= (PC_write_b and ALU_b_out);
-  We2<=(PC_Write or We1);
+  We2<=(PC_Write);
 --Pr<=in_PC when We2='1';
 process(clk)
   begin
@@ -386,11 +386,9 @@ out_instruciton<=instruction;
   process (clk)
   begin  -- process
     if (clk'event and clk='1') then
-      case we is
-        when '1' => instruction<=in_instruction;
-        when others => null;
-      end case;
-     end if;
+      if we='1' then instruction<=in_instruction;
+      end if;
+    end if;
   end process;
 
 end InstructionRegister;

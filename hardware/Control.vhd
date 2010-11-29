@@ -112,7 +112,7 @@ make_signal:process(State)
         Reg_dist<='0';
 
       when "001101"=>
-        PCSource<='1';
+--        PCSource<='1';
 
       when "001110"=>
         PCSource<='1';
@@ -189,7 +189,7 @@ make_signal:process(State)
         when "010110"=>
           state<="010111";
         when "010111"=>
-          State<="010011";
+          State<="001011";
         when "001011"=>                 --SW
           State<="000000";
         when "001100"=>
@@ -199,7 +199,8 @@ make_signal:process(State)
         when "001110"=>
           State<="000000";
         when "001111"=>
-          State<="111110";
+      State<="000000";
+--          state<="111110";
         when "010000"=>
           State<="100000";
         when "100000"=>

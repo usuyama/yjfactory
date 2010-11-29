@@ -58,7 +58,8 @@ begin  -- ex
          data_j when Alu_src_b="11";
   
   PC_out<=data_imm+PC when ((ALU_ctrl="001001"and Alu_Br='1')  or (ALU_ctrl="001010" and Alu_Br='1')  or (ALU_ctrl="001011"and Alu_Br='1')  or( ALU_ctrl= "001100"and Alu_Br='1'))
-           else data_j when (ALU_ctrl="010011" or ALU_ctrl="010100" or ALU_ctrl="010101" or ALU_ctrl="010110" )
+           else data_j when (ALU_ctrl="010101" or ALU_ctrl="010110" )
+           else op_a when (ALU_ctrl="010011" or ALU_ctrl="010100")
            else PC+1;
   data_out<= data_o;
   Alu_Br_out<=Alu_Br;
@@ -86,14 +87,14 @@ architecture alu_inside of ALU is
 begin  -- EX
 
 ans<=
-  op2 - op1 when (opcode="100010" or opcode="101010")else
+  op1 - op2 when (opcode="100010" or opcode="101010")else
   op1 * op2 when (opcode="100011" or opcode="101011")else
   op1 + op2 when (opcode="100001" or opcode="101001" or opcode="001110" or opcode="001111")else
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
   op2  when (opcode="110010" or opcode="001111" or opcode="001110") else
   (op1 xor op2) when (opcode="100111" or opcode="101111")else
-  (op1 sll op2) when (opcode="010000") else
-  (op1 srl op2) when opcode="010001" else                      
+--  to_stdLogicVector(to_bitvector(op1) sll to_bitvector(op2)) when (opcode="010000") else
+--  to_stdLogicVector(to_bitvector(op1) srl to_bitvector(op2)) when opcode="010001" else                      
   op1 + op2;
 
 end alu_inside;
