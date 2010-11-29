@@ -52,7 +52,7 @@ void hogehoge::print_mem(int address){
   int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
 
   for(int i=start;i<end;i++){
-    std::cout << i << ": " << data_mem[i].myfloat << std::endl;
+    std::cout << i << ": " << data_mem[i].myint <<" "<< data_mem[i].myfloat << std::endl;
   }
 }
 
