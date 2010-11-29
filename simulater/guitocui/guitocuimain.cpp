@@ -79,7 +79,7 @@ int main(int argc, char* argv[]){
     }
     else{
       cout << "usage\n" 
-	   << "run: run program to the next break point\n"
+	   << "e: run program till the next break point or execute X step\n"
 	   << "exit: exit\n"
 	   << "step: change step mode\n"
 	   << "r: print register\n"
