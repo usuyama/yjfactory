@@ -1,4 +1,4 @@
-objs = parser.o guitocui.o guitocuimain.o
+objs = parser2.o guitocui.o guitocuimain.o
 CPPC = g++
 CFLAGS = -Wall
 .SUFFIXES: .o .cpp

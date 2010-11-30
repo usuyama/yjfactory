@@ -1,0 +1,8 @@
+lli  dstの位置 
+lhi  dstの位置
+
+add
+addi
+sub 
+subi
+などの ソース dst の位置

@@ -52,7 +52,7 @@ void hogehoge::print_mem(int address){
   int end = (address+MSCOPE) > MEMSIZE ? MEMSIZE : address+MSCOPE;
 
   for(int i=start;i<end;i++){
-    std::cout << i << ": " << data_mem[i].myfloat << std::endl;
+    std::cout << i << ": " << data_mem[i].myint <<" "<< data_mem[i].myfloat << std::endl;
   }
 }
 
@@ -83,54 +83,54 @@ void hogehoge::doInst(int steps){
     switch (opcode){
     case ADD :
       //	//        ui->instruction->appendPlainText(iinfo.assm);
-      regs[iinfo.op1] = regs[iinfo.op2] + regs[iinfo.op3];
+      regs[iinfo.op3] = regs[iinfo.op2] + regs[iinfo.op1];
       pc++;
       break;
     case SUB :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      regs[iinfo.op1] = regs[iinfo.op2] - regs[iinfo.op3];
+      regs[iinfo.op3] = regs[iinfo.op1] - regs[iinfo.op2];
       pc++;
       break;
     case ADDI :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      regs[iinfo.op1] = regs[iinfo.op2] + iinfo.op3;
+      regs[iinfo.op2] = regs[iinfo.op1] + iinfo.op3;
       pc++;
       break;
     case SUBI :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      regs[iinfo.op1] = regs[iinfo.op2] - iinfo.op3;
+      regs[iinfo.op2] = regs[iinfo.op1] - iinfo.op3;
       pc++;
       break;
     case MUL :
-      regs[iinfo.op1] = regs[iinfo.op2] * regs[iinfo.op3];
+      regs[iinfo.op3] = regs[iinfo.op2] * regs[iinfo.op1];
       pc++; break;
     case SRA :
-      regs[iinfo.op1] = regs[iinfo.op2] >> iinfo.op3;
+      regs[iinfo.op2] = regs[iinfo.op1] >> iinfo.op3;
       pc++; break;
     case XOR :
-      regs[iinfo.op1] = regs[iinfo.op2]^regs[iinfo.op3];
+      regs[iinfo.op3] = regs[iinfo.op2]^regs[iinfo.op1];
       pc++; break;
     case XORI :
-      regs[iinfo.op1] = regs[iinfo.op2]^iinfo.op3;
+      regs[iinfo.op2] = regs[iinfo.op3]^iinfo.op3;
       pc++; break;
     case ADDF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op1] = fpr[iinfo.op2] + fpr[iinfo.op3];
+      fpr[iinfo.op3] = fpr[iinfo.op2] + fpr[iinfo.op1];
       pc++;
       break;
     case MULF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op1] = fpr[iinfo.op2] * fpr[iinfo.op3];
+      fpr[iinfo.op3] = fpr[iinfo.op2] * fpr[iinfo.op1];
       pc++;
       break;
     case SUBF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op1] = fpr[iinfo.op2] - fpr[iinfo.op3];
+      fpr[iinfo.op3] = fpr[iinfo.op2] - fpr[iinfo.op1];
       pc++;
       break;
     case DIVF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op1] = fpr[iinfo.op2] / fpr[iinfo.op3];
+      fpr[iinfo.op3] = fpr[iinfo.op1] / fpr[iinfo.op2];
       pc++;
       break;
     case MOVF :
@@ -170,12 +170,14 @@ void hogehoge::doInst(int steps){
       break;
     case LW :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      tmp=regs[iinfo.op2]+iinfo.op3;
+      //      tmp=regs[iinfo.op2]+iinfo.op3;
+      tmp=regs[iinfo.op1]+iinfo.op3;
       if ((tmp >= MEMSIZE) || tmp < 0){
 	//          ui->instruction->appendPlainText( "exceed memory\n");
 	exit(1);
       }
-      regs[iinfo.op1] = data_mem[tmp].myint;
+      //      regs[iinfo.op1] = data_mem[tmp].myint;
+      regs[iinfo.op2] = data_mem[tmp].myint;
       pc++;
       break;
     case LF :

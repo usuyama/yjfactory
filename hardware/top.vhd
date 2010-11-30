@@ -51,6 +51,7 @@ architecture tp of top is
   end component;
   signal clk : std_logic:='0';
   signal ZD : std_logic_vector(31 downto 0):=(others=>'0');
+--  variable ZD;
   signal ZDP : std_logic_vector(3 downto 0):=(others=>'0');
   signal ZA : std_logic_vector(19 downto 0):=(others=>'0');
   signal XE1 : std_logic:='0';
