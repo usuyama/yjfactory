@@ -1,7 +1,7 @@
--FADD、FMUL
+-FADD,FSUB,FMUL
 組み合わせ回路に作ってあります。
 
--FSQRT、FDIV
+-FSQRT,FDIV
 同期式回路に作ってあります。
 readyは入力を変更するクロックでだけ１にしてください。
-FSQRTは16クロック、FDIVは11クロックで作ってあります。
+FSQRTは21クロック、FDIVは11クロックで作ってあります。
