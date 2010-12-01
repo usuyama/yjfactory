@@ -22,7 +22,7 @@ signal NX,X1,X2,X3,X4,Z1,Z2,Z3,Z4,D,D2,D3,DD,DD2 : std_logic_vector(31 downto 0)
 begin
 p0 : process(MCLK1) is
 begin
-  if (rising_edge(MCLK1)) then
+  if (rising_edge(MCLK1)) the
     if (ready = '1') then
       NX(31) <= '1';
       NX(22 downto 0) <= A(22 downto 0);
