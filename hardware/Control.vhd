@@ -19,19 +19,19 @@ entity Control is
     PCwrite   : out std_logic;
     PC_write_b: out std_logic;
     Reg_source:out std_logic;
---    FPU_ready:out std_logic;
---    RG_f: out std_logic_vector(2 downto 0)
+    FPU_ready:out std_logic;
+    RG_f: out std_logic_vector(2 downto 0)
     );
 
 end Control;
 
 architecture Con of Control is
-signal State : std_logic_vector(5 downto 0):=(others=>'1');
+signal State : std_logic_vector(6 downto 0):=(others=>'1');
 begin  -- Con
 make_signal:process(State)
   begin
     case State is
-      when "111111" =>
+      when "0111111" =>
         RG_f<="000";
           ALUSrcA<='0';
           ALUSrcB<="01";
@@ -43,7 +43,7 @@ make_signal:process(State)
           MemWrite<='0';
           PCwrite<='0';
           PC_write_b<='0';
-      when "101010"=>
+      when "0011111"=>
         RG_f<="000";
         ALUSrcA<='0';
           ALUSrcB<="01";
@@ -56,7 +56,7 @@ make_signal:process(State)
           PCwrite<='0';
           PC_write_b<='0';
         FPU_ready<='0';
-      when "000000"=>
+      when "0000000"=>
         RG_f<="000";
           PCwrite<='1';
           MemWrite<='0';
@@ -64,7 +64,7 @@ make_signal:process(State)
           Reg_write<='0';
           Reg_dist<='0';
           FPU_ready<='0';
-      when "111110"=>
+      when "1000000"=>
         RG_f<="000";
           Reg_write<='0';
           Reg_dist<='0';
@@ -75,7 +75,7 @@ make_signal:process(State)
           Reg_source<='0';
           PC_write_b<='0';
           FPU_ready<='0';
-      when "000001" =>
+      when "0000001" =>
           ALUSrcA<='0';
           ALUSrcB<="11";
           PCwrite<='0';
@@ -85,79 +85,101 @@ make_signal:process(State)
           MemtoReg<='0';
           MemWrite<='0';
           
-      when "000010" =>
+      when "0000010" =>
         ALUSrcA<='1';
         ALUSrcB<="00";
         
-      when "000011" =>
+      when "0000011" =>
         ALUSrcA<='1';
         ALUSrcB<="10";
         
-      when "000100" => 
+      when "0000100" => 
         PCSource<='1';
 
-      when "000101"=>
+      when "0000101"=>
         PCSource<='1';
         Reg_source<='1';
         Reg_dist<='1';
         Reg_write<='1';
 
-      when "000110"=>
+      when "0000110"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
           
-      when "000111" =>
+      when "0000111" =>
         ALUSrcA<='1';
         ALUSrcB<="10";
         
-      when "001000"=>
+      when "0001000"=>
         ALUSrcA<='1';
         ALUSrcB<="00";          
 
-      when "001001"=>
+      when "0001001"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
         
-      when "001010"=>
+      when "0001010"=>
         ALUSrcA<='1';
         ALUSrcB<="00";
         
-      when "001011"=>
+      when "0001011"=>
         Reg_write<='1';
         Reg_source<='0';
         Reg_dist<='1';
         
         
-      when "001100" =>        
+      when "0001100" =>        
         Reg_write<='1';
         Reg_source<='0';
         Reg_dist<='0';
 
-      when "001101"=>
+      when "0001101"=>
 --        PCSource<='1';
 
-      when "001110"=>
+      when "0001110"=>
         PCSource<='1';
         Reg_source<='1';
         Reg_dist<='1';
         Reg_write<='1';
 
-      when "001111"=>
+      when "0001111"=>
         PC_write_b<='1';
         PCSource<='0';
 
-      when "010000"=>
+      when "0010000"=>
         MemWrite<='1';
-      when "100000"=>
+      when "0011000"=>
         memwrite<='1';
-      when "100001"=>
+      when "0011001"=>
         memwrite<='0';
-      when "010001"=>null;
-      when "010010"=>null;
-      when "010011"=>
+      when "0010001"=>null;
+      when "0010010"=>null;
+      when "0010011"=>
         MemtoReg<='1';
         Reg_write<='1';
         Reg_dist<='0';
+      when "0100000"=>
+        RG_f<="111";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+      when "0100001"=>
+        Reg_write<='1';
+        Reg_source<='0';
+        Reg_dist<='1';
+      when "0100010"=>
+        RG_f<="111";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+        FPU_ready<='1';
+      when "0100011"=>
+        FPU_ready<='0';
+      when "0110100"=>
+        RG_f<="111";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+        FPU_ready<='1';
+      when "0110101"=>
+        FPU_ready<='0';
       when others => null;
     end case;
   end process make_signal;
@@ -165,88 +187,157 @@ make_signal:process(State)
   begin  -- process Statemachine
     if (clk'event and clk = '1') then  -- rising clock edge
       case State is
-        when "000000" =>
-          State<="111110";
-        when "111110"=>
-          State<="000001";
-        when "000001" => 
+        when "0000000" =>
+          State<="0111110";
+        when "1000000"=>
+          State<="0000001";
+        when "0000001" => 
           case op is
-            when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="000010";--R
-            when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="000011";--Ri
-            when "010101"|"010110" =>State<="000101";--jal
-            when "010011" =>State<="000110";--jr
---            when "010110"=>State<="111101";   --jal
-            when "010100" =>State<="000111";--jalr
-            when "001001"|"001010"|"001011"|"001100"=>State<="001000";--b
-            when "001111"=>State<="001001";--sw
-            when "001110"=>State<="001010";  --lw
-            when "110000"=>state<="101010";  --halt
-            when others=>State<="000000";
+            when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="0000010";--R
+            when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="0000011";--Ri
+            when "010101"|"010110" =>State<="0000101";--jal
+            when "010011" =>State<="0000110";--jr
+--            when "010110"=>State<="0111101";   --jal
+            when "010100" =>State<="0000111";--jalr
+            when "001001"|"001010"|"001011"|"001100"=>State<="0001000";--b
+            when "001111"=>State<="0001001";--sw
+            when "001110"=>State<="0001010";  --lw
+            when "110000"=>state<="0011111";  --halt
+            when "111000"|"111001"|"111010"=>state<="0100000";   --f R
+            when "111100"=>state<="0100010";  --f sqrt
+            when "111011"=>state<="0110100";  --fdiv
+            when others=>State<="0000000";
           end case;
-        when "000010" => 
-          State<="001011";
-        when "000011"=>
-          State<="001100";
-        when "000100"=>
-          State<="000000";
-        when "000101"=>
-          State<="000000";
-        when "000110"=>
-          State<="001101";
-        when "000111"=>
-          State<="001110";
-        when "111101"=>
-          state<="111100";
-        when "111100"=>
-          state<="000000";
-        when "001000"=>
-          state<="001111";
-        when "001001" => 
-          State<="010000";
-        when "001010" =>
-          state<="010100";
-        when "010100"=>
-          state<="010101";
-        when "010101"=>
-          state<="010110";
-        when "010110"=>
-          state<="010111";
-        when "010111"=>
-          State<="010011";
-        when "001011"=>                 --SW
-          State<="000000";
-        when "001100"=>
-          State<="000000";
-        when "001101"=>
-          State<="000000";
-        when "001110"=>
-          State<="000000";
-        when "001111"=>
-      State<="000000";
---          state<="111110";
-        when "010000"=>
-          State<="100000";
-        when "100000"=>
-          state<="100001";
-        when "100001"=>
-          state<="100010";
-        when "100010"=>
-          state<="100011";
-        when "100011"=>
-          state<="100100";
-        when "100100"=>
-          state<="000000";
-        --When "010001"=>                 --B
-        --  State<="010010";
-        --when "010010"=>
-        --  State<="010011";
-        when "010011"=>
-          State<="000000";
-        when "111111"=>
-          State<="000000";
-        when "101010"=>
-          state<="101010";
-        when others => State<="000000";  
+        when "0000010" => 
+          State<="0001011";
+        when "0000011"=>
+          State<="0001100";
+        when "0000100"=>
+          State<="0000000";
+        when "0000101"=>
+          State<="0000000";
+        when "0000110"=>
+          State<="0001101";
+        when "0000111"=>
+          State<="0001110";
+--        when "0111101"=>
+--          state<="0111100";
+--        when "0111100"=>
+--          state<="0000000";
+        when "0001000"=>
+          state<="0001111";
+        when "0001001" => 
+          State<="0010000";
+        when "0001010" =>
+          state<="0010100";
+        when "0010100"=>
+          state<="0010101";
+        when "0010101"=>
+          state<="0010110";
+        when "0010110"=>
+          state<="0010111";
+        when "0010111"=>
+          State<="0010011";
+        when "0001011"=>                 --SW
+          State<="0000000";
+        when "0001100"=>
+          State<="0000000";
+        when "0001101"=>
+          State<="0000000";
+        when "0001110"=>
+          State<="0000000";
+        when "0001111"=>
+      State<="0000000";
+--          state<="0111110";
+        when "0010000"=>
+          State<="0011000";
+        when "0011000"=>
+          state<="0011001";
+        when "0011001"=>
+          state<="0011010";
+        when "0011010"=>
+          state<="0011011";
+        when "0011011"=>
+          state<="0011100";
+        when "0010011"=>
+          State<="0000000";
+        when "0100000"=>                --f R
+          state<="0100001";
+        when "0100001"=>
+          state<="0000000";
+        when "0100010"=>                --fsqrt start
+          state<="0100011";
+        when "0100011"=>
+          state<="0100100";
+        when "0100100"=>
+          state<="0100101";
+        when "0100101"=>
+          state<="0100110";
+        when "0100110"=>
+          state<="0100111";
+        when "0100111"=>
+          state<="0101000";
+        when "0101000"=>
+          state<="0101001";
+        when "0101001"=>
+          state<="0101010";
+        when "0101010"=>
+          state<="0101011";
+        when "0101011"=>
+          state<="0101100";
+        when "0101100"=>
+          state<="0101101";
+        when "0101101"=>
+          state<="0101110";
+        when "0101110"=>
+          state<="0101111";
+        when "0101111"=>
+          state<="0110000";
+        when "0110000"=>
+          state<="0110001";
+        when "0110001"=>
+          state<="0110010";
+        when "0110010"=>
+          state<="0110011";
+        when "0110011"=>
+          state<="0000000";
+
+        when "0110100"=>                --f div
+          state<="0110101";
+        when "0110101"=>
+          state<="0110110";
+        when "0110110"=>
+          state<="0110111";
+        when "0110111"=>
+          state<="0111000";
+        when "0111000"=>
+          state<="0111001";
+        when "0111001"=>
+          state<="0111010";
+        when "0111010"=>
+          state<="0111011";
+        when "0111011"=>
+          state<="0111100";
+        when "0111100"=>
+          state<="0111101";
+        when "0111101"=>
+          state<="0111110";
+        when "0111110"=>
+          state<="0111111";
+        when "1111111"=>
+          state<="0000000";
+        when "0111111"=>                --reset
+          State<="0000000";
+        when "0011111"=>                --halt
+          state<="0011111";
+        when others => State<="0000000";
+        --when "0100100"=>
+        --  state<="0000000";
+        --When "0010001"=>                 --B
+        --  State<="0010010";
+        --when "0010010"=>
+        --  State<="0010011";
+
       end case;
     end if;
   end process Statemachine;
