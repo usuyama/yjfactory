@@ -2,6 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
 entity Allover is
   
   port (
@@ -20,8 +23,16 @@ entity Allover is
   ADVA : out std_logic;
   XFT : out std_logic;
   XLBO : out std_logic;
-  ZZA : out std_logic
-);
+  ZZA : out std_logic;
+  outdata0 : out std_logic_vector(7 downto 0);
+  outdata1 : out std_logic_vector(7 downto 0);
+  outdata2 : out std_logic_vector(7 downto 0);
+  outdata3 : out std_logic_vector(7 downto 0);
+  outdata4 : out std_logic_vector(7 downto 0);
+  outdata5 : out std_logic_vector(7 downto 0);
+  outdata6 : out std_logic_vector(7 downto 0);
+  outdata7 : out std_logic_vector(7 downto 0)
+    );
 
 end Allover;
 
@@ -40,7 +51,9 @@ component Control
     MemWrite  : out std_logic;
     PCwrite   : out std_logic;
     PC_write_b: out std_logic;
-    Reg_source: out std_logic);
+    Reg_source: out std_logic;
+    FPU_ready: out std_logic;
+    RG_f : out std_logic_vector(2 downto 0));
 end component;
 
 component IF_stage
@@ -56,11 +69,12 @@ end component;
 
 component DC_stage
   port (
+    RG_f: in  std_logic_vector(2 downto 0);
     Instruciton : in  std_logic_vector(31 downto 0);
     opcode      : out std_logic_vector(5 downto 0);
-    op_a        : out std_logic_vector(4 downto 0);
-    op_b        : out std_logic_vector(4 downto 0);
-    op_c        : out std_logic_vector(4 downto 0);
+    op_a        : out std_logic_vector(5 downto 0);
+    op_b        : out std_logic_vector(5 downto 0);
+    op_c        : out std_logic_vector(5 downto 0);
     op_imm      : out std_logic_vector(31 downto 0);
     op_j        : out std_logic_vector(31 downto 0));
 end component;
@@ -77,7 +91,9 @@ component EX_stage
     data_j    : in  std_logic_vector(31 downto 0);
     data_out  : out std_logic_vector(31 downto 0);
     PC_out    : out std_logic_vector(31 downto 0);
-    Alu_Br_out: out std_logic);
+    Alu_Br_out: out std_logic;
+    clk: in std_logic;
+    ready: in std_logic);
 end component;
 
 component MA_stage
@@ -100,9 +116,9 @@ component WB_stage
     Mem_data : in  std_logic_vector(31 downto 0);
     ALU_data : in  std_logic_vector(31 downto 0);
     RegDst   : in  std_logic;
-    rt       : in  std_logic_vector(4 downto 0);
-    rd       : in  std_logic_vector(4 downto 0);
-    r_out    : out std_logic_vector(4 downto 0);
+    rt       : in  std_logic_vector(5 downto 0);
+    rd       : in  std_logic_vector(5 downto 0);
+    r_out    : out std_logic_vector(5 downto 0);
     data_out : out std_logic_vector(31 downto 0);
     Reg_source: in std_logic;
     PC_in:in std_logic_vector(31 downto 0));
@@ -112,10 +128,10 @@ component Rgstr
   port (
     clk:in std_logic;
     we :in std_logic;
-    out_a : in std_logic_vector(4 downto 0);
-    dpra : in std_logic_vector(4 downto 0);
+    out_a : in std_logic_vector(5 downto 0);
+    dpra : in std_logic_vector(5 downto 0);
     di  :in std_logic_vector(31 downto 0);
-    in_a : in std_logic_vector(4 downto 0);
+    in_a : in std_logic_vector(5 downto 0);
     spo : out std_logic_vector(31 downto 0);
     dpo : out std_logic_vector(31 downto 0));
 end component;
@@ -131,9 +147,9 @@ end component;
 component PROM
   port (
     clka : in std_logic;
-    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(5 downto 0);
-    dina : in std_logic_vector(31 downto 0);
+--    wea : in std_logic_vector(0 downto 0);
+    addra : in std_logic_vector(6 downto 0);
+--    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
 
@@ -174,7 +190,22 @@ component Driver
         Mode_Read : in std_logic;
         SZZA : out std_logic);
 end component;
-
+  component ledextd2 is
+    port(
+      leddata : in std_logic_vector(31 downto 0);
+      leddotdata : in std_logic_vector(7 downto 0);
+      outdata0 : out std_logic_vector(7 downto 0);
+      outdata1 : out std_logic_vector(7 downto 0);
+      outdata2 : out std_logic_vector(7 downto 0);
+      outdata3 : out std_logic_vector(7 downto 0);
+      outdata4 : out std_logic_vector(7 downto 0);
+      outdata5 : out std_logic_vector(7 downto 0);
+      outdata6 : out std_logic_vector(7 downto 0);
+      outdata7 : out std_logic_vector(7 downto 0)); 
+  end component;
+  signal leddata : std_logic_vector(31 downto 0);
+  signal leddotdata : std_logic_vector(7 downto 0);
+signal RG_isf : std_logic_vector(2 downto 0);
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
 signal PC_source,ALUSrcA,Reg_write,Reg_dist,IRWrite,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source : std_logic;
@@ -184,21 +215,22 @@ signal data_o,data_amd,Mem_data_out_md : std_logic_vector(31 downto 0):=(others=
 signal p_we : std_logic_vector(0 downto 0) := "0";
 signal p_in : std_logic_vector(31 downto 0) := (others=>'0');
 signal PROM_out : std_logic_vector(31 downto 0);
-signal op_r_a,op_r_b,op_r_c,w_r_addr  : std_logic_vector(4 downto 0);
+signal op_r_a,op_r_b,op_r_c,w_r_addr  : std_logic_vector(5 downto 0);
 signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
+  signal F_ready : std_logic;
 begin  -- all
   p_we<="0";
   p_in<=(others=>'0');
---mclk<=MCLK1;
-  ib: IBUFG port map (
-    i=>MCLK1,
-    o=>iclk);
-  bg: BUFG port map (
-    i=>iclk,
-    o=>mclk);
+mclk<=MCLK1;--enable when simuration
+  --ib: IBUFG port map (
+  --  i=>MCLK1,
+  --  o=>iclk);
+  --bg: BUFG port map (
+  --  i=>iclk,
+  --  o=>mclk);
 Ctrl: Control port map (
   clk => mclk,
   op => opcode,
@@ -212,7 +244,9 @@ Ctrl: Control port map (
   MemWrite=>MemWrite,
   PCwrite=>PCwrite,
   PC_write_b=>PC_write_b,
-  Reg_source=>Reg_source);
+  Reg_source=>Reg_source,
+  FPU_ready=>f_ready,
+  RG_f=>RG_isf);
 I_F:IF_stage port map (
     PC_Write => PCwrite,
     PC_write_b => PC_write_b,
@@ -222,13 +256,15 @@ I_F:IF_stage port map (
     ALU_PC=>ALU_PC,
     PC_out=>PC_out);
   DC:DC_stage port map(
-Instruciton=>IR_out,                  --
-opcode=>opcode,
-op_a=>op_r_a,
-op_b=>op_r_b,
-op_c=>op_r_c,
-op_imm=>op_imm,
-op_j=>op_j
+    RG_f=>RG_isf,
+    Instruciton=>IR_out,                  --
+    opcode=>opcode,
+    op_a=>op_r_a,
+    op_b=>op_r_b,
+    op_c=>op_r_c,
+    op_imm=>op_imm,
+    op_j=>op_j
+
     );
 EX:EX_stage port map (
     ALU_ctrl => IR_out(31 downto 26),
@@ -241,7 +277,9 @@ EX:EX_stage port map (
     data_j=>op_j,
     data_out=>data_o,
     PC_out=>ALU_PC,
-    Alu_Br_out=>Alu_Br_out);
+    Alu_Br_out=>Alu_Br_out,
+    clk=>mclk,
+    ready=>f_ready);
   MA:MA_stage port map(
 mem_write=>MemWrite,
 mem_addr=>data_out,
@@ -284,9 +322,9 @@ mem_Address=>Mem_Addr_out
     out_instruciton =>  IR_out);
   PR:PROM port map (
     clka => mclk,
-    wea => p_we,
-    addra => PC_PR(5 downto 0),
-    dina => p_in,
+--    wea => p_we,
+    addra => PC_PR(6 downto 0),
+--    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
   clk    => mclk,
@@ -320,6 +358,13 @@ Dr:Driver port map(
   SXLBO =>XLBO,
   Mode_Read =>Mem_We_out,
   SZZA =>ZZA);
+
+  
+  led : ledextd2 port map(leddata, leddotdata, outdata0, outdata1, outdata2,
+                          outdata3, outdata4, outdata5, outdata6, outdata7);
+
+
+  leddata(31 downto 16)<=data_o(15 downto 0);
 
 process (mclk)
 begin  -- process

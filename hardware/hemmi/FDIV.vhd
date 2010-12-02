@@ -14,6 +14,11 @@ component FMUL is
   port (A,B : in std_logic_vector(31 downto 0);
         P : out std_logic_vector(31 downto 0));
 end component FMUL;
+component FADD
+  port (
+    A, B : in  std_logic_vector(31 downto 0);
+    S    : out std_logic_vector(31 downto 0));
+end component;
 signal X1,X3,X4,Y1,Y3,Y4,D2,D3 : std_logic_vector(31 downto 0);
 signal Sign : std_logic;
 signal E : integer;
