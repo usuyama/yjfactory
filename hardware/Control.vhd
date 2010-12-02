@@ -4,7 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 entity Control is
-  
+
   port (
     clk       : in  std_logic;
     op        : in  std_logic_vector(5 downto 0);
@@ -84,15 +84,15 @@ make_signal:process(State)
           PC_write_b<='0';
           MemtoReg<='0';
           MemWrite<='0';
-          
+
       when "0000010" =>
         ALUSrcA<='1';
         ALUSrcB<="00";
-        
+
       when "0000011" =>
         ALUSrcA<='1';
         ALUSrcB<="10";
-        
+
       when "0000101"=>
         PCSource<='0';
       when "0000100"=>
@@ -104,30 +104,30 @@ make_signal:process(State)
       when "0000110"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
-          
+
       when "0000111" =>
         ALUSrcA<='1';
         ALUSrcB<="10";
-        
+
       when "0001000"=>
         ALUSrcA<='1';
-        ALUSrcB<="00";          
+        ALUSrcB<="00";
 
       when "0001001"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
-        
+
       when "0001010"=>
         ALUSrcA<='1';
         ALUSrcB<="00";
-        
+
       when "0001011"=>
         Reg_write<='1';
         Reg_source<='0';
         Reg_dist<='1';
-        
-        
-      when "0001100" =>        
+
+
+      when "0001100" =>
         Reg_write<='1';
         Reg_source<='0';
         Reg_dist<='0';
@@ -190,11 +190,11 @@ make_signal:process(State)
           State<="1000000";
         when "1000000"=>
           State<="0000001";
-        when "0000001" => 
+        when "0000001" =>
           case op is
             when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="0000010";--R
             when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="0000011";--Ri
-            when "010101"| =>State<="0000101";--j
+            when "010101" =>State<="0000101";--j
             when "010110"=>state<="000100";--jal
             when "010011" =>State<="0000110";--jr
 --            when "010110"=>State<="0111101";   --jal
@@ -208,7 +208,7 @@ make_signal:process(State)
             when "111011"=>state<="0110100";  --fdiv
             when others=>State<="0000000";
           end case;
-        when "0000010" => 
+        when "0000010" =>
           State<="0001011";
         when "0000011"=>
           State<="0001100";
@@ -226,7 +226,7 @@ make_signal:process(State)
 --          state<="0000000";
         when "0001000"=>
           state<="0001111";
-        when "0001001" => 
+        when "0001001" =>
           State<="0010000";
         when "0001010" =>
           state<="0010100";
@@ -340,5 +340,5 @@ make_signal:process(State)
       end case;
     end if;
   end process Statemachine;
- 
+
 end Con;
