@@ -179,6 +179,30 @@ make_signal:process(State)
         FPU_ready<='1';
       when "0110101"=>
         FPU_ready<='0';
+      when "1000001"=>
+        RG_f<="100";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+      when "1000010"=>
+        Reg_write<='1';
+        Reg_source<='0';
+        Reg_dist<='1';
+      when "1000011"=>
+        RG_f<="010";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+      when "1000100"=>
+        Reg_write<='1';
+        Reg_source<='0';
+        Reg_dist<='1';
+      when "1000101"=>
+        RG_f<="111";
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+      when "1000110"=>
+        PC_write_b<='1';
+        PCSource<='0';
+
       when others => null;
     end case;
   end process make_signal;
@@ -194,7 +218,7 @@ make_signal:process(State)
           case op is
             when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="0000010";--R
             when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="0000011";--Ri
-            when "010101"| =>State<="0000101";--j
+            when "010101" =>State<="0000101";--j
             when "010110"=>state<="000100";--jal
             when "010011" =>State<="0000110";--jr
 --            when "010110"=>State<="0111101";   --jal
@@ -203,9 +227,12 @@ make_signal:process(State)
             when "001111"=>State<="0001001";--sw
             when "001110"=>State<="0001010";  --lw
             when "110000"=>state<="0011111";  --halt
-            when "111000"|"111001"|"111010"=>state<="0100000";   --f R
+            when "111000"|"111001"|"111010"|"000100"|"000101"|"000011"|"000110"|"111101"|"111110"=>state<="0100000";   --f R
             when "111100"=>state<="0100010";  --f sqrt
             when "111011"=>state<="0110100";  --fdiv
+            when "010111"|"011001"=>state<="1000001";  --ftoi,movf2i
+            when "011000"=>State<="1000011";  --itof
+            when "001000"=>state<="1000101";
             when others=>State<="0000000";
           end case;
         when "0000010" => 
@@ -324,7 +351,23 @@ make_signal:process(State)
           state<="0111110";
         when "0111110"=>
           state<="0111111";
-        when "1111111"=>
+
+        when "1000001"=>                --ftoi movf2i
+          state<="1000010";
+        when "1000010"=>
+          state<="0000000";
+
+        when "1000011"=>                --itof
+          state<="1000100";
+        when "1000100"=>
+          state<="0000000";
+
+        when "1000101"=>                --bgtf
+          state<="1000110";
+        when "1000110"=>
+          state<="0000000";
+          
+        when "1111111"=>                --start
           state<="0000000";
         when "0111111"=>                --reset
           State<="0000000";
