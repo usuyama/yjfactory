@@ -31,7 +31,7 @@ begin  -- Con
 make_signal:process(State)
   begin
     case State is
-      when "0111111" =>
+      when "1111111" =>
         RG_f<="000";
           ALUSrcA<='0';
           ALUSrcB<="01";
@@ -188,7 +188,7 @@ make_signal:process(State)
     if (clk'event and clk = '1') then  -- rising clock edge
       case State is
         when "0000000" =>
-          State<="0111110";
+          State<="1000000";
         when "1000000"=>
           State<="0000001";
         when "0000001" => 
@@ -337,10 +337,8 @@ make_signal:process(State)
         --  State<="0010010";
         --when "0010010"=>
         --  State<="0010011";
-
       end case;
     end if;
   end process Statemachine;
-  
-
+ 
 end Con;
