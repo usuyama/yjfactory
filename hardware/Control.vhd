@@ -93,11 +93,10 @@ make_signal:process(State)
         ALUSrcA<='1';
         ALUSrcB<="10";
         
-      when "0000100" => 
-        PCSource<='1';
-
       when "0000101"=>
-        PCSource<='1';
+        PCSource<='0';
+      when "0000100"=>
+        PCSource<='0';
         Reg_source<='1';
         Reg_dist<='1';
         Reg_write<='1';
@@ -195,7 +194,8 @@ make_signal:process(State)
           case op is
             when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="0000010";--R
             when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="0000011";--Ri
-            when "010101"|"010110" =>State<="0000101";--jal
+            when "010101"| =>State<="0000101";--j
+            when "010110"=>state<="000100";--jal
             when "010011" =>State<="0000110";--jr
 --            when "010110"=>State<="0111101";   --jal
             when "010100" =>State<="0000111";--jalr
