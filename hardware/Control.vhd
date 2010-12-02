@@ -18,7 +18,10 @@ entity Control is
     MemWrite  : out std_logic;
     PCwrite   : out std_logic;
     PC_write_b: out std_logic;
-    Reg_source:out std_logic);
+    Reg_source:out std_logic;
+--    FPU_ready:out std_logic;
+--    RG_f: out std_logic_vector(2 downto 0)
+    );
 
 end Control;
 
@@ -28,7 +31,8 @@ begin  -- Con
 make_signal:process(State)
   begin
     case State is
-      when "111111" => 
+      when "111111" =>
+        RG_f<="000";
           ALUSrcA<='0';
           ALUSrcB<="01";
           PCSource<='0';
@@ -39,13 +43,29 @@ make_signal:process(State)
           MemWrite<='0';
           PCwrite<='0';
           PC_write_b<='0';
+      when "101010"=>
+        RG_f<="000";
+        ALUSrcA<='0';
+          ALUSrcB<="01";
+          PCSource<='0';
+          Reg_write<='0';
+          Reg_dist<='0';
+          IR_Write<='0';
+          MemtoReg<='0';
+          MemWrite<='0';
+          PCwrite<='0';
+          PC_write_b<='0';
+        FPU_ready<='0';
       when "000000"=>
+        RG_f<="000";
           PCwrite<='1';
           MemWrite<='0';
           MemtoReg<='0';
           Reg_write<='0';
           Reg_dist<='0';
+          FPU_ready<='0';
       when "111110"=>
+        RG_f<="000";
           Reg_write<='0';
           Reg_dist<='0';
           IR_Write<='1';
@@ -54,6 +74,7 @@ make_signal:process(State)
           MemWrite<='0';
           Reg_source<='0';
           PC_write_b<='0';
+          FPU_ready<='0';
       when "000001" =>
           ALUSrcA<='0';
           ALUSrcB<="11";
@@ -151,7 +172,7 @@ make_signal:process(State)
         when "000001" => 
           case op is
             when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="000010";--R
-            when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010000"|"010001"|"110010"|"110011" =>State<="000011";--Ri
+            when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011" =>State<="000011";--Ri
             when "010101"|"010110" =>State<="000101";--jal
             when "010011" =>State<="000110";--jr
 --            when "010110"=>State<="111101";   --jal
@@ -159,6 +180,7 @@ make_signal:process(State)
             when "001001"|"001010"|"001011"|"001100"=>State<="001000";--b
             when "001111"=>State<="001001";--sw
             when "001110"=>State<="001010";  --lw
+            when "110000"=>state<="101010";  --halt
             when others=>State<="000000";
           end case;
         when "000010" => 
@@ -214,14 +236,16 @@ make_signal:process(State)
           state<="100100";
         when "100100"=>
           state<="000000";
-        when "010001"=>                 --B
-          State<="010010";
-        when "010010"=>
-          State<="010011";
+        --When "010001"=>                 --B
+        --  State<="010010";
+        --when "010010"=>
+        --  State<="010011";
         when "010011"=>
           State<="000000";
         when "111111"=>
           State<="000000";
+        when "101010"=>
+          state<="101010";
         when others => State<="000000";  
       end case;
     end if;

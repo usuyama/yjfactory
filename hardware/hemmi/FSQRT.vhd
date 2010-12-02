@@ -18,12 +18,13 @@ component FMUL is
   port (A,B : in std_logic_vector(31 downto 0);
         P : out std_logic_vector(31 downto 0));
 end component FMUL;
-signal NX,X1,X2,X3,X4,Z1,Z2,Z3,Z4,D,D2,D3,DD,DD2 : std_logic_vector(31 downto 0);
+signal AR,NX,X1,X2,X3,X4,Z1,Z2,Z3,Z4,D,D2,D3,DD,DD2 : std_logic_vector(31 downto 0);
 begin
 p0 : process(MCLK1) is
 begin
-  if (rising_edge(MCLK1)) the
+  if (rising_edge(MCLK1)) then
     if (ready = '1') then
+	   AR <= A;
       NX(31) <= '1';
       NX(22 downto 0) <= A(22 downto 0);
 		X1(31) <= '0';
@@ -53,10 +54,10 @@ begin
     end if;
   end if;
 end process p0; 
-R(31) <= A(31);
-R(30 downto 23) <= "00000000" when A(30 downto 23) = "00000000" else
-                   "11111111" when A(30 downto 23) = "11111111" else
-                   "01000000" + ('0' & A(30 downto 24)) when A(23) = '1' else
+R(31) <= AR(31);
+R(30 downto 23) <= "00000000" when AR(30 downto 23) = "00000000" else
+                   "11111111" when AR(30 downto 23) = "11111111" else
+                   "01000000" + ('0' & A(30 downto 24)) when AR(23) = '1' else
                    "00111111" + ('0' & A(30 downto 24));
 R(22 downto 0) <= Z4(22 downto 0);
 ADD0 : FADD port map (NX,"00111111110000000000000000000000",D);
