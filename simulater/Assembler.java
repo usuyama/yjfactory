@@ -238,15 +238,15 @@ public class Assembler {
 			else if(inst[0].equals("lhif")){
 			    System.out.println("hoge");
 			    code.append("000100");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000");
+			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) >> 16, 16));
 			}
 			else if(inst[0].equals("llif")){
 			    System.out.println("fuga");
 			    code.append("000101");
-			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000");
+			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) & 0x0000FFFF, 16));
 			}
 			else if(inst[0].equals("sw")){
