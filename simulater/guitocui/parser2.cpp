@@ -196,7 +196,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXMOVF"){ // divf
+    else if(inst=="000011"){ // movf
       cout << "MOVF\n";
       inst_mem[index].opcode= MOVF;
       fill_3reg(inst_mem,index,str);
