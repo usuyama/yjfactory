@@ -261,7 +261,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFABS"){ // fabs
+    else if(inst=="111110"){ // fabs
       cout << "fabs\n";
       inst_mem[index].opcode=FABS;
       fill_3reg(inst_mem,index,str);
