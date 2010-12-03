@@ -1,3 +1,16 @@
+let rec print_int x =
+  let rec div10 x =
+    let rec div10_sub x ret =
+      if x < 10 then ret
+      else div10_sub (x - 10) (ret + 1)
+    in div10_sub x 0
+  in
+    if x < 10 then print_char (x + 48)
+    else
+      let q = div10 x
+      in (print_int q;
+	  print_char ((x-q*10) + 48))
+in
 let rec sin x =
   let rec calc_sin x =
     let s1 = -0.1666666667 in
@@ -8,7 +21,7 @@ let rec sin x =
     let s6 = 0.0000000002 in
     let x2 = x *. x in
     let x3 = x2 *. x in
-    let r= s2 +. x2 *. (s3 +. x2 *. (s4 +. x2 *. ( s5 +. x2 *. s6))) in
+    let r = s2 +. x2 *. (s3 +. x2 *. (s4 +. x2 *. ( s5 +. x2 *. s6))) in
       x +. x3 *. (s1 +. x2 *. r) in
   let rec sinf__ x =
     let h_pi = 1.5707963268 in
@@ -39,5 +52,11 @@ let rec cos x =
 	else if x > h_pi then cosf__ (pi -. x)
 	else calc_cos x
   in if x >= 0.0 then cosf__ x else cosf__ (-.x)
-in print_float (cos 1.0);
-  sin 1.0
+in let rec atan x = (* taylor expansion *)
+  if abs_float x > 0.15 then
+    let new_x = ( -1.0 +. sqrt ( 1.0 +. x *. x )) /. x in
+      2.0 *. ( arctan new_x )
+  else
+    let xx = x *. x in (* honer method *)
+      x *. (1. +. xx *. (-1. /. 3. +. xx *. (1. /. 5. +. xx *. (1. /. 7.))))
+in
