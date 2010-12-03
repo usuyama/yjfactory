@@ -10,7 +10,8 @@ entity IO_wrapper is
     clk      : in  std_logic;
     RS_RX  : in  std_logic;
     RX_TX  : out std_logic;
-    io_busy : out std_logic;
+    send_busy : out std_logic;
+    recv_wait: out std_logic;
     out_go: in std_logic;
     in_go:in std_logic
     SD : in std_logic_vector(7 downto 0);
@@ -35,7 +36,6 @@ architecture wrapper of IO_wrapper is
   signal recv_pos : std_logic_vector(7 downto 0) := (others=>'0');
   signal state : std_logic_vector(1 downto 0):=(others=>'0');
   signal recv_wait : std_logic := '0';
-  signal send_busy : std_logic;
 begin  -- wrapper
   IO_MOD:IO_MODULE port map(
     CLK=>clk,
@@ -48,16 +48,16 @@ begin  -- wrapper
     RECV_POS=>recv_pos,
     SEND_BUSY=>send_busy
     );
+
+    recv_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)) else
+                '1';
   process (clk)
-    io_busy<=send_busy or recv_wait;
   begin  -- process
     if (clk'event and clk='1') then
       if in_go='1' then
-        if (conv_integer(RECV_POS)>conv_integer(READ_POS)) then
+        if recv_wait='0' then
           read_pos<=read_pos+1;
-          recv_wait='0';
-          else
-            recv_wait='1';
+--pos は次にほしいもの。今ほしいものは回す前のposにある。だから手順としてはwb->pos回す->次命令
         end if;
       end if;
     end if;
