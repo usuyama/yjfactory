@@ -52,6 +52,7 @@ enum {
   MVF2I,
   SENDW,
   SENDC,
+  RECV,
   RECVF,
   BREAK,
   HALT,

@@ -202,51 +202,49 @@ public class Assembler {
 			    code.append(gr.toStr_nlen((Integer.parseInt(inst[2]) & 0xFFFF0000)>>>16,16));
 			}
 			else if(inst[0].equals("addf")){
-			    code.append("XXADDF");
+			    code.append("111000");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("mulf")){
-			    code.append("XXMULF");
+			    code.append("111010");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("subf")){
-			    code.append("XXSUBF");
+			    code.append("111001");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("divf")){
-			    code.append("XXDIVF");
+			    code.append("111011");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[3]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("00000000000");
 			}
 			else if(inst[0].equals("movf")){
-			    code.append("XXMOVF");
+			    code.append("000011");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("lhif")){
-			    System.out.println("hoge");
-			    code.append("XXLHIF");
-			    code.append(gr.getFnum(inst[1]));
+			    code.append("000100");
 			    code.append("00000");
+			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) >> 16, 16));
 			}
 			else if(inst[0].equals("llif")){
-			    System.out.println("fuga");
-			    code.append("XXLLIF");
-			    code.append(gr.getFnum(inst[1]));
+			    code.append("000101");
 			    code.append("00000");
+			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) & 0x0000FFFF, 16));
 			}
 			else if(inst[0].equals("sw")){
@@ -334,12 +332,18 @@ public class Assembler {
 			    code.append("000000000000000000000");
 			}
 			else if(inst[0].equals("sendc")){
-			    code.append("XSENDC");
+			    code.append("110100");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("000000000000000000000");
 			}
+			else if(inst[0].equals("recv")){
+			    code.append("110001");
+			    code.append("00000");
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("0000000000000000");
+			}
 			else if(inst[0].equals("movf2i")){
-			    code.append("MOVF2I");
+			    code.append("010111");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");

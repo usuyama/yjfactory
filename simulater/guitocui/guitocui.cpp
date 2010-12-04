@@ -69,6 +69,14 @@ void hogehoge::getPC(){
   std::cout << "pc = "<< pc << std::endl;
 }
 
+typedef struct bothsig_int{
+  int i;
+  unsigned int u;
+}bothsig_int;
+bothsig_int recv_buf;
+int recv_count=0;
+unsigned int mask = (unsigned int)0xff<<24;
+
 void hogehoge::doInst(int steps){
   std::ofstream os("outputfile");
   int opcode;
@@ -125,7 +133,7 @@ void hogehoge::doInst(int steps){
       break;
     case SUBF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op3] = fpr[iinfo.op2] - fpr[iinfo.op1];
+      fpr[iinfo.op3] = fpr[iinfo.op1] - fpr[iinfo.op2];
       pc++;
       break;
     case DIVF :
@@ -307,6 +315,17 @@ void hogehoge::doInst(int steps){
       //        ui->instruction->appendPlainText("\nprogram end\n");
       std::cout << "end program" << std::endl;
       return;
+
+/* RECV を追加 branch io_loaded用*/
+    case RECV :
+      if(recv_count==0){
+	ifs >> recv_buf.i;
+	recv_count=4;
+      }
+      regs[iinfo.op1] = (recv_buf.u & mask)>>24;
+      recv_buf.u<<=8;
+      recv_count--;
+      pc++;break;
 
 /* 擬似命令s */
     case SQRT :

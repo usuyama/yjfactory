@@ -318,10 +318,16 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].op1=ext_op1(str);
       //      inst_mem[index].assm = "sendw\tr" + QString::number(inst_mem[index].op1);
     }
-    else if(inst=="XSENDC"){
+    else if(inst=="110100"){
       cout << "SENDC\n";
       inst_mem[index].opcode=SENDC;
       inst_mem[index].op1=ext_op1(str);
+      //      inst_mem[index].assm = "sendc\tr" + QString::number(inst_mem[index].op1);
+    }
+    else if(inst=="110001"){
+      cout << "RECV\n";
+      inst_mem[index].opcode=RECV;
+      inst_mem[index].op1=ext_op2(str);
       //      inst_mem[index].assm = "sendc\tr" + QString::number(inst_mem[index].op1);
     }
     else if(inst=="000000"){
