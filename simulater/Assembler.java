@@ -352,7 +352,7 @@ public class Assembler {
 			    code.append("00000000000000000000000000");
 			}
 			else if(inst[0].equals("halt")){
-			    code.append("110000");
+			    code.append("111111");
 			    code.append("00000000000000000000000000");
 			}
 			//
