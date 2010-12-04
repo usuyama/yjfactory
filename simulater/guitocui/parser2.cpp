@@ -196,7 +196,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXMOVF"){ // divf
+    else if(inst=="000011"){ // movf
       cout << "MOVF\n";
       inst_mem[index].opcode= MOVF;
       fill_3reg(inst_mem,index,str);
@@ -261,7 +261,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFABS"){ // fabs
+    else if(inst=="111110"){ // fabs
       cout << "fabs\n";
       inst_mem[index].opcode=FABS;
       fill_3reg(inst_mem,index,str);
@@ -332,7 +332,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
         inst_mem[index].opcode=BREAK;
 	//        inst_mem[index].assm = QString("break point");
     }
-    else if(inst=="110000"){ // halt
+    else if(inst=="XXHALT"){ // halt
       cout << "HALT\n";
       inst_mem[index].opcode=HALT;
     }

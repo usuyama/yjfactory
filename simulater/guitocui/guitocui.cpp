@@ -125,7 +125,7 @@ void hogehoge::doInst(int steps){
       break;
     case SUBF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op3] = fpr[iinfo.op2] - fpr[iinfo.op1];
+      fpr[iinfo.op3] = fpr[iinfo.op1] - fpr[iinfo.op2];
       pc++;
       break;
     case DIVF :

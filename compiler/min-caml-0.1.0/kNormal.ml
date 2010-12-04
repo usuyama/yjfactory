@@ -99,7 +99,7 @@ let rec fv = function (* 式に出現する（自由な）変数 (caml2html: knormal_fv) *)
 let insert_let (e, t) k = (* letを挿入する補助関数 (caml2html: knormal_insert) *)
   match e with
     | Var(x) -> k x
-    | _ -> 
+    | _ ->
 	let x = Id.gentmp t in
 	let e', t' = k x in
 	  Let((x, t), e, e'), t'
@@ -121,11 +121,11 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
       insert_let (g env e1)
 	(fun x -> insert_let (g env e2)
 	   (fun y -> Sub(x, y), Type.Int))
-  | Syntax.Mul(e1, e2) -> 
+  | Syntax.Mul(e1, e2) ->
       insert_let (g env e1)
 	(fun x -> insert_let (g env e2)
 	   (fun y -> Mul(x, y), Type.Int))
-  | Syntax.Div(e1, e2) -> 
+  | Syntax.Div(e1, e2) ->
       let rec log2 x y =
 	if x = 1 then (true, y)
 	else
@@ -135,7 +135,7 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	    (false, 0)
       in
 	(match e1, e2 with
-	   | _, Syntax.Int(d) -> 
+	   | _, Syntax.Int(d) ->
 	       (match log2 d 0 with
 		  | false, _ -> failwith "Int Div supports only with SRA"
 		  | true, i -> 	(insert_let (g env e1)
@@ -227,7 +227,7 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	    insert_let g_e
 	      (fun x -> bind (xs @ [x]) (ts @ [t]) es) in
       bind [] [] es
-  | Syntax.LetTuple(xts, e1, e2) -> 
+  | Syntax.LetTuple(xts, e1, e2) ->
       insert_let (g env e1)
 	(fun y ->
 	  let e2', t2 = g (M.add_list xts env) e2 in

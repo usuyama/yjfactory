@@ -4,7 +4,7 @@
 open Asm
 
 (* xtsは多分, (Id.t * Type.t) list *)
-let classify xts ini addf addi = (* なんか関数addiとaddfを適用してる *) 
+let classify xts ini addf addi = (* なんか関数addiとaddfを適用してる *)
   List.fold_left (* fold_left : ('a -> 'b -> 'a) -> 'a -> 'b list -> 'a = <fun> *)
     (fun acc (x, t) ->
        match t with
@@ -48,7 +48,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
   | Closure.IfEq(x, y, e1, e2) ->
       (match M.find x env with
 	 | Type.Bool | Type.Int -> Ans(IfEq(x, y, g env e1, g env e2))
-	 | Type.Float -> 
+	 | Type.Float ->
 	     (let f1 = Id.genid "t" in
 	      let f2 = Id.genid "t" in
 		Let((f1, Type.Int), MovFToI(x), Let((f2, Type.Int), MovFToI(y), Ans(IfEq(f1, f2, g env e1, g env e2)))))
@@ -121,7 +121,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       | Type.Array(_) ->
 	  Let((addr, Type.Int), Add(x, V(y)), Ans(Ld(addr, 0)))
       | _ -> assert false)
-  | Closure.Put(x, y, z) -> 
+  | Closure.Put(x, y, z) ->
       let addr = Id.genid "t" in
       (match M.find x env with
       | Type.Array(Type.Unit) -> Ans(Nop)
