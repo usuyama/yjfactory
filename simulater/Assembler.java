@@ -322,12 +322,18 @@ public class Assembler {
 			    code.append("000000000000000000000");
 			}
 			else if(inst[0].equals("sendc")){
-			    code.append("XSENDC");
+			    code.append("110100");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("000000000000000000000");
 			}
+			else if(inst[0].equals("recv")){
+			    code.append("110001");
+			    code.append("00000")
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("0000000000000000");
+			}
 			else if(inst[0].equals("movf2i")){
-			    code.append("MOVF2I");
+			    code.append("010111");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");
@@ -340,7 +346,7 @@ public class Assembler {
 			    code.append("00000000000000000000000000");
 			}
 			else if(inst[0].equals("halt")){
-			    code.append("XXHALT");
+			    code.append("111111");
 			    code.append("00000000000000000000000000");
 			}
 			//
