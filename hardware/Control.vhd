@@ -8,6 +8,7 @@ entity Control is
   port (
     clk       : in  std_logic;
     op        : in  std_logic_vector(5 downto 0);
+    wait_signal: in std_logic;
     PCSource  : out std_logic;
     ALUSrcB   : out std_logic_vector(1 downto 0);
     ALUSrcA   : out std_logic;
@@ -20,7 +21,12 @@ entity Control is
     PC_write_b: out std_logic;
     Reg_source:out std_logic;
     FPU_ready:out std_logic;
-    RG_f: out std_logic_vector(2 downto 0)
+    RG_f: out std_logic_vector(2 downto 0);
+    recv_wait: in std_logic;
+    send_busy:in std_logic;
+    send_go:out std_logic;
+    recv_go:out std_logic;
+    reg_io:out std_logic;
     );
 
 end Control;
@@ -32,6 +38,7 @@ make_signal:process(State)
   begin
     case State is
       when "1111111" =>
+        reg_io<='0';
         RG_f<="000";
           ALUSrcA<='0';
           ALUSrcB<="01";
@@ -44,6 +51,7 @@ make_signal:process(State)
           PCwrite<='0';
           PC_write_b<='0';
       when "0011111"=>
+        reg_io<='0';
         RG_f<="000";
         ALUSrcA<='0';
           ALUSrcB<="01";
@@ -65,6 +73,7 @@ make_signal:process(State)
           Reg_dist<='0';
           FPU_ready<='0';
       when "1000000"=>
+        reg_io<='0';
         RG_f<="000";
           Reg_write<='0';
           Reg_dist<='0';
@@ -202,7 +211,18 @@ make_signal:process(State)
       when "1000110"=>
         PC_write_b<='1';
         PCSource<='0';
-
+      when "1000111"=>
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+      when "1001000"=>
+        send_go<='1';
+      when "1001001"=>
+        recv_go<='1';
+      when "1001010"=>
+        recv_go<='0';
+        reg_io<='1';
+        Reg_write<='1';
+        Reg_dist<='0';
       when others => null;
     end case;
   end process make_signal;
@@ -226,7 +246,7 @@ make_signal:process(State)
             when "001001"|"001010"|"001011"|"001100"=>State<="0001000";--b
             when "001111"=>State<="0001001";--sw
             when "001110"=>State<="0001010";  --lw
-            when "110000"=>state<="0011111";  --halt
+            when "111111"=>state<="0011111";  --halt
             when "111000"|"111001"|"111010"|"000100"|"000101"|"000011"|"000110"|"111101"|"111110"=>state<="0100000";   --f R
             when "111100"=>state<="0100010";  --f sqrt
             when "111011"=>state<="0110100";  --fdiv
@@ -366,7 +386,27 @@ make_signal:process(State)
           state<="1000110";
         when "1000110"=>
           state<="0000000";
-          
+
+        when "1000111"=>                --send
+          state<="1001000";
+        when "1001000"=>
+          case send_busy is
+            when '1'=>
+              state<="1001000";
+           when  '0'=>
+              state<="0000000":
+          end case;
+
+        when "1001001"=>                --recv
+          case recv_wait is
+            when '1' =>
+              state<="1001001";
+            when '0' =>
+              State<="1001010";
+          end case;
+        when "1001010"
+          state<="0000000";
+                  
         when "1111111"=>                --start
           state<="0000000";
         when "0111111"=>                --reset
