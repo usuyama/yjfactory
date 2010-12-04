@@ -316,7 +316,9 @@ void hogehoge::doInst(int steps){
       std::cout << "end program" << std::endl;
       return;
 
-/* RECV を追加 branch io_loaded用*/
+    case RECV:
+      pc++;break;
+/* 盛大に間違っている。後で直す
     case RECV :
       if(recv_count==0){
 	ifs >> recv_buf.i;
@@ -326,6 +328,7 @@ void hogehoge::doInst(int steps){
       recv_buf.u<<=8;
       recv_count--;
       pc++;break;
+*/
 
 /* 擬似命令s */
     case SQRT :
