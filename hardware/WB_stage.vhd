@@ -17,7 +17,7 @@ entity WB_stage is
     data_out : out std_logic_vector(31 downto 0);
     Reg_source: in std_logic;
     PC_in:in std_logic_vector(31 downto 0);
-    reg_io:in std_logic;
+    reg_io:in std_logic
     );
 
 end WB_stage;

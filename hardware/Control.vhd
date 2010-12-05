@@ -26,7 +26,7 @@ entity Control is
     send_busy:in std_logic;
     send_go:out std_logic;
     recv_go:out std_logic;
-    reg_io:out std_logic;
+    reg_io:out std_logic
     );
 
 end Control;
@@ -393,8 +393,10 @@ make_signal:process(State)
           case send_busy is
             when '1'=>
               state<="1001000";
-           when  '0'=>
-              state<="0000000":
+            when '0'=>
+              state<="0000000";
+            when others=>
+              null;
           end case;
 
         when "1001001"=>                --recv
@@ -403,8 +405,10 @@ make_signal:process(State)
               state<="1001001";
             when '0' =>
               State<="1001010";
+            when others=>
+              null;
           end case;
-        when "1001010"
+        when "1001010"=>
           state<="0000000";
                   
         when "1111111"=>                --start

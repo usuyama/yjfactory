@@ -33,7 +33,7 @@ entity Allover is
   outdata6 : out std_logic_vector(7 downto 0);
   outdata7 : out std_logic_vector(7 downto 0);
   RS_RX:in std_logic;
-  RX_TX:out std_logic
+  RS_TX:out std_logic
     );
 
 end Allover;
@@ -217,11 +217,11 @@ end component;
       port (
     clk      : in  std_logic;
     RS_RX  : in  std_logic;
-    RX_TX  : out std_logic;
+    RS_TX  : out std_logic;
     send_busy : out std_logic;
     recv_wait: out std_logic;
     out_go: in std_logic;
-    in_go:in std_logic
+    in_go:in std_logic;
     SD : in std_logic_vector(7 downto 0);
     DOUT:out std_logic_vector(7 downto 0)
     );
@@ -231,7 +231,7 @@ end component;
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
 signal send_busy_io,recv_wait_io,out_go_io,in_go_io : std_logic := '0';
-  signal SD_io,DOUT_io : std_logic_vector(7 downto 0);1
+  signal SD_io,DOUT_io : std_logic_vector(7 downto 0);
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
 signal PC_source,ALUSrcA,Reg_write,Reg_dist,IRWrite,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source,reg_io : std_logic;
@@ -246,6 +246,7 @@ signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
+signal io_wait : std_logic;
   signal F_ready : std_logic;
 begin  -- all
   p_we<="0";
@@ -405,7 +406,7 @@ io_w : IO_wrapper port map (
   out_go    => out_go_io,
   in_go     => in_go_io,
   SD        => SD_io,
-  DOUT      => DOUT_io)
+  DOUT      => DOUT_io);
 SD_io<=data_o(7 downto 0);
   leddata(31 downto 16)<=data_o(15 downto 0);
 process (mclk)
