@@ -130,6 +130,7 @@ component r_shifter
 end component;
 signal l_o : std_logic_vector(31 downto 0);
 signal r_o : std_logic_vector(31 downto 0);
+signal mul_o : std_logic_vector(63 downto 0);
 begin  -- EX
 asl : l_shifter port map (
   a => op1,
@@ -139,9 +140,10 @@ asr : r_shifter port map (
   a => op1,
   n => op2,
   o => r_o);
+mul_o<=op1*op2;
 ans<=
   op1 - op2 when (opcode="100010" or opcode="101010")else
-  op1 * op2 when (opcode="100011" or opcode="101011")else
+  mul_o(31 downto 0) when (opcode="100011" or opcode="101011")else
   op1 + op2 when (opcode="100001" or opcode="101001" )else
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
   op2  when (opcode="110010" or opcode="001110" or opcode="001111") else
