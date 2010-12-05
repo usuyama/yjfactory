@@ -150,8 +150,8 @@ ans<=
   r_o when opcode="010010" else
 --  conv_integer(op1) sra conv_unsigned(op2) when opcode="010000" else
 --  conv_integer(op1) sla conv_unsigned(op2) when opcode="010010" else
-  op1 + op2;
-
+--  op1 + op2;
+    op1;
 end alu_inside;
 
 library ieee;
