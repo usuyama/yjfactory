@@ -69,6 +69,14 @@ void hogehoge::getPC(){
   std::cout << "pc = "<< pc << std::endl;
 }
 
+typedef struct bothsig_int{
+  int i;
+  unsigned int u;
+}bothsig_int;
+bothsig_int recv_buf;
+int recv_count=0;
+unsigned int mask = (unsigned int)0xff<<24;
+
 void hogehoge::doInst(int steps){
   std::ofstream os("outputfile");
   int opcode;
@@ -107,6 +115,11 @@ void hogehoge::doInst(int steps){
     case SRA :
       regs[iinfo.op2] = regs[iinfo.op1] >> iinfo.op3;
       pc++; break;
+    case SLL :
+      bothsig_int tmpsll;
+      tmpsll.u= (unsigned int)regs[iinfo.op1] << iinfo.op3;
+      regs[iinfo.op2] = tmpsll.i;
+      pc++;break;
     case XOR :
       regs[iinfo.op3] = regs[iinfo.op2]^regs[iinfo.op1];
       pc++; break;
@@ -307,6 +320,20 @@ void hogehoge::doInst(int steps){
       //        ui->instruction->appendPlainText("\nprogram end\n");
       std::cout << "end program" << std::endl;
       return;
+
+    case RECV:
+      pc++;break;
+/* 盛大に間違っている。後で直す
+    case RECV :
+      if(recv_count==0){
+	ifs >> recv_buf.i;
+	recv_count=4;
+      }
+      regs[iinfo.op1] = (recv_buf.u & mask)>>24;
+      recv_buf.u<<=8;
+      recv_count--;
+      pc++;break;
+*/
 
 /* 擬似命令s */
     case SQRT :
