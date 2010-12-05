@@ -328,7 +328,7 @@ public class Assembler {
 			}
 			else if(inst[0].equals("recv")){
 			    code.append("110001");
-			    code.append("00000")
+			    code.append("00000");
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append("0000000000000000");
 			}
