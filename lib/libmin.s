@@ -1,6 +1,3 @@
-yj_print_int:
-	sendw	%r1
-	jr	%ra
 yj_print_float:
 	print_float	%f0
 	jr	%ra
