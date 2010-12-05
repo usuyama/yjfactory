@@ -173,7 +173,10 @@ make_signal:process(State)
       when "0100001"=>
         Reg_write<='1';
         Reg_source<='0';
-        Reg_dist<='1';
+        case op is
+          when  "000100"|"000101"=>Reg_dist<='0' ;
+          when others =>         Reg_dist<='1';
+        end case;
       when "0100010"=>
         RG_f<="111";
         ALUSrcA<='1';
