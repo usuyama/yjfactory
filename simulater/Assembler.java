@@ -183,13 +183,13 @@ public class Assembler {
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("sra")){
-			    code.append("010001");
+			    code.append("010000");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("sll")){
-			    code.append("010000");
+			    code.append("010010");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));

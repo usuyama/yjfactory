@@ -145,9 +145,14 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= MUL;
       fill_3reg(inst_mem,index,str);
     }
-    else if(inst=="XXXSRA"){
+    else if(inst=="010000"){
       cout << "SRA\n";
       inst_mem[index].opcode = SRA;
+      fill_2reg_1imm(inst_mem, index,str);
+    }
+    else if(inst=="010010"){
+      cout << "SLL\n";
+      inst_mem[index].opcode = SLL;
       fill_2reg_1imm(inst_mem, index,str);
     }
     else if(inst=="XXXXOR"){ //mul
@@ -322,7 +327,11 @@ int parser::parse(inst_info* inst_mem, const char* program){
       cout << "SENDC\n";
       inst_mem[index].opcode=SENDC;
       inst_mem[index].op1=ext_op1(str);
-      //      inst_mem[index].assm = "sendc\tr" + QString::number(inst_mem[index].op1);
+    }
+    else if(inst=="110001"){
+      cout << "RECV\n";
+      inst_mem[index].opcode=RECV;
+      inst_mem[index].op1=ext_op2(str);
     }
     else if(inst=="000000"){
       cout << "NOP\n";
@@ -330,7 +339,6 @@ int parser::parse(inst_info* inst_mem, const char* program){
     }
     else if(inst=="XBREAK"){
         inst_mem[index].opcode=BREAK;
-	//        inst_mem[index].assm = QString("break point");
     }
     else if(inst=="111111"){ // halt
       cout << "HALT\n";
