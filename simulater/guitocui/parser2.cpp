@@ -287,7 +287,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "lw\t" + make_asm_mem(inst_mem[index], true);
     }
-    else if(inst=="XXXXLF"){ // load float
+    else if(inst=="100100"){ // load float
       cout << "LF\n";
       inst_mem[index].opcode=LF;
       fill_2reg_1imm(inst_mem,index,str);
@@ -299,7 +299,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "sw\t" + make_asm_mem(inst_mem[index], true);
     }
-    else if(inst=="XXXXSF"){ // store float
+    else if(inst=="101100"){ // store float
       cout << "SF\n";
       inst_mem[index].opcode=SF;
       fill_2reg_1imm(inst_mem,index,str);

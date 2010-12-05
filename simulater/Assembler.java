@@ -261,7 +261,7 @@ public class Assembler {
 			    code.append(gr.getRelate(inst[2])); //will be changed
 			}
 			else if(inst[0].equals("sf")){
-			    code.append("XXXXSF");
+			    code.append("101100");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getRelate(inst[2]));
 			}
@@ -273,7 +273,7 @@ public class Assembler {
 			    code.append(tmpstr.substring(5));
 			}
 			else if(inst[0].equals("lf")){
-			    code.append("XXXXLF");
+			    code.append("100100");
 			    StringBuffer tmpstr=gr.getRelate(inst[2]);
 			    code.append(tmpstr.substring(0,5));
 			    code.append(gr.getFnum(inst[1]));
