@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
-entity a_shifter is
+entity l_shifter is
   
   port (
 a : in std_logic_vector(31 downto 0);
@@ -11,8 +11,8 @@ n:in std_logic_vector(31 downto 0);
 o: out std_logic_vector(31 downto 0)
 );
 
-end a_shifter;
-architecture a_s of a_shifter is
+end l_shifter;
+architecture l_s of l_shifter is
 signal n_s : std_logic_vector(4 downto 0);
 begin
   n_s<=n(4 downto 0);
@@ -48,5 +48,5 @@ begin
                    a(2 downto 0)&"00000000000000000000000000000" when n_s="11101" else
                    a(1 downto 0)&"000000000000000000000000000000" when n_s="11110" else
                    a(0)&"0000000000000000000000000000000" when n_s="11111" else
-                   "0000000000000000000000000000000";
-end a_s;
+                   "00000000000000000000000000000000";
+end l_s;
