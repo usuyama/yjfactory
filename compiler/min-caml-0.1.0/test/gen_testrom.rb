@@ -13,7 +13,7 @@ entity PROM is
   port (
     clka  : in  std_logic;
 --    wea   : in  std_logic_vector(0 downto 0);
-    addra : in  std_logic_vector(31 downto 0);
+    addra : in  std_logic_vector(6 downto 0);
 --    dina  : in  std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 
@@ -27,9 +27,9 @@ $footer = <<'EOS'
 
 );
 
-signal shortened : std_logic_vector(5 downto 0):=(others=>'0');
+signal shortened : std_logic_vector(6 downto 0):=(others=>'0');
 begin  -- R_rom
-  shortened<=addra(5 downto 0);
+  shortened<=addra(6 downto 0);
     douta<=rom(conv_integer(shortened));
 end R_rom;
 EOS

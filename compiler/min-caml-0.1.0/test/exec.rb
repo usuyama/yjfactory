@@ -22,7 +22,7 @@ else
   p sh.cat without_ext + ".s"
   sh.cd "../../../simulater/"
   print "###assembler###\n"
-  unless sh.transact{system "java", "Assembler", program_name + ".s", program_name}
+  unless sh.transact{system "java", "Assembler", program_name + "_.s", program_name}
     print "XXX assemle failed\n"
   else
     system "cp ../../../simulater/" + program_name + " " + without_ext

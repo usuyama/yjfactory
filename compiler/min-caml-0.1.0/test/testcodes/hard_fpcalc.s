@@ -1,3 +1,25 @@
+entry:
+	lli	%sp, 0
+	addi	%ra, %r0, halt
+	lli	%hp, 50000
+	llif	%f0, 1.000000
+	lhif	%f0, 1.000000
+	llif	%f1, 2.000000
+	lhif	%f1, 2.000000
+	sw	%ra, [%sp + 0]
+	addi	%sp, %sp, 1
+	jal	f.4
+	subi	%sp, %sp, 1
+	lw	%ra, [%sp + 0]
+	j	yj_print_float
+halt:
+	halt
+f.4:
+	addf	%f0, %f0, %f1
+	jr	%ra
+yj_print_int:
+	sendw	%r1
+	jr	%ra
 yj_print_float:
 	print_float	%f0
 	jr	%ra
@@ -46,18 +68,7 @@ yj_floor:
 	floor	%f0, %f0
 	jr	%ra
 yj_read_int:
-	lli	%r1, 0
-	lli	%r2, 0
-	recv	%r1
-	sll	%r1, 8
-	recv	%r2
-	xor	%r1, %r1, %r2
-	sll	%r1, 8
-	recv	%r2
-	xor	%r1, %r1, %r2
-	sll	%r1, 8
-	recv	%r2
-	xor	%r1, %r1, %r2
+	read_int	%r1
 	jr	%ra
 yj_read_float:
 	read_float	%f0
