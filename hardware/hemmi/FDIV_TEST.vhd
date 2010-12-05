@@ -24,15 +24,15 @@ signal T : std_logic_vector(31 downto 0);
 begin
 P: process
 variable V : integer := 0;
-  begin
-	 if (V = 2) then
-	   ready <= '1';
-	 elsif (V = 3) then
-	   ready <= '0';
-	 end if;
-    V := V + 1;
-	 clock <= not clock;
-	 wait for 1 ps;
+begin
+  if (V = 2) then
+    ready <= '1';
+  elsif (V = 3) then
+    ready <= '0';
+  end if;
+  V := V + 1;
+  clock <= not clock;
+  wait for 1 ps;
 end process;
 FDIV0: FDIV port map (clock,ready,IN1,IN2,ANS);
 FMUL0: FMUL port map (IN2,ANS,T);
