@@ -183,13 +183,7 @@ public class Assembler {
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
 			}
 			else if(inst[0].equals("sra")){
-			    code.append("010001");
-			    code.append(gr.getRegnum(inst[2]));
-			    code.append(gr.getRegnum(inst[1]));
-			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
-			}
-			else if(inst[0].equals("sll")){
-			    code.append("010010");
+			    code.append("010000");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getRegnum(inst[1]));
 			    code.append(gr.signInt_toStr_nlen(Integer.parseInt(inst[3]),16));
@@ -242,12 +236,14 @@ public class Assembler {
 			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("lhif")){
+			    System.out.println("hoge");
 			    code.append("000100");
 			    code.append("00000");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.toStr_nlen(Float.floatToIntBits(Float.parseFloat(inst[2])) >> 16, 16));
 			}
 			else if(inst[0].equals("llif")){
+			    System.out.println("fuga");
 			    code.append("000101");
 			    code.append("00000");
 			    code.append(gr.getFnum(inst[1]));
@@ -265,8 +261,6 @@ public class Assembler {
 			}
 			else if(inst[0].equals("lw")){
 			    code.append("001110");
-			    ///			    code.append(gr.getRegnum(inst[1]));
-			    //			    code.append(gr.getRelate(inst[2]));
 			    StringBuffer tmpstr=gr.getRelate(inst[2]);
 			    code.append(tmpstr.substring(0,5));
 			    code.append(gr.getRegnum(inst[1]));
@@ -308,20 +302,10 @@ public class Assembler {
 			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
 			}
 			else if(inst[0].equals("bgtf")){
-			    code.append("XXBGTF");
+			    code.append("001000");
 			    code.append(gr.getFnum(inst[1]));
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.signInt_toStr_nlen(tagmap.get(inst[3])-k, 16));
-			}
-			else if(inst[0].equals("negf")){
-			    code.append("XXFNEG");
-			    code.append(gr.getFnum(inst[1]));
-			    code.append("000000000000000000000");
-			}
-			else if(inst[0].equals("absf")){
-			    code.append("XXFABS");
-			    code.append(gr.getFnum(inst[1]));
-			    code.append("000000000000000000000");
 			}
 			else if(inst[0].equals("jal")){
 			    code.append("010110");
@@ -368,10 +352,6 @@ public class Assembler {
 			//
 			// 疑似命令
 			//
-			else if(inst[0].equals("sqrt")){
-			    code.append("XXSQRT");
-			    code.append("00000000000000000000000000");
-			}
 			else if(inst[0].equals("sin")){
 			    code.append("XXXSIN");
 			    code.append("00000000000000000000000000");
@@ -384,16 +364,43 @@ public class Assembler {
 			    code.append("XXATAN");
 			    code.append("00000000000000000000000000");
 			}
+			//
+			// 疑似命令
+			//
+			else if(inst[0].equals("sqrt")){
+			    code.append("111100");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("0000000000000000");
+			}
+			else if(inst[0].equals("negf")){
+			    code.append("000110");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("0000000000000000");
+			}
+			else if(inst[0].equals("absf")){
+			    code.append("111110");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("0000000000000000");
+			}
 			else if(inst[0].equals("floor")){
-			    code.append("XFLOOR");
-			    code.append("00000000000000000000000000");
+			    code.append("111101");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("itof")){
-			    code.append("XXITOF");
-			    code.append("00000000000000000000000000");
+			    code.append("011000");
+			    code.append(gr.getRegnum(inst[2]));
+			    code.append(gr.getFnum(inst[1]));
+			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("ftoi")){
-			    code.append("XXFTOI");
+			    code.append("011001");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
 			    code.append("00000000000000000000000000");
 			}
 			else if(inst[0].equals("print_float")){
@@ -408,7 +415,6 @@ public class Assembler {
 			    code.append("XRDFLT");
 			    code.append("00000000000000000000000000");
 			}
-
 			//
 			// 要修正！！！！！！！！！！！！！！！！！！！！
 			//
@@ -419,9 +425,6 @@ public class Assembler {
 			//			    code.append(gr.signInt_toStr_nlen(2, 16));
 			//			}
 
-			//
-			// 疑似命令
-			//
 			else{
 			    System.out.println(inst[0]+" is not defined");
 			    System.exit(1);

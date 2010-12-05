@@ -49,7 +49,7 @@ yj_floor:
 	floor	%f0, %f0
 	jr	%ra
 yj_read_int:
-	read_int	%r1
+	recv	%r1
 	jr	%ra
 yj_read_float:
 	read_float	%f0

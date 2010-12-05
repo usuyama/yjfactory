@@ -17,4 +17,5 @@ in
   assert_atan (-0.1);
   assert_atan (-0.3);
   assert_atan (-1.0);
-  assert_atan (-100.0)
+  assert_atan (-100.0);
+  arctan 0.1
