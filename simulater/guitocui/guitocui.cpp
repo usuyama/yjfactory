@@ -125,7 +125,7 @@ void hogehoge::doInst(int steps){
       break;
     case SUBF :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      fpr[iinfo.op3] = fpr[iinfo.op2] - fpr[iinfo.op1];
+      fpr[iinfo.op3] = fpr[iinfo.op1] - fpr[iinfo.op2];
       pc++;
       break;
     case DIVF :
@@ -134,7 +134,7 @@ void hogehoge::doInst(int steps){
       pc++;
       break;
     case MOVF :
-      fpr[iinfo.op1] = fpr[iinfo.op2];
+      fpr[iinfo.op2] = fpr[iinfo.op1];
       pc++; break;
     case LLIF :
       //        ui->instruction->appendPlainText(iinfo.assm);
@@ -310,7 +310,7 @@ void hogehoge::doInst(int steps){
 
 /* 擬似命令s */
     case SQRT :
-      fpr[0] = sqrt(fpr[0]);
+      fpr[iinfo.op2] = sqrt(fpr[iinfo.op1]);
       pc++;
       break;
     case SIN :
@@ -323,13 +323,14 @@ void hogehoge::doInst(int steps){
       fpr[0] = atan(fpr[0]);
       pc++; break;
     case FLOOR :
-      fpr[0] = floor(fpr[0]);
+      fpr[iinfo.op2] = floor(fpr[iinfo.op1]);
       pc++; break;
     case ITOF :
+      fpr[iinfo.op2] = (float)regs[iinfo.op1];
       fpr[0]=(float)regs[1];
       pc++; break;
     case FTOI :
-      regs[1]=(int)fpr[0];
+      regs[iinfo.op2] = (int)fpr[iinfo.op1];
       pc++; break;
     case RDINT :
       ifs >> regs[1];

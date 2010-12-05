@@ -155,19 +155,16 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= XOR;
       fill_3reg(inst_mem,index,str);
     }
-    else if(inst=="XXXORI"){ // xori
+    else if(inst=="101111"){ // xori
       cout << "XORI\n";
       inst_mem[index].opcode= XORI;
       fill_2reg_1imm(inst_mem,index,str);
-      //      inst_mem[index].assm = "subi\t" + make_asm_2r1i(inst_mem[index]);
     }
     else if(inst=="110010"){ // lli
       cout << "LLI\n";
       inst_mem[index].opcode= LLI;
-      //      inst_mem[index].op1=ext_op1(str);
       inst_mem[index].op1=ext_op2(str);
       inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
-      //      inst_mem[index].assm = "lli\t" + make_asm_1r1i(inst_mem[index]);
     }
     else if(inst=="110011"){ //lhi
       cout << "LHI\n";
@@ -175,37 +172,37 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].op1=ext_op2(str);      
       inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
     }
-    else if(inst=="XXADDF"){ // addf
+    else if(inst=="111000"){ // addf
       cout << "ADDF\n";
       inst_mem[index].opcode= ADDF;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "addf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXSUBF"){ // subf
+    else if(inst=="111001"){ // subf
       cout << "SUBF\n";
       inst_mem[index].opcode= SUBF;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "subf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXMULF"){ // mulf
+    else if(inst=="111010"){ // mulf
       cout << "MULF\n";
       inst_mem[index].opcode= MULF;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "mulf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXDIVF"){ // divf
+    else if(inst=="111011"){ // divf
       cout << "DIVF\n";
       inst_mem[index].opcode= DIVF;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXMOVF"){ // divf
+    else if(inst=="000011"){ // movf
       cout << "MOVF\n";
       inst_mem[index].opcode= MOVF;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm= "divf\t" + make_asm_3fp(inst_mem[index]);
     }
-    else if(inst=="XXLLIF"){ // llif
+    else if(inst=="000101"){ // llif
       cout << "LLIF\n";
       inst_mem[index].opcode= LLIF;
       inst_mem[index].op1 = ext_op2(str);
@@ -213,7 +210,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      std::cout << inst_mem[index].op1 << endl;
       //      inst_mem[index].assm = "llif\t" + make_asm_1r1i(inst_mem[index]);
     }
-    else if(inst=="XXLHIF"){ // llih
+    else if(inst=="000100"){ // lhif
       cout << "LHIF\n";
       inst_mem[index].opcode= LHIF;
       inst_mem[index].op1 = ext_op2(str);
@@ -237,7 +234,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode=BNEQ;
       fill_2reg_1imm(inst_mem,index,str);
     }
-    else if(inst=="XXBGTF"){ // bgtf
+    else if(inst=="001000"){ // bgtf
       cout << "BGTF\n";
       inst_mem[index].opcode=BGTF;
       fill_2reg_1imm(inst_mem,index,str);
@@ -264,14 +261,14 @@ int parser::parse(inst_info* inst_mem, const char* program){
       //      inst_mem[index].assm = "jr\tr" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFABS"){ // fabs
+    else if(inst=="111110"){ // fabs
       cout << "fabs\n";
       inst_mem[index].opcode=FABS;
       fill_3reg(inst_mem,index,str);
       //      inst_mem[index].assm = "fabs\tf" + QString::number(inst_mem[index].op1);
       //      cout << inst_mem[index].op1;
     }
-    else if(inst=="XXFNEG"){ // xneg
+    else if(inst=="000110"){ // xneg
       cout << "FNEG\n";
       inst_mem[index].opcode=FNEG;
       fill_3reg(inst_mem,index,str);
@@ -321,7 +318,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].op1=ext_op1(str);
       //      inst_mem[index].assm = "sendw\tr" + QString::number(inst_mem[index].op1);
     }
-    else if(inst=="XSENDC"){
+    else if(inst=="110100"){
       cout << "SENDC\n";
       inst_mem[index].opcode=SENDC;
       inst_mem[index].op1=ext_op1(str);
@@ -335,32 +332,38 @@ int parser::parse(inst_info* inst_mem, const char* program){
         inst_mem[index].opcode=BREAK;
 	//        inst_mem[index].assm = QString("break point");
     }
-    else if(inst=="110000"){ // halt
+    else if(inst=="XXHALT"){ // halt
       cout << "HALT\n";
       inst_mem[index].opcode=HALT;
     }
 
     /* 擬似命令 */
-    else if(inst=="XXSQRT"){
+
+    else if(inst=="111100"){//sqrt
       inst_mem[index].opcode=SQRT;
+      fill_3reg(inst_mem,index,str);
     }
     else if(inst=="XXXSIN"){
       inst_mem[index].opcode=SIN;
     }
     else if(inst=="XXXCOS"){
       inst_mem[index].opcode=COS;
+
     }
     else if(inst=="XXATAN"){
       inst_mem[index].opcode=ATAN;
     }
-    else if(inst=="XFLOOR"){
+    else if(inst=="111101"){
       inst_mem[index].opcode=FLOOR;
+      fill_3reg(inst_mem,index,str);
     }
-    else if(inst=="XXITOF"){
+    else if(inst=="011000"){
       inst_mem[index].opcode=ITOF;
+      fill_3reg(inst_mem,index,str);
     }
-    else if(inst=="XXFTOI"){
+    else if(inst=="011001"){
       inst_mem[index].opcode=FTOI;
+      fill_3reg(inst_mem,index,str);
     }
     else if(inst=="XRDINT"){
       inst_mem[index].opcode=RDINT;

@@ -4,19 +4,6 @@ $stdout_sv = STDOUT.dup          # STDOUT を保存
 STDERR.reopen("output/errlog", "w")
 STDOUT.reopen("output/tmplog", "w")
 
-def check(program_name)
-  open("output/" + program_name + ".output") { |file|
-    while l = file.gets
-      l.each_byte do |c|
-        unless c = '1'[0] then
-          return false
-        end
-      end
-    end
-  }
-  return true
-end
-
 def display(str)
   STDOUT.reopen($stdout_sv)        # 元に戻す
   print str

@@ -8,17 +8,17 @@ entity Rgstr is
   port (
     clk:in std_logic;
     we :in std_logic;
-    out_a : in std_logic_vector(4 downto 0);
-    dpra : in std_logic_vector(4 downto 0);
+    out_a : in std_logic_vector(5 downto 0);
+    dpra : in std_logic_vector(5 downto 0);
     di  :in std_logic_vector(31 downto 0);
-    in_a : in std_logic_vector(4 downto 0);
+    in_a : in std_logic_vector(5 downto 0);
     spo : out std_logic_vector(31 downto 0);
     dpo : out std_logic_vector(31 downto 0));
 end Rgstr;
  architecture Reg of Rgstr is
-type ram_type is array (31 downto 0) of std_logic_vector(31 downto 0);
+type ram_type is array (63 downto 0) of std_logic_vector(31 downto 0);
  signal RAM : ram_type := (others=>(others=>'0'));
- signal a : std_logic_vector(4 downto 0);
+ signal a : std_logic_vector(5 downto 0);
  begin  -- Reg
 
    

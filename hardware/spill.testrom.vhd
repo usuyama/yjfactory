@@ -132,8 +132,8 @@ type rom_type is array (0 to 107) of std_logic_vector(31 downto 0);
 "01001111111000000000000000000000"	-- 108: 	jr	%ra
 );
 
-signal shortened : std_logic_vector(5 downto 0):=(others=>'0');
+signal shortened : std_logic_vector(6 downto 0):=(others=>'0');
 begin  -- R_rom
-  shortened<=addra(5 downto 0);
+  shortened<=addra(6 downto 0);
     douta<=rom(conv_integer(shortened));
 end R_rom;

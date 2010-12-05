@@ -42,7 +42,7 @@ let rec shuffle sw xys =
 let print_int_ope oc ope rd arg0 arg1 =
   match arg1 with
     | V(z) -> fprintf oc "\t%s\t%s, %s, %s\n" ope rd arg0 z
-    | C(z) -> (if z <= 65536 then 
+    | C(z) -> (if z <= 65536 then
 		 fprintf oc "\t%si\t%s, %s, %s\n" ope rd arg0 (string_of_int z)
 	       else
 		 failwith "intope") (* [XXX] fix later *)
@@ -69,7 +69,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   (* 末尾でなかったら計算結果をdestにセット (caml2html: emit_nontail) *)
   | NonTail(_), Nop -> ()
   | NonTail(x), Set(i) -> print_li oc x i
-  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\taddi\t%s, %%r0, %s\n" x y 
+  | NonTail(x), SetL(Id.L(y)) -> fprintf oc "\taddi\t%s, %%r0, %s\n" x y
   | NonTail(x), MovFToI(y) -> fprintf oc "\tmovf2i\t%s, %s\n" x y
   | NonTail(x), SetF(f) -> print_lif oc x f
   | NonTail(x), Mov(y) when x = y -> ()
@@ -157,7 +157,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
       print_int_ope oc "add" reg_sp reg_sp (C(ss));
       fprintf oc "\tjalr\t%s\n" reg_sw;
-      print_int_ope oc "sub" reg_sp reg_sp (C(ss)); 
+      print_int_ope oc "sub" reg_sp reg_sp (C(ss));
       fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0) (* a <- regs.(0) *)
@@ -174,7 +174,7 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       if List.mem a allregs && a <> regs.(0) then
 	print_mov oc a regs.(0)
       else if List.mem a allfregs && a <> fregs.(0) then
-	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)	
+	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)
 and g'_tail_if oc e1 e2 ope r1 r2 =
   let b_else = Id.genid (ope ^ "_else") in
     fprintf oc "\t%s\t%s, %s, %s\n" ope r1 r2 b_else;
@@ -216,7 +216,7 @@ and g'_args oc x_reg_cl ys zs =
 	   Printf.fprintf oc "\tmovf\t%s, %s\n" fr z)
 	(shuffle reg_fsw zfrs)
 
-  
+
 
 let h oc { name = Id.L(x); args = _; fargs = _; body = e; ret = _ } =
   fprintf oc "%s:\n" x;

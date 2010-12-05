@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require "shell"
 
 unless ARGV[0]
@@ -6,8 +7,12 @@ unless ARGV[0]
 end
 fullname = ARGV[0]
 program_name = File::basename(fullname, '.ml')
-sh = Shell.cd "."
 without_ext = fullname[0..fullname.length-4]
+# コピーして、ライブラリ関数をリンクする
+system "cat " + "../../../lib/lib.ml " + without_ext + ".ml > " + without_ext + "_.ml"
+without_ext = without_ext + "_"
+
+sh = Shell.cd "."
 unless ARGV[1] || (system "../min-caml --noprint " + without_ext)
   print "XXX compile failed\n"
 else

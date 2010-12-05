@@ -144,7 +144,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       cout << "LLI\n";
       inst_mem[index].opcode= LLI;
       //      inst_mem[index].op1=ext_op1(str);
-      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].op1=ext_op2(str);
       inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
       inst_mem[index].assm = "lli\t" + make_asm_1r1i(inst_mem[index]);
       //      inst_mem[index].assm = "lli\t" + make_asm_1r1i(inst_mem[index]);
@@ -152,7 +152,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
     else if(inst=="110011"){ //lhi
       cout << "LHI\n";
       inst_mem[index].opcode=LHI;
-      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].op1=ext_op2(str);
       inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
       inst_mem[index].assm = "lhi\t" + make_asm_1r1i(inst_mem[index]);
     }
@@ -183,15 +183,15 @@ int parser::parse(inst_info* inst_mem, const char* program){
     else if(inst=="XXLLIF"){ // llif
       cout << "LLIF\n";
       inst_mem[index].opcode= LLIF;
-      inst_mem[index].op1 = ext_op1(str);
+      inst_mem[index].op1 = ext_op2(str);
       inst_mem[index].op2 = u_strToInt(str.substr(16,32) ,16);
       //      std::cout << inst_mem[index].op1 << endl;
       inst_mem[index].assm = "llif\t" + make_asm_1r1i(inst_mem[index]);
     }
-    else if(inst=="XXLHIF"){ // llih
+    else if(inst=="XXLHIF"){ // lhih
       cout << "LHIF\n";
       inst_mem[index].opcode= LHIF;
-      inst_mem[index].op1 = ext_op1(str);
+      inst_mem[index].op1 = ext_op2(str);
       inst_mem[index].op2 = u_strToInt(str.substr(16,32) ,16);
       //      std::cout << inst_mem[index].op1 << endl;
       inst_mem[index].assm = "lhif\t" + make_asm_1r1i(inst_mem[index]);
