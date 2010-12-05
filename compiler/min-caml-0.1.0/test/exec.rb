@@ -10,19 +10,18 @@ program_name = File::basename(fullname, '.ml')
 without_ext = fullname[0..fullname.length-4]
 # コピーして、ライブラリ関数をリンクする
 system "cat " + "../../../lib/lib.ml " + without_ext + ".ml > " + without_ext + "_.ml"
-without_ext = without_ext + "_"
+without_ext = without_ext
 
 sh = Shell.cd "."
-unless ARGV[1] || (system "../min-caml --noprint " + without_ext)
+unless ARGV[1] || (system "../min-caml --noprint " + without_ext + "_";system "cat " + without_ext + "_.s ../../../lib/libmin.s > " + without_ext + ".s")
   print "XXX compile failed\n"
 else
-  system "cat " + "../../../lib/libmin.s >> " + without_ext + ".s"
   system "cp " + without_ext + ".s ../../../simulater/"
   print "###assembly###\n"
   p sh.cat without_ext + ".s"
   sh.cd "../../../simulater/"
   print "###assembler###\n"
-  unless sh.transact{system "java", "Assembler", program_name + "_.s", program_name}
+  unless sh.system("java", "Assembler", program_name + ".s", program_name) | sh.cat > STDOUT
     print "XXX assemle failed\n"
   else
     system "cp ../../../simulater/" + program_name + " " + without_ext
