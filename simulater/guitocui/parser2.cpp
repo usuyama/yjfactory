@@ -310,7 +310,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       fill_2reg_1imm(inst_mem,index,str);
       //      inst_mem[index].assm = "sf\t" + make_asm_mem(inst_mem[index], false);
 }
-    else if(inst=="MOVF2I"){
+    else if(inst=="010111"){
       cout << "MOVF2I\n";
       inst_mem[index].opcode=MVF2I;
       inst_mem[index].op1=ext_op1(str);
