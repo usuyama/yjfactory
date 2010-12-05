@@ -145,12 +145,18 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= MUL;
       fill_3reg(inst_mem,index,str);
     }
-    else if(inst=="XXXSRA"){
+    else if(inst=="010001"){//sra
       cout << "SRA\n";
       inst_mem[index].opcode = SRA;
       fill_2reg_1imm(inst_mem, index,str);
     }
-    else if(inst=="XXXXOR"){ //mul
+    else if(inst=="010010"){//sll
+      cout << "SLL\n";
+      inst_mem[index].opcode = SLL;
+      fill_2reg_1imm(inst_mem, index,str);
+    }
+
+    else if(inst=="100111"){ //mul
       cout << "XOR\n";
       inst_mem[index].opcode= XOR;
       fill_3reg(inst_mem,index,str);

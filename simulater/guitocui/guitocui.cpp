@@ -115,6 +115,11 @@ void hogehoge::doInst(int steps){
     case SRA :
       regs[iinfo.op2] = regs[iinfo.op1] >> iinfo.op3;
       pc++; break;
+    case SLL :
+      bothsig_int tmpsll;
+      tmpsll.u= (unsigned int)regs[iinfo.op1] << iinfo.op3;
+      regs[iinfo.op2] = tmpsll.i;
+      pc++;break;
     case XOR :
       regs[iinfo.op3] = regs[iinfo.op2]^regs[iinfo.op1];
       pc++; break;
