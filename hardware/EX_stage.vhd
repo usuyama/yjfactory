@@ -148,8 +148,8 @@ ans<=
   op2 when (opcode="110011" or opcode="010011"  or opcode="010100" or opcode="010110") else
   op2  when (opcode="110010" or opcode="001110" or opcode="001111") else
   (op1 xor op2) when (opcode="100111" or opcode="101111")else
-  l_o when opcode="010000" else
-  r_o when opcode="010010" else
+  r_o when opcode="010000" else
+  l_o when opcode="010010" else
 --  conv_integer(op1) sra conv_unsigned(op2) when opcode="010000" else
 --  conv_integer(op1) sla conv_unsigned(op2) when opcode="010010" else
 --  op1 + op2;
