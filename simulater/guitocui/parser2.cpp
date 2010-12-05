@@ -160,13 +160,13 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode= XORI;
       fill_2reg_1imm(inst_mem,index,str);
     }
-    else if(inst=="110010"){ // lli
+    else if(inst=="110011"){ // lli
       cout << "LLI\n";
       inst_mem[index].opcode= LLI;
       inst_mem[index].op1=ext_op2(str);
       inst_mem[index].op2=u_strToInt(str.substr(16,32),16);
     }
-    else if(inst=="110011"){ //lhi
+    else if(inst=="110010"){ //lhi
       cout << "LHI\n";
       inst_mem[index].opcode=LHI;
       inst_mem[index].op1=ext_op2(str);      
