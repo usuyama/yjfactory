@@ -60,8 +60,7 @@ yj_read_int:
 	xor	%r1, %r1, %r2
 	jr	%ra
 yj_read_float:
-	jal	yj_read_int
-	movi2f	%f0, %r1
+	read_float	%f0
 	jr	%ra
 yj_fabs:
 	absf	%f0, %f0
