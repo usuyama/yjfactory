@@ -46,7 +46,18 @@ yj_floor:
 	floor	%f0, %f0
 	jr	%ra
 yj_read_int:
+	lli	%r1, 0
+	lli	%r2, 0
 	recv	%r1
+	sll	%r1, 8
+	recv	%r2
+	xor	%r1, %r1, %r2
+	sll	%r1, 8
+	recv	%r2
+	xor	%r1, %r1, %r2
+	sll	%r1, 8
+	recv	%r2
+	xor	%r1, %r1, %r2
 	jr	%ra
 yj_read_float:
 	read_float	%f0
