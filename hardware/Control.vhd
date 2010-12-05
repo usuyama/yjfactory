@@ -271,9 +271,9 @@ make_signal:process(State)
             when "111011"=>state<="0110100";  --fdiv
             when "010111"|"011001"=>state<="1000001";  --ftoi,movf2i
             when "011000"=>State<="1000011";  --itof
-            when "001000"=>state<="1000101";
-            when "010000"=>state<="1010010";
-            when "010001"=>state<="1010010";
+            when "001000"=>state<="1000101";  --bgtf
+            when "101100"=>state<="1010011";  --storef
+            when "100100"=>state<="1010010";  --loadf
             when others=>State<="0000000";
           end case;
         when "0000010" =>
@@ -445,7 +445,7 @@ make_signal:process(State)
         when "1010001"=>
           state<="0000000";
 
-        when "1010010"  =>              --laod f
+        when "1010010"  =>              --load f
           state<="1010011";
         when "1010011"=>
           state<="1010100";
