@@ -4,7 +4,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 entity Control is
-
+ 
   port (
     clk       : in  std_logic;
     op        : in  std_logic_vector(5 downto 0);
@@ -223,6 +223,25 @@ make_signal:process(State)
         reg_io<='1';
         Reg_write<='1';
         Reg_dist<='0';
+      when "1001011"=>
+        ALUSrcA<='1';
+        ALUSrcB<="10";
+        RG_f<="010";
+      when "1001100"=>
+        MemWrite<='1';
+      when "1001101"=>
+        memwrite<='1';
+      when "1001110"=>
+        memwrite<='0';
+      when "1010010"=>
+        ALUSrcA<='1';
+        ALUSrcB<="00";
+        RG_f<="100";
+      when "1011000"=>
+        MemtoReg<='1';
+        Reg_write<='1';
+        Reg_dist<='0';
+        
       when others => null;
     end case;
   end process make_signal;
@@ -253,6 +272,8 @@ make_signal:process(State)
             when "010111"|"011001"=>state<="1000001";  --ftoi,movf2i
             when "011000"=>State<="1000011";  --itof
             when "001000"=>state<="1000101";
+            when "010000"=>state<="1010010";
+            when "010001"=>state<="1010010";
             when others=>State<="0000000";
           end case;
         when "0000010" =>
@@ -393,10 +414,10 @@ make_signal:process(State)
           case send_busy is
             when '1'=>
               state<="1001000";
-            when '0'=>
+           when  '0'=>
               state<="0000000";
             when others=>
-              null;
+              state<="0000000";
           end case;
 
         when "1001001"=>                --recv
@@ -406,12 +427,38 @@ make_signal:process(State)
             when '0' =>
               State<="1001010";
             when others=>
-              null;
+              state<="1001010";
           end case;
         when "1001010"=>
           state<="0000000";
+
+        when "1001011"  =>              --storef
+          state<="1001100";
+        when "1001100"=>
+          state<="1001101";
+        when "1001101"=>
+          state<="1001110";
+        when "1001110"=>
+          state<="1001111";
+        when "1010000"=>
+          state<="10010001";
+        when "1010001"=>
+          state<="0000000";
+
+        when "1010010"  =>              --laod f
+          state<="1010011";
+        when "1010011"=>
+          state<="1010100";
+        when "1010100"=>
+          state<="1010101";
+        when "1010101"=>
+          state<="1010110";
+        when "1010111"=>
+          state<="1011000";
+        when "1011000"=>
+          state<="0000000";
                   
-        when "1111111"=>                --start
+        when "1111111"  =>              --start
           state<="0000000";
         when "0111111"=>                --reset
           State<="0000000";
