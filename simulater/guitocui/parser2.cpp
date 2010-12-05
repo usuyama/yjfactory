@@ -332,7 +332,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
         inst_mem[index].opcode=BREAK;
 	//        inst_mem[index].assm = QString("break point");
     }
-    else if(inst=="XXHALT"){ // halt
+    else if(inst=="111111"){ // halt
       cout << "HALT\n";
       inst_mem[index].opcode=HALT;
     }
