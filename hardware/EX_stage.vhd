@@ -174,7 +174,7 @@ architecture cmp of comper is
 
 begin  -- cmp
 
-  ans<='1' when ((opcode="001001" and op1 = op2)or(opcode="001010" and op1 /= op2) or (opcode="001011" and op1 >= op2) or (opcode="001100" and op1 > op2)) or (opcode="001000" and op1>op2) 
+  ans<='1' when ((opcode="001001" and op1 = op2)or(opcode="001010" and op1 /= op2) or (opcode="001011" and op1 >= op2) or (opcode="001100" and op1 > op2) or (opcode="001000" and op1>op2))
         else '0';
 
 end cmp;
