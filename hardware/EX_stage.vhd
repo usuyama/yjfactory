@@ -91,7 +91,7 @@ lhi_o<=data_imm(15 downto 0) & data_b(15 downto 0);
            else data_j when (ALU_ctrl="010101" or ALU_ctrl="010110" )
            else op_a when (ALU_ctrl="010011" or ALU_ctrl="010100")
            else PC+1;
-  data_out<= FPU_o when (ALU_ctrl="111000" or ALU_ctrl="111001" or ALU_ctrl="111010" or ALU_ctrl="111011" or ALU_ctrl="111100")
+  data_out<= FPU_o when (ALU_ctrl="111000" or ALU_ctrl="111001" or ALU_ctrl="111010" or ALU_ctrl="111011" or ALU_ctrl="111100" or ALU_ctrl="000011" or ALU_ctrl="000110" or ALU_ctrl="011000" or ALU_ctrl="011001" or ALU_ctrl="111101" or ALU_ctrl="111110")
              else lhi_o when (ALU_ctrl="110010" or ALU_ctrl="000100") 
              else lli_o when (ALU_ctrl="110011" or ALU_ctrl="000101") 
              else data_o;
@@ -294,11 +294,14 @@ FSQRT1 : FSQRT port map (
   FLOOR1 : FLOOR port map (
     i => op_a,
     o => ans_floor);
+
   ans_n(30 downto 0)<=op_a(30 downto 0);
   ans_n(31)<='1' when op_a(31)='0' else
              '0';
+
   ans_abs(30 downto 0)<=op_a(30 downto 0);
   ans_abs(31)<='0';
+  
 ans<=ans_a when opcode="111000" else
   ans_m when opcode="111010" else
   ans_d when opcode="111011" else
