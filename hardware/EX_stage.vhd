@@ -305,7 +305,7 @@ ans<=ans_a when opcode="111000" else
   ans_s when opcode="111001" else
   ans_q when opcode="111100" else
   ans_abs when opcode="111110" else
-  ans_n when opcode="000100" else
+  ans_n when opcode="000110" else
   ans_itof when opcode="011000" else
   ans_ftoi when opcode="011001" else
   ans_floor when opcode="111101" else
