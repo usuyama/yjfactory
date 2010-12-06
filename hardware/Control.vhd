@@ -177,6 +177,10 @@ make_signal:process(State)
           when  "000100"|"000101"=>Reg_dist<='0' ;
           when others =>         Reg_dist<='1';
         end case;
+      when "0111110"=>
+        Reg_write<='1';
+        Reg_source<='0';
+        Reg_dist<='1';
       when "0100010"=>
         RG_f<="111";
         ALUSrcA<='1';
@@ -395,6 +399,8 @@ make_signal:process(State)
           state<="0111110";
         when "0111110"=>
           state<="0111111";
+        when "0111111"=>
+          state<="0000000";
 
         when "1000001"=>                --ftoi movf2i
           state<="1000010";
@@ -463,8 +469,8 @@ make_signal:process(State)
                   
         when "1111111"  =>              --start
           state<="0000000";
-        when "0111111"=>                --reset
-          State<="0000000";
+--        when "0111111"=>                --reset
+--          State<="0000000";
         when "0011111"=>                --halt
           state<="0011111";
         when others => State<="0000000";
