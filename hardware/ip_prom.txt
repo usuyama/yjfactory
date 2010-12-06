@@ -1,0 +1,6 @@
+PROMのつくりかた
+
+new source ->IP(hoge)->NameをPROMに->next->Basic elements/Memory elements/Block Memory Generator
+->Finish
+
+singleport RAM->next->widthを32に、depthを適当に。このときアドレス信号の幅が決まる。12/6現在depth64でアドレス[5:0]->load initfileにチェックを入れて使いたいバイナリを指定する->Generate
