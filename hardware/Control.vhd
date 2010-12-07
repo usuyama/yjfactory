@@ -177,7 +177,7 @@ make_signal:process(State)
           when  "000100"|"000101"=>Reg_dist<='0' ;
           when others =>         Reg_dist<='1';
         end case;
-      when "0111110"=>
+      when "0111111"=>
         Reg_write<='1';
         Reg_source<='0';
         Reg_dist<='1';
@@ -188,7 +188,7 @@ make_signal:process(State)
         FPU_ready<='1';
       when "0100011"=>
         FPU_ready<='0';
-      when "0110011"=>
+      when "0110010"=>
         Reg_write<='1';
         Reg_source<='0';
         reg_dist<='0';
@@ -378,8 +378,8 @@ make_signal:process(State)
         when "0110001"=>
           state<="0110010";
         when "0110010"=>
-          state<="0110011";
-        when "0110011"=>
+--          state<="0110011";
+--        when "0110011"=>
           state<="0000000";
 
         when "0110100"=>                --f div
