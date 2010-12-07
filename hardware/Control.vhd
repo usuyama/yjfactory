@@ -65,7 +65,6 @@ make_signal:process(State)
           PC_write_b<='0';
         FPU_ready<='0';
       when "0000000"=>
-        RG_f<="000";
           PCwrite<='1';
           MemWrite<='0';
           MemtoReg<='0';
@@ -189,6 +188,10 @@ make_signal:process(State)
         FPU_ready<='1';
       when "0100011"=>
         FPU_ready<='0';
+      when "0110011"=>
+        Reg_write<='1';
+        Reg_source<='0';
+        reg_dist<='0';
       when "0110100"=>
         RG_f<="111";
         ALUSrcA<='1';
@@ -341,6 +344,7 @@ make_signal:process(State)
           state<="0100001";
         when "0100001"=>
           state<="0000000";
+          
         when "0100010"=>                --fsqrt start
           state<="0100011";
         when "0100011"=>

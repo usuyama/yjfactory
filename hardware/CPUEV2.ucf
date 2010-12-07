@@ -89,7 +89,7 @@ NET  MCLK1		   IOSTANDARD = LVTTL;
 
 #NET "u_mig/u_infrastructure/sys_clk_ibufg" TNM_NET =  "SYS_CLK";
 NET "MCLK1" TNM_NET = "SYS_CLK";
-TIMESPEC "TS_SYS_CLK" = PERIOD "SYS_CLK" 14.52 ns HIGH 50 %;
+TIMESPEC "TS_SYS_CLK" = PERIOD "SYS_CLK" 18.00 ns HIGH 50 %;
 
 ###############################################################################
 # Define multicycle paths - these paths may take longer because additional
