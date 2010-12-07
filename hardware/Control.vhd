@@ -467,6 +467,8 @@ make_signal:process(State)
           state<="1010101";
         when "1010101"=>
           state<="1010110";
+        when "1010110"=>
+          state<="1010111";
         when "1010111"=>
           state<="1011000";
         when "1011000"=>
