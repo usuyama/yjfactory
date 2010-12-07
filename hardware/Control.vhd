@@ -50,6 +50,8 @@ make_signal:process(State)
           MemWrite<='0';
           PCwrite<='0';
           PC_write_b<='0';
+        send_go='0';
+        recv_go<='0';
       when "0011111"=>
         reg_io<='0';
         RG_f<="000";
@@ -64,6 +66,8 @@ make_signal:process(State)
           PCwrite<='0';
           PC_write_b<='0';
         FPU_ready<='0';
+        send_go='0';
+        recv_go='0';
       when "0000000"=>
           PCwrite<='1';
           MemWrite<='0';
@@ -71,7 +75,9 @@ make_signal:process(State)
           Reg_write<='0';
           Reg_dist<='0';
           FPU_ready<='0';
-                reg_io<='0';
+          reg_io<='0';
+          send_go='0';
+          recv_go='0';
       when "1000000"=>
         reg_io<='0';
         RG_f<="000";
