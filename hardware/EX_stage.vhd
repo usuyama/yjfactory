@@ -276,7 +276,7 @@ FDIV1 : FDIV port map (
   B     => op_b,
   R     => ans_d);
   FSUB1:FSUB port map(
-        A => op_a,
+    A => op_a,
     B => op_b,
     S => ans_s
 );
