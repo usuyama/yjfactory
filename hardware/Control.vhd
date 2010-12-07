@@ -72,6 +72,7 @@ make_signal:process(State)
           Reg_write<='0';
           Reg_dist<='0';
           FPU_ready<='0';
+                reg_io<='0';
       when "1000000"=>
         reg_io<='0';
         RG_f<="000";
