@@ -27,9 +27,7 @@ begin
      if(we = '1') then
        RAM(conv_integer(iadd)) <= din;
      end if;
+     dout <= RAM(conv_integer(oadd));
    end if;
   end process;
-
-  dout <= RAM(conv_integer(oadd));
-  
 end behav;
