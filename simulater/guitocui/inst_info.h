@@ -1,7 +1,6 @@
 #ifndef INCLUDED_INST_INFO
 #define INCLUDED_INST_INFO
 
-
 union float_int{
   unsigned int myint;
   float myfloat;
