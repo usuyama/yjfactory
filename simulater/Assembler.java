@@ -340,6 +340,12 @@ public class Assembler {
 			}
 			else if(inst[0].equals("movf2i")){
 			    code.append("010111");
+			    code.append(gr.getFnum(inst[2]));
+			    code.append(gr.getRegnum(inst[1]));
+			    code.append("0000000000000000");
+			}
+			else if(inst[0].equals("movi2f")){
+			    code.append("011111");
 			    code.append(gr.getRegnum(inst[2]));
 			    code.append(gr.getFnum(inst[1]));
 			    code.append("0000000000000000");

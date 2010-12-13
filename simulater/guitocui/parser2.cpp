@@ -317,6 +317,13 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].op2=ext_op2(str);
       //      inst_mem[index].assm = "movf2i\tr" + QString::number(inst_mem[index].op1) + "f" + QString::number(inst_mem[index].op2);
     }
+    else if(inst=="MOVI2F"){
+      cout << "MOVI2F\n";
+      inst_mem[index].opcode=MVI2F;
+      inst_mem[index].op1=ext_op1(str);
+      inst_mem[index].op2=ext_op2(str);
+      //      inst_mem[index].assm = "movf2i\tr" + QString::number(inst_mem[index].op1) + "f" + QString::number(inst_mem[index].op2);
+    }
     else if(inst=="XSENDW"){
       cout << "SENDW\n";
       inst_mem[index].opcode=SENDW;

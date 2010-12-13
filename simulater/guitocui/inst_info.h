@@ -51,6 +51,7 @@ enum {
   FABS,
   FNEG,
   MVF2I,
+  MVI2F,
   SENDW,
   SENDC,
   RECV,
