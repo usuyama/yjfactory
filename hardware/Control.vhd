@@ -430,7 +430,7 @@ make_signal:process(State)
 
         when "1000111"=>                --send
           state<="1001000";
-        when "1001000"=>
+        when "1001000"=>    -- [XXX] send_go must be 0 when send_busy's 1
           case send_busy is
             when '1'=>
               state<="1001000";
@@ -442,7 +442,7 @@ make_signal:process(State)
 
         when "1001001"=>                --recv
           case recv_wait is
-            when '1' =>
+            when '1' =>     -- [XXX] recv_go must be 0 when recv_wait's 1
               state<="1001001";
             when '0' =>
               State<="1001010";
