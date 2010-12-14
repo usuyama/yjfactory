@@ -288,8 +288,14 @@ void hogehoge::doInst(int steps){
       break;
     case MVF2I :
       //        ui->instruction->appendPlainText(iinfo.assm);
-      tmp_union.myfloat = fpr[iinfo.op2];
-      regs[iinfo.op1] = tmp_union.myint;
+      tmp_union.myfloat = fpr[iinfo.op1];
+      regs[iinfo.op2] = tmp_union.myint;
+      pc++;
+      break;
+    case MVI2F :
+      //        ui->instruction->appendPlainText(iinfo.assm);
+      tmp_union.myint = regs[iinfo.op1];
+      fpr[iinfo.op2] = tmp_union.myfloat;
       pc++;
       break;
     case SENDW :
