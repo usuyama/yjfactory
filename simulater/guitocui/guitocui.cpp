@@ -327,9 +327,6 @@ void hogehoge::doInst(int steps){
       return;
 
     case RECV:
-      pc++;break;
-/* 盛大に間違っている。後で直す
-    case RECV :
       if(recv_count==0){
 	ifs >> recv_buf.i;
 	recv_count=4;
@@ -337,6 +334,9 @@ void hogehoge::doInst(int steps){
       regs[iinfo.op1] = (recv_buf.u & mask)>>24;
       recv_buf.u<<=8;
       recv_count--;
+      pc++;break;
+/* 盛大に間違っている。後で直す
+    case RECV :
       pc++;break;
 */
 
