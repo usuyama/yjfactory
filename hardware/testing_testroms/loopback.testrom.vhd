@@ -17,9 +17,10 @@ end PROM;
 
 architecture R_rom of PROM is
 
-type rom_type is array (0 to 2) of std_logic_vector(31 downto 0);
+type rom_type is array (0 to 3) of std_logic_vector(31 downto 0);
   constant rom : rom_type:=(
 	-- entry:
+"00000000000000000000000000000000",
 "11000100000000010000000000000000",	-- 1: 	recv	%r1
 "11010000001000000000000000000000",	-- 2: 	sendc	%r1
 "01010100000000000000000000000000"	-- 3: 	j	entry

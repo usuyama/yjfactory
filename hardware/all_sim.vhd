@@ -32,6 +32,8 @@ entity Allover is
   outdata5 : out std_logic_vector(7 downto 0);
   outdata6 : out std_logic_vector(7 downto 0);
   outdata7 : out std_logic_vector(7 downto 0)
+--  RS_RX:in std_logic;
+--  RS_TX:out std_logic
     );
 
 end Allover;
@@ -41,6 +43,7 @@ component Control
   port(
     clk       : in  std_logic;
     op        : in  std_logic_vector(5 downto 0);
+    wait_signal: in std_logic;
     PCSource  : out std_logic;
     ALUSrcB   : out std_logic_vector(1 downto 0);
     ALUSrcA   : out std_logic;
@@ -53,7 +56,12 @@ component Control
     PC_write_b: out std_logic;
     Reg_source: out std_logic;
     FPU_ready: out std_logic;
-    RG_f : out std_logic_vector(2 downto 0));
+    RG_f : out std_logic_vector(2 downto 0);
+    recv_wait:in std_logic;
+    send_busy:in std_logic;
+    send_go:out std_logic;
+    recv_go:out std_logic;
+    reg_io:out std_logic);
 end component;
 
 component IF_stage
@@ -115,13 +123,15 @@ component WB_stage
     MemtoReg : in  std_logic;
     Mem_data : in  std_logic_vector(31 downto 0);
     ALU_data : in  std_logic_vector(31 downto 0);
+    io_data_i:in std_logic_vector(7 downto 0);
     RegDst   : in  std_logic;
     rt       : in  std_logic_vector(5 downto 0);
     rd       : in  std_logic_vector(5 downto 0);
     r_out    : out std_logic_vector(5 downto 0);
     data_out : out std_logic_vector(31 downto 0);
     Reg_source: in std_logic;
-    PC_in:in std_logic_vector(31 downto 0));
+    PC_in:in std_logic_vector(31 downto 0);
+    reg_io:in std_logic);
 end component;
 
 component Rgstr
@@ -148,7 +158,7 @@ component PROM
   port (
     clka : in std_logic;
 --    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(5 downto 0);
+    addra : in std_logic_vector(6 downto 0);
 --    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -203,12 +213,28 @@ end component;
       outdata6 : out std_logic_vector(7 downto 0);
       outdata7 : out std_logic_vector(7 downto 0)); 
   end component;
+  component IO_wrapper is
+      port (
+    clk      : in  std_logic;
+    RS_RX  : in  std_logic;
+    RS_TX  : out std_logic;
+    send_busy : out std_logic;
+    recv_wait: out std_logic;
+    out_go: in std_logic;
+    in_go:in std_logic;
+    SD : in std_logic_vector(7 downto 0);
+    DOUT:out std_logic_vector(7 downto 0)
+    );
+  end component;
+
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
+signal send_busy_io,recv_wait_io,out_go_io,in_go_io : std_logic := '0';
+  signal SD_io,DOUT_io : std_logic_vector(7 downto 0);
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
-signal PC_source,ALUSrcA,Reg_write,Reg_dist,IRWrite,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source : std_logic;
+signal PC_source,ALUSrcA,Reg_write,Reg_dist,IRWrite,MemtoReg,MemWrite,PCwrite,PC_write_b,Alu_Br_out,Reg_source,reg_io : std_logic;
 signal ALUSrcB : std_logic_vector(1 downto 0);
 signal ALUout,ALU_PC,PC_out,IR_in,op_imm,op_j,data_a,data_b,data_a_a,data_b_a,data_out,Mem_Data,w_r_data,PC_PR: std_logic_vector(31 downto 0);
 signal data_o,data_amd,Mem_data_out_md : std_logic_vector(31 downto 0):=(others=>'0');
@@ -220,7 +246,9 @@ signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
+signal io_wait : std_logic;
   signal F_ready : std_logic;
+  signal RS_RX,RS_TX : std_logic;
 begin  -- all
   p_we<="0";
   p_in<=(others=>'0');
@@ -234,6 +262,7 @@ mclk<=MCLK1;--enable when simuration
 Ctrl: Control port map (
   clk => mclk,
   op => opcode,
+  wait_signal=>io_wait,
   PCSource => PC_source,
   ALUSrcB=>ALUSrcB,
   ALUSrcA=>ALUSrcA,
@@ -245,8 +274,13 @@ Ctrl: Control port map (
   PCwrite=>PCwrite,
   PC_write_b=>PC_write_b,
   Reg_source=>Reg_source,
-  FPU_ready=>F_ready,
-  RG_f=>RG_isf);
+  FPU_ready=>f_ready,
+  RG_f=>RG_isf,
+  recv_wait=>recv_wait_io,
+  send_busy=>send_busy_io,
+  send_go=>out_go_io,
+  recv_go=>in_go_io,
+  reg_io=>reg_io);
 I_F:IF_stage port map (
     PC_Write => PCwrite,
     PC_write_b => PC_write_b,
@@ -296,13 +330,15 @@ mem_Address=>Mem_Addr_out
     MemtoReg =>MemtoReg,                --in
     Mem_data=>Mem_Data,                 --in
     ALU_data=>data_out,                 --in
+    io_data_i=>DOUT_io,
     RegDst=>Reg_dist,                   --in
     rt=>op_r_b,                         --in
     rd=>op_r_c,                         --in
     r_out=>w_r_addr,                    --out
     data_out=>w_r_data,                 --out
     Reg_source=>Reg_source,
-    PC_in=>PC_PR
+    PC_in=>PC_PR,
+    reg_io=>reg_io
     );
   RG:Rgstr port map(
     clk=>mclk,
@@ -323,7 +359,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
 --    wea => p_we,
-    addra => PC_PR(5 downto 0),
+    addra => PC_PR(6 downto 0),
 --    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
@@ -358,14 +394,22 @@ Dr:Driver port map(
   SXLBO =>XLBO,
   Mode_Read =>Mem_We_out,
   SZZA =>ZZA);
-
   
   led : ledextd2 port map(leddata, leddotdata, outdata0, outdata1, outdata2,
                           outdata3, outdata4, outdata5, outdata6, outdata7);
 
-
+io_w : IO_wrapper port map (
+  clk       => mclk,
+  RS_RX     => RS_RX,
+  RS_TX     => RS_TX,
+  send_busy => send_busy_io,
+  recv_wait => recv_wait_io,
+  out_go    => out_go_io,
+  in_go     => in_go_io,
+  SD        => SD_io,
+  DOUT      => DOUT_io);
+SD_io<=data_o(7 downto 0);
   leddata(31 downto 16)<=data_o(15 downto 0);
-
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then
