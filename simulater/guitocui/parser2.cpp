@@ -155,7 +155,7 @@ int parser::parse(inst_info* inst_mem, const char* program){
       inst_mem[index].opcode = SLL;
       fill_2reg_1imm(inst_mem, index,str);
     }
-    else if(inst=="XXXXOR"){ //mul
+    else if(inst=="100111"){ //mul
       cout << "XOR\n";
       inst_mem[index].opcode= XOR;
       fill_3reg(inst_mem,index,str);
