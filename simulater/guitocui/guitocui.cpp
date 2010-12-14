@@ -1,5 +1,6 @@
 #include "hogehoge.h"
 #include <math.h>
+#include <string>
 
 
 hogehoge::hogehoge(const char* input_sld)
@@ -329,8 +330,15 @@ void hogehoge::doInst(int steps){
 
     case RECV:
       if(recv_count==0){
-	ifs >> recv_buf.i;
+	std::string str;
+	ifs >> str;
 	recv_count=4;
+	if(str.find(".")==std::string::npos)
+	  recv_buf.i=atoi(str.c_str());
+	else{
+	  tmp_union.myfloat=atof(str.c_str());
+	  recv_buf.i=tmp_union.myint;
+	}
       }
       regs[iinfo.op1] = (recv_buf.u & mask)>>24;
       recv_buf.u<<=8;
