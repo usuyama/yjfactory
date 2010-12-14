@@ -29,18 +29,19 @@ signal Sign : std_logic;
 signal Com,DIFFLAG : boolean;
 begin
   Com <= B(30 downto 0) > A(30 downto 0);
-  G <= (not B(31) & B(30 downto 0)) when Com else A;
+  G <= (not B(31)) & B(30 downto 0) when Com else A;
   L <= A when Com else B;
-  Sign <= A(31) xor B(31);
+  Sign <= not (A(31) xor B(31));
   DIFF_E <= G(30 downto 23) - L(30 downto 23);
-  DIFFLAG <= (DIFF_E(7 downto 1) = "0000000") and (Sign = '0');
+  DIFFLAG <= (DIFF_E(7 downto 1) = "0000000") and (Sign = '1');
 
   LF_1 <= '1' & L(22 downto 0) & '0' when (DIFF_E(0) = '0') else "01" & L(22 downto 0);
   F_1 <= ('1' & G(22 downto 0) & '0') - LF_1;
-  E_1_NORMALIZED <= G(30 downto 23) - ("000" & P);
+  E_1_NORMALIZED <= "00000000" when (A = B) else
+                    G(30 downto 23) - ("000" & P);
 
   LF_2 <= to_bitvector(("01" & L(22 downto 0) & '0')) srl conv_integer(DIFF_E);
-  F_2 <= ("01" & G(22 downto 0) & '0') + to_stdlogicvector(LF_2) when (Sign = '1') else
+  F_2 <= ("01" & G(22 downto 0) & '0') + to_stdlogicvector(LF_2) when (Sign = '0') else
          ("01" & G(22 downto 0) & '0') - to_stdlogicvector(LF_2);
   F_2_NORMALIZED <= F_2(24 downto 2) when (F_2(25) = '1') else
                     F_2(23 downto 1) when (F_2(24) = '1') else
@@ -51,8 +52,7 @@ begin
 
   S(31) <= G(31);
   S(30 downto 0) <= E_1_NORMALIZED & F_1_NORMALIZED when DIFFLAG else
-                     E_2_NORMALIZED & F_2_NORMALIZED;
+                    E_2_NORMALIZED & F_2_NORMALIZED;
 PRIOR0: TFB_PRIORITY_ENCODER port map (F_1(24 downto 1),P);
 SHIFT0: TFB_LSHIFTER port map (F_1,P,F_1_NORMALIZED);
 end GATE;
-

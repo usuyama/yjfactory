@@ -37,7 +37,8 @@ begin
 
   LF_1 <= '1' & L(22 downto 0) & '0' when (DIFF_E(0) = '0') else "01" & L(22 downto 0);
   F_1 <= ('1' & G(22 downto 0) & '0') - LF_1;
-  E_1_NORMALIZED <= G(30 downto 23) - ("000" & P);
+  E_1_NORMALIZED <= "00000000" when (A - B = "10000000000000000000000000000000") else
+                    G(30 downto 23) - ("000" & P);
 
   LF_2 <= to_bitvector(("01" & L(22 downto 0) & '0')) srl conv_integer(DIFF_E);
   F_2 <= ("01" & G(22 downto 0) & '0') + to_stdlogicvector(LF_2) when (Sign = '0') else
@@ -51,7 +52,7 @@ begin
 
   S(31) <= G(31);
   S(30 downto 0) <= E_1_NORMALIZED & F_1_NORMALIZED when DIFFLAG else
-                     E_2_NORMALIZED & F_2_NORMALIZED;
+                    E_2_NORMALIZED & F_2_NORMALIZED;
 PRIOR0: TFB_PRIORITY_ENCODER port map (F_1(24 downto 1),P);
 SHIFT0: TFB_LSHIFTER port map (F_1,P,F_1_NORMALIZED);
 end GATE;
