@@ -69,10 +69,11 @@ void hogehoge::getPC(){
   std::cout << "pc = "<< pc << std::endl;
 }
 
-typedef struct bothsig_int{
+typedef union bothsig_int{
   int i;
   unsigned int u;
 }bothsig_int;
+
 bothsig_int recv_buf;
 int recv_count=0;
 unsigned int mask = (unsigned int)0xff<<24;
@@ -117,7 +118,7 @@ void hogehoge::doInst(int steps){
       pc++; break;
     case SLL :
       bothsig_int tmpsll;
-      tmpsll.u= (unsigned int)regs[iinfo.op1] << iinfo.op3;
+      tmpsll.u= (unsigned int)(regs[iinfo.op1]) << iinfo.op3;
       regs[iinfo.op2] = tmpsll.i;
       pc++;break;
     case XOR :
