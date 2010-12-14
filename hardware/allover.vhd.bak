@@ -31,8 +31,8 @@ entity Allover is
   outdata4 : out std_logic_vector(7 downto 0);
   outdata5 : out std_logic_vector(7 downto 0);
   outdata6 : out std_logic_vector(7 downto 0);
-  outdata7 : out std_logic_vector(7 downto 0)
---  RS_RX:in std_logic;
+  outdata7 : out std_logic_vector(7 downto 0);
+  --RS_RX:in std_logic;
   --RS_TX:out std_logic
     );
 
@@ -226,8 +226,7 @@ end component;
     DOUT:out std_logic_vector(7 downto 0)
     );
   end component;
-signal RS_TX: std_logic;
-signal RS_RX: std_logic;
+
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);

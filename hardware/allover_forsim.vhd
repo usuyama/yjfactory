@@ -31,9 +31,9 @@ entity Allover is
   outdata4 : out std_logic_vector(7 downto 0);
   outdata5 : out std_logic_vector(7 downto 0);
   outdata6 : out std_logic_vector(7 downto 0);
-  outdata7 : out std_logic_vector(7 downto 0)
---  RS_RX:in std_logic;
-  --RS_TX:out std_logic
+  outdata7 : out std_logic_vector(7 downto 0);
+  RS_RX:in std_logic;
+  RS_TX:out std_logic
     );
 
 end Allover;
@@ -158,7 +158,7 @@ component PROM
   port (
     clka : in std_logic;
 --    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(6 downto 0);
+    addra : in std_logic_vector(5 downto 0);
 --    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -226,8 +226,7 @@ end component;
     DOUT:out std_logic_vector(7 downto 0)
     );
   end component;
-signal RS_TX: std_logic;
-signal RS_RX: std_logic;
+
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
@@ -359,7 +358,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
 --    wea => p_we,
-    addra => PC_PR(6 downto 0),
+    addra => PC_PR(5 downto 0),
 --    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
