@@ -53,7 +53,7 @@ begin  -- wrapper
     SEND_BUSY=>send_busy
     );
 
-  -- block ram に サーバからのデータはたまっている
+  -- block ram に サーバから��タはたまってあ�
   DOUT<=memout;
 
   recv_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)) else
@@ -61,9 +61,7 @@ begin  -- wrapper
 --  flt_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)+3) else '1';
   
   --for recvf
-  -- flt_wait ='0' の時しか、recvf_goが起たない事を想定。
-  -- recvf_go を入れてから、5clock後に、doutに欲しいデータが出てくるはず。
---  process(clk)
+  -- flt_wait ='0' の時しか、recvf_goが起たなぺ�を想定�  -- recvf_go を�れてから�clock後に、doutに欲しい�タが�てくるはず�--  process(clk)
 --  begin
 --  if rising_edge(clk) then
 --    -- 1st clock
@@ -92,7 +90,7 @@ begin  -- wrapper
     if rising_edge(clk) then
       if in_go='1' then
           read_pos<=read_pos+1;
---pos は次にほしいもの。今ほしいものは回す前のposにある。だから手順としてはwb->pos回す->次命令
+--pos は次にほしいも�。今ほしいも�は回す前�posにある。だから手遨してはwb->pos回す->次命令
       end if;
     end if;
   end process;

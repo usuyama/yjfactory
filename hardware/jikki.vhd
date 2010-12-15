@@ -216,6 +216,7 @@ end component;
   component IO_wrapper is
       port (
     clk      : in  std_logic;
+	 RESET:in std_logic;
     RS_RX  : in  std_logic;
     RS_TX  : out std_logic;
     send_busy : out std_logic;
@@ -246,6 +247,7 @@ signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
+signal reset:std_logic;
 signal io_wait : std_logic;
   signal F_ready : std_logic;
 begin  -- all
@@ -399,6 +401,7 @@ Dr:Driver port map(
 
 io_w : IO_wrapper port map (
   clk       => mclk,
+  RESET=>reset,
   RS_RX     => RS_RX,
   RS_TX     => RS_TX,
   send_busy => send_busy_io,
@@ -408,7 +411,7 @@ io_w : IO_wrapper port map (
   SD        => SD_io,
   DOUT      => DOUT_io);
 SD_io<=data_o(7 downto 0);
-  leddata(31 downto 16)<=data_o(15 downto 0);
+  leddata(31 downto 24)<=SD_io;
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then

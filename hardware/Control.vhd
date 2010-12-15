@@ -297,6 +297,8 @@ make_signal:process(State)
             when "001000"=>state<="1000101";  --bgtf
             when "101100"=>state<="1001011";  --storef
             when "100100"=>state<="1010010";  --loadf
+            when "110100"=>state<="1000111";  --send
+            when "110001"=>state<="1001001";  --recv
             when others=>State<="0000000";
           end case;
         when "0000010" =>
