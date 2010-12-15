@@ -333,7 +333,7 @@ void hogehoge::doInst(int steps){
 	std::string str;
 	ifs >> str;
 	recv_count=4;
-	if(inst_mem[pc+10].opcode==MVI2F)
+	if(inst_mem[pc+10].opcode!=MVI2F)
 	  recv_buf.i=atoi(str.c_str());
 	else{
 	  tmp_union.myfloat=atof(str.c_str());
