@@ -8,41 +8,43 @@ entry:
 	lli	%r4, 1
 	sw	%ra, [%sp + 0]
 	addi	%sp, %sp, 1
-	jal	f.135
+	jal	f.139
 	subi	%sp, %sp, 1
 	lw	%ra, [%sp + 0]
 	lli	%r2, -509
 	lhi	%r2, -509
-	j	g.132
+	j	g.136
 halt:
 	halt
-div10_sub.328:
+div10_sub.336:
 	lli	%r3, 10
-	bgt	%r3, %r1, bgt_else.354
+	bgt	%r3, %r1, bgt_else.363
 	lli	%r3, 10
 	sub	%r1, %r1, %r3
 	lli	%r3, 1
 	add	%r2, %r2, %r3
-	j	div10_sub.328
-bgt_else.354:
+	j	div10_sub.336
+bgt_else.363:
 	add	%r1, %r0, %r2
 	jr	%ra
-div10.316:
+div10.320:
 	lli	%r2, 0
-	j	div10_sub.328
-print_int.124:
+	j	div10_sub.336
+print_int.128:
+	lli	%r2, 0
+	bgt	%r2, %r1, bgt_else.364
 	lli	%r2, 10
-	bgt	%r2, %r1, bgt_else.355
+	bgt	%r2, %r1, bgt_else.365
 	sw	%r1, [%sp + 0]
 	sw	%ra, [%sp + 1]
 	addi	%sp, %sp, 2
-	jal	div10.316
+	jal	div10.320
 	subi	%sp, %sp, 2
 	lw	%ra, [%sp + 1]
 	sw	%r1, [%sp + 1]
 	sw	%ra, [%sp + 2]
 	addi	%sp, %sp, 3
-	jal	print_int.124
+	jal	print_int.128
 	subi	%sp, %sp, 3
 	lw	%ra, [%sp + 2]
 	lli	%r1, 10
@@ -53,18 +55,30 @@ print_int.124:
 	lli	%r2, 48
 	add	%r1, %r1, %r2
 	j	yj_print_char
-bgt_else.355:
+bgt_else.365:
 	lli	%r2, 48
 	add	%r1, %r1, %r2
 	j	yj_print_char
-g.132:
-	bneq	%r1, %r2, bneq_else.356
+bgt_else.364:
+	lli	%r2, 45
+	sw	%r1, [%sp + 0]
+	add	%r1, %r0, %r2
+	sw	%ra, [%sp + 2]
+	addi	%sp, %sp, 3
+	jal	yj_print_char
+	subi	%sp, %sp, 3
+	lw	%ra, [%sp + 2]
+	lw	%r1, [%sp + 0]
+	sub	%r1, %r0, %r1
+	j	print_int.128
+g.136:
+	bneq	%r1, %r2, bneq_else.366
 	lli	%r1, 1
-	j	print_int.124
-bneq_else.356:
+	j	print_int.128
+bneq_else.366:
 	lli	%r1, 0
-	j	print_int.124
-f.135:
+	j	print_int.128
+f.139:
 	add	%r5, %r1, %r2
 	add	%r6, %r1, %r3
 	add	%r7, %r1, %r4
