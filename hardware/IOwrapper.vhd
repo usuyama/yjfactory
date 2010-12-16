@@ -67,6 +67,7 @@ ledout<=SD_stay;
       SD_keep<=SD;
     end if;
   end process sdkeep;
+  
   send_pr: process (clk)
   begin  -- process send_pr
     if rising_edge(clk) then
