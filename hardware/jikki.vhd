@@ -158,7 +158,7 @@ component PROM
   port (
     clka : in std_logic;
     wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(5 downto 0);
+    addra : in std_logic_vector(13 downto 0);
     dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -370,7 +370,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
     wea => p_we,
-    addra => PC_PR(5 downto 0),
+    addra => PC_PR(13 downto 0),
     dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
