@@ -224,10 +224,20 @@ end component;
     out_go: in std_logic;
     in_go:in std_logic;
     SD : in std_logic_vector(7 downto 0);
-    DOUT:out std_logic_vector(7 downto 0)
+    DOUT:out std_logic_vector(7 downto 0);
+    Ledout:out std_logic_vector(7 downto 0)
     );
   end component;
+component u232c
+    generic (wtime: std_logic_vector(15 downto 0) := x"1A0A");
+  Port ( clk  : in  STD_LOGIC;
+         data : in  STD_LOGIC_VECTOR (7 downto 0);
+         go   : in  STD_LOGIC;
+         busy : out STD_LOGIC;
+         tx   : out STD_LOGIC);
+end component;
 
+  
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
@@ -409,9 +419,11 @@ io_w : IO_wrapper port map (
   out_go    => out_go_io,
   in_go     => in_go_io,
   SD        => SD_io,
-  DOUT      => DOUT_io);
-SD_io<=data_o(7 downto 0);
+  DOUT      => DOUT_io,
+  ledout=>leddata(23 downto 16));
+SD_io<=data_a(7 downto 0);
   leddata(31 downto 24)<=SD_io;
+  leddata(15 downto 8)<=pc_pr(7 downto 0);
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then

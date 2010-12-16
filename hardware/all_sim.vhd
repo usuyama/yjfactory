@@ -216,6 +216,7 @@ end component;
   component IO_wrapper is
       port (
     clk      : in  std_logic;
+    RESET:in std_logic;
     RS_RX  : in  std_logic;
     RS_TX  : out std_logic;
     send_busy : out std_logic;
@@ -247,6 +248,7 @@ signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
 signal io_wait : std_logic;
+signal reset:std_logic;
   signal F_ready : std_logic;
   signal RS_RX,RS_TX : std_logic;
 begin  -- all
@@ -401,6 +403,7 @@ Dr:Driver port map(
 io_w : IO_wrapper port map (
   clk       => mclk,
   RS_RX     => RS_RX,
+  RESET=>reset,
   RS_TX     => RS_TX,
   send_busy => send_busy_io,
   recv_wait => recv_wait_io,

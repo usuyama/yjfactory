@@ -55,8 +55,8 @@ make_signal:process(State)
       when "0011111"=>
         reg_io<='0';
         RG_f<="000";
-        ALUSrcA<='0';
-          ALUSrcB<="01";
+        ALUSrcA<='1';
+          ALUSrcB<="00";
           PCSource<='0';
           Reg_write<='0';
           Reg_dist<='0';
@@ -274,7 +274,10 @@ make_signal:process(State)
       case State is
         when "0000000" =>
           State<="1000000";
+          
         when "1000000"=>
+          state<="1111100";
+        when "1111100"=>
           State<="0000001";
         when "0000001" =>
           case op is

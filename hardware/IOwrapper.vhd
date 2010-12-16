@@ -15,7 +15,8 @@ entity IO_wrapper is
     SD : in std_logic_vector(7 downto 0);
     send_busy : out std_logic;
     recv_wait: out std_logic;
-    DOUT:out std_logic_vector(7 downto 0)
+    DOUT:out std_logic_vector(7 downto 0);
+    ledout:out std_logic_vector(7 downto 0)
     );
 
 end IO_wrapper;
@@ -38,13 +39,14 @@ architecture wrapper of IO_wrapper is
 --  signal flt_wait : std_logic := '0';
   signal memout: std_logic_vector(7 downto 0);
   signal count: std_logic_vector(1 downto 0);
-  
+  signal SD_stay : std_logic_vector(7 downto 0):=(others=>'0');
+  signal SD_keep : std_logic_vector(7 downto 0);
 begin  -- wrapper
   IO_MOD:IO_MODULE port map(
     CLK=>clk,
     RESET=>RESET,
     RS_RX=>RS_RX,
-    SD=>SD,
+    SD=>SD_keep,
     READ_POS=>read_pos,
     GO=>out_go,
     RS_TX=>RS_TX,
@@ -53,15 +55,32 @@ begin  -- wrapper
     SEND_BUSY=>send_busy
     );
 
-  -- block ram に サーバから��タはたまってあ�
+  -- block ram
+  -- 
   DOUT<=memout;
-
+ledout<=SD_stay;
   recv_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)) else
                 '1';
+  sdkeep: process (out_go)
+  begin  -- process sdkeep
+    if (out_go='1' and out_go'event) then
+      SD_keep<=SD;
+    end if;
+  end process sdkeep;
+  send_pr: process (clk)
+  begin  -- process send_pr
+    if rising_edge(clk) then
+      if out_go='1' then
+        SD_stay<=SD;
+      end if;
+    end if;
+  end process send_pr;
 --  flt_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)+3) else '1';
   
   --for recvf
-  -- flt_wait ='0' の時しか、recvf_goが起たなぺ�を想定�  -- recvf_go を�れてから�clock後に、doutに欲しい�タが�てくるはず�--  process(clk)
+  -- flt_wait ='0'
+  -- recvf_go
+  -- --  process(clk)
 --  begin
 --  if rising_edge(clk) then
 --    -- 1st clock
@@ -90,7 +109,6 @@ begin  -- wrapper
     if rising_edge(clk) then
       if in_go='1' then
           read_pos<=read_pos+1;
---pos は次にほしいも�。今ほしいも�は回す前�posにある。だから手遨してはwb->pos回す->次命令
       end if;
     end if;
   end process;
