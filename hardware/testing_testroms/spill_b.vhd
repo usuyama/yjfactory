@@ -17,7 +17,7 @@ end PROM;
 
 architecture R_rom of PROM is
 
-type rom_type is array (0 to 5) of std_logic_vector(31 downto 0);
+type rom_type is array (0 to 212) of std_logic_vector(31 downto 0);
   constant rom : rom_type:=(
 "11001100000111100000000000000000",
 "10100100000111110000000000001111",
@@ -175,7 +175,8 @@ type rom_type is array (0 to 5) of std_logic_vector(31 downto 0);
 "10000100001110110000100000000000",
 "10001000000000010000100000000000",
 "01001111111000000000000000000000",
-"11010000001000000000000000000000",
+--"11010000001000000000000000000000",
+"00000000001000000000000000000000",
 "01001111111000000000000000000000",
 "11001100000000110000000000000000",
 "10000111101000110010000000000000",
@@ -237,8 +238,9 @@ type rom_type is array (0 to 5) of std_logic_vector(31 downto 0);
 signal read_a : std_logic_vector(6 downto 0);
 signal shortened : std_logic_vector(6 downto 0):=(others=>'0');
 begin  -- R_rom
-  process(clk)
-    if (clk'event and clk='1')then
+  process(clka)
+    begin
+    if (clka'event and clka='1') then
       read_a<=addra;
     end if;
   end process;

@@ -260,6 +260,7 @@ signal dev_null_a : std_logic_vector(3 downto 0);
 signal reset:std_logic;
 signal io_wait : std_logic;
   signal F_ready : std_logic;
+signal gomi : std_logic_vector(31 downto 0);
 begin  -- all
   p_we<="0";
   p_in<=(others=>'0');
@@ -420,10 +421,11 @@ io_w : IO_wrapper port map (
   in_go     => in_go_io,
   SD        => SD_io,
   DOUT      => DOUT_io,
-  ledout=>leddata(23 downto 16));
+  ledout=>gomi(23 downto 16));
+  
 SD_io<=data_a(7 downto 0);
-  leddata(31 downto 24)<=SD_io;
-  leddata(15 downto 8)<=pc_pr(7 downto 0);
+--  leddata(31 downto 24)<=SD_io;
+  leddata(31 downto 8)<=pc_pr(23 downto 0);
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then
