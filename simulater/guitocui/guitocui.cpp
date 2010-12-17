@@ -83,6 +83,7 @@ void hogehoge::doInst(int steps){
   std::ofstream os("outputfile");
   int opcode;
   int tmp,count2=0;
+  int count3=0;
   float_int tmp_union;
 
   for(int count=0; runall || count<steps; count++){
@@ -325,6 +326,7 @@ void hogehoge::doInst(int steps){
       return;
     case HALT :
       //        ui->instruction->appendPlainText("\nprogram end\n");
+      std::cout << "number of instructions "<< count3+count2 << std::endl;
       std::cout << "end program" << std::endl;
       return;
 
@@ -344,11 +346,6 @@ void hogehoge::doInst(int steps){
       recv_buf.u<<=8;
       recv_count--;
       pc++;break;
-/* 盛大に間違っている。後で直す
-    case RECV :
-      pc++;break;
-*/
-
 /* 擬似命令s */
     case SQRT :
       fpr[iinfo.op2] = sqrt(fpr[iinfo.op1]);
@@ -395,6 +392,7 @@ void hogehoge::doInst(int steps){
     }
     count2++;
     if(count2 > 10000000){
+      count3+=10000000;
       count2=0;
       std::cout << " * " << pc << std::endl;
     }
