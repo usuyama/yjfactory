@@ -158,7 +158,7 @@ component PROM
   port (
     clka : in std_logic;
 --    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(5 downto 0);
+    addra : in std_logic_vector(6 downto 0);
 --    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
@@ -223,10 +223,12 @@ end component;
     out_go: in std_logic;
     in_go:in std_logic;
     SD : in std_logic_vector(7 downto 0);
-    DOUT:out std_logic_vector(7 downto 0)
+    DOUT:out std_logic_vector(7 downto 0);
+        Ledout:out std_logic_vector(7 downto 0)
     );
   end component;
-
+signal RS_TX: std_logic;
+signal RS_RX: std_logic;
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
@@ -358,7 +360,7 @@ mem_Address=>Mem_Addr_out
   PR:PROM port map (
     clka => mclk,
 --    wea => p_we,
-    addra => PC_PR(5 downto 0),
+    addra => PC_PR(6 downto 0),
 --    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
@@ -406,8 +408,9 @@ io_w : IO_wrapper port map (
   out_go    => out_go_io,
   in_go     => in_go_io,
   SD        => SD_io,
-  DOUT      => DOUT_io);
-SD_io<=data_o(7 downto 0);
+  DOUT      => DOUT_io,
+  ledout=>leddata(23 DOUT_io 16));
+SD_io<=data_a(7 downto 0);
   leddata(31 downto 16)<=data_o(15 downto 0);
 process (mclk)
 begin  -- process
@@ -442,8 +445,7 @@ begin  -- Programcounter
 out_PC<=Pr;
 
   We1<= (PC_write_b and ALU_b_out);
-  We2<=(PC_Write);
---Pr<=in_PC when We2='1';
+  We2<=(PC_Write);--Pr<=in_PC when We2='1';
 process(clk)
   begin
    if (clk'event and clk='1') then

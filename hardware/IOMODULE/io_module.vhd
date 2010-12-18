@@ -6,6 +6,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity IO_MODULE is
   port(
         CLK: in std_logic;
+        RESET: in std_logic;
         RS_RX : in std_logic;
         SD: in std_logic_vector(7 downto 0);  -- send data
         READ_POS: in std_logic_vector (7 downto 0);
@@ -93,6 +94,7 @@ begin
   end process rx_latch;
 
   RECV_POS<=iadrs_counter;
+          
   receive_sld_data : process (clk)
   begin
     if rising_edge(clk) then
@@ -105,7 +107,9 @@ begin
         we <= '0';
         buf_delay<='0';
       end if;
-      if buf_delay='1' then
+      if RESET='1' then
+        iadrs_counter<=x"00";
+      elsif buf_delay='1' then
         iadrs_counter<=iadrs_counter+1;
       end if;
     end if;

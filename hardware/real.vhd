@@ -20,7 +20,9 @@ entity top is
   ADVA : out std_logic;
   XFT : out std_logic;
   XLBO : out std_logic;
-  ZZA : out std_logic
+  ZZA : out std_logic;
+    RS_RX:in std_logic;
+  RS_TX:out std_logic
 );
 end top;
 
@@ -43,7 +45,9 @@ architecture tp of top is
   ADVA : out std_logic;
   XFT : out std_logic;
   XLBO : out std_logic;
-  ZZA : out std_logic
+  ZZA : out std_logic;
+    RS_RX:in std_logic;
+  RS_TX:out std_logic
 );
   end component;
   signal clk : std_logic:='0';
@@ -88,7 +92,9 @@ AL:Allover port map(
     ADVA =>ADVA1,
     XFT =>XFT1,
     XLBO =>XLBO1,
-    ZZA =>ZZA1);
+    ZZA =>ZZA1
+    RS_RX=>RS_RX,
+  RS_TX=>RS_TX);
   process(clk)
     begin
       if (clk'event and clk='1') then

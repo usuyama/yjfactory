@@ -55,8 +55,8 @@ make_signal:process(State)
       when "0011111"=>
         reg_io<='0';
         RG_f<="000";
-        ALUSrcA<='0';
-          ALUSrcB<="01";
+        ALUSrcA<='1';
+          ALUSrcB<="00";
           PCSource<='0';
           Reg_write<='0';
           Reg_dist<='0';
@@ -90,6 +90,8 @@ make_signal:process(State)
           Reg_source<='0';
           PC_write_b<='0';
           FPU_ready<='0';
+          send_go<='0';
+          recv_go<='0';
       when "0000001" =>
           ALUSrcA<='0';
           ALUSrcB<="11";
@@ -232,11 +234,15 @@ make_signal:process(State)
         ALUSrcA<='1';
         ALUSrcB<="00";
       when "1001000"=>
-        send_go<='1';
+        send_go<='0';
+      when "1011001"=>
+        send_go<='1';       
       when "1001001"=>
-        recv_go<='1';
-      when "1001010"=>
         recv_go<='0';
+ 
+      when "1001010"=>
+        recv_go<='1';
+      --when ""
         reg_io<='1';
         Reg_write<='1';
         Reg_dist<='0';
@@ -268,7 +274,10 @@ make_signal:process(State)
       case State is
         when "0000000" =>
           State<="1000000";
+          
         when "1000000"=>
+          state<="1111100";
+        when "1111100"=>
           State<="0000001";
         when "0000001" =>
           case op is
@@ -291,6 +300,8 @@ make_signal:process(State)
             when "001000"=>state<="1000101";  --bgtf
             when "101100"=>state<="1001011";  --storef
             when "100100"=>state<="1010010";  --loadf
+            when "110100"=>state<="1000111";  --send
+            when "110001"=>state<="1001001";  --recv
             when others=>State<="0000000";
           end case;
         when "0000010" =>
@@ -435,11 +446,12 @@ make_signal:process(State)
             when '1'=>
               state<="1001000";
            when  '0'=>
-              state<="0000000";
+              state<="1011001";
             when others=>
               state<="0000000";
           end case;
-
+        when "1011001"=>
+          state<="0000000";
         when "1001001"=>                --recv
           case recv_wait is
             when '1' =>     -- [XXX] recv_go must be 0 when recv_wait's 1
@@ -450,8 +462,10 @@ make_signal:process(State)
             when others=>
               state<="1001010";
           end case;
-        when "1001010"=>   
+        when "1001010"=>
+--          state<="1011011"
    -- recv_go <= '0' -- (suggestion)
+--        when "1011011"=>
           state<="0000000";
         when "1001011"  =>              --storef
           state<="1001100";

@@ -1,5 +1,6 @@
 #include "hogehoge.h"
 #include <math.h>
+#include <string>
 
 
 hogehoge::hogehoge(const char* input_sld)
@@ -69,10 +70,11 @@ void hogehoge::getPC(){
   std::cout << "pc = "<< pc << std::endl;
 }
 
-typedef struct bothsig_int{
+typedef union bothsig_int{
   int i;
   unsigned int u;
 }bothsig_int;
+
 bothsig_int recv_buf;
 int recv_count=0;
 unsigned int mask = (unsigned int)0xff<<24;
@@ -81,6 +83,7 @@ void hogehoge::doInst(int steps){
   std::ofstream os("outputfile");
   int opcode;
   int tmp,count2=0;
+  int count3=0;
   float_int tmp_union;
 
   for(int count=0; runall || count<steps; count++){
@@ -117,7 +120,7 @@ void hogehoge::doInst(int steps){
       pc++; break;
     case SLL :
       bothsig_int tmpsll;
-      tmpsll.u= (unsigned int)regs[iinfo.op1] << iinfo.op3;
+      tmpsll.u= (unsigned int)(regs[iinfo.op1]) << iinfo.op3;
       regs[iinfo.op2] = tmpsll.i;
       pc++;break;
     case XOR :
@@ -323,23 +326,26 @@ void hogehoge::doInst(int steps){
       return;
     case HALT :
       //        ui->instruction->appendPlainText("\nprogram end\n");
+      std::cout << "number of instructions "<< count3+count2 << std::endl;
       std::cout << "end program" << std::endl;
       return;
 
     case RECV:
-      pc++;break;
-/* 盛大に間違っている。後で直す
-    case RECV :
       if(recv_count==0){
-	ifs >> recv_buf.i;
+	std::string str;
+	ifs >> str;
 	recv_count=4;
+	if(inst_mem[pc+10].opcode!=MVI2F)
+	  recv_buf.i=atoi(str.c_str());
+	else{
+	  tmp_union.myfloat=atof(str.c_str());
+	  recv_buf.i=tmp_union.myint;
+	}
       }
       regs[iinfo.op1] = (recv_buf.u & mask)>>24;
       recv_buf.u<<=8;
       recv_count--;
       pc++;break;
-*/
-
 /* 擬似命令s */
     case SQRT :
       fpr[iinfo.op2] = sqrt(fpr[iinfo.op1]);
@@ -386,6 +392,7 @@ void hogehoge::doInst(int steps){
     }
     count2++;
     if(count2 > 10000000){
+      count3+=10000000;
       count2=0;
       std::cout << " * " << pc << std::endl;
     }

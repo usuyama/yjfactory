@@ -413,7 +413,7 @@ public class Assembler {
 			    code.append("011001");
 			    code.append(gr.getFnum(inst[2]));
 			    code.append(gr.getRegnum(inst[1]));
-			    code.append("00000000000000000000000000");
+			    code.append("0000000000000000");
 			}
 			else if(inst[0].equals("print_float")){
 			    code.append("XPRFLT");
