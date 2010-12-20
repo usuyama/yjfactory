@@ -6,7 +6,6 @@ let rec g x y =
 in
 let rec f a b c d =
   let e = a + b in
-
   let z = a + b + e in
-    -z in
-  g (f 4 3) (-7)
+    -z
+in g (f 4 3 2 1) (-14)
