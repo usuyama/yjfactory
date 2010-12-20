@@ -37,7 +37,11 @@ begin
     end if;
   end if;
 end process p0;
-R <= Sign & E & X4(61 downto 39);
+R(31) <= Sign;
+R(30 downto 23) <= E when (X4(62) = '1') else
+                   E - "00000001";
+R(22 downto 0) <= X4(61 downto 39) when (X4(62) = '1') else
+                  X4(60 downto 38);
 D2 <= (not Y1) + "00000000000000000000000000000001";
 X4 <= X3 * D3;
 Y4 <= Y3 * D3;
