@@ -34,10 +34,10 @@ begin
       X3 <= X1;
       Y3 <= Y1;
       D3 <= D2;
-      R <= Sign & E & X4(61 downto 39);
     end if;
   end if;
 end process p0;
+R <= Sign & E & X4(61 downto 39);
 D2 <= (not Y1) + "00000000000000000000000000000001";
 X4 <= X3 * D3;
 Y4 <= Y3 * D3;
