@@ -1,6 +1,6 @@
 entry:
 	lli	%sp, 0
-	addi	%ra, %r0, halt
+	addi	%ra, %r0, loop
 	lli	%hp, 50000
 	lli	%r1, 4
 	lli	%r2, 3
@@ -11,11 +11,12 @@ entry:
 	jal	f.139
 	subi	%sp, %sp, 1
 	lw	%ra, [%sp + 0]
+	sendc	%r1
 	lli	%r2, -509
 	lhi	%r2, -509
 	j	g.136
-halt:
-	halt
+loop:
+	j	loop
 div10_sub.336:
 	lli	%r3, 10
 	bgt	%r3, %r1, bgt_else.363
