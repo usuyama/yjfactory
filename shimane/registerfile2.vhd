@@ -35,18 +35,22 @@ signal reg:RegType:= (others =>(others => '0'));
 begin
   RD1<=reg(conv_integer(RSEL1));
   RD2<=reg(conv_integer(RSEL2));
-  data_in <= DIN when ISJAL='0' else RET_ADRS;
+--  data_in <= DIN when ISJAL='0' else RET_ADRS;
   
   process(clk)
   begin
     if rising_edge(clk) then
       if WE='1' then
-        if LOW='1' then
-          reg(conv_integer(WSEL))(31 downto 0) <= "0000000000000000"&DIN(15 downto 0);
-        elsif HIGH='1' then
-          reg(conv_integer(WSEL))(31 downto 16) <= DIN(15 downto 0);
+        if ISJAL='0' then
+          if LOW='1' then
+            reg(conv_integer(WSEL))(31 downto 0) <= "0000000000000000"&DIN(15 downto 0);
+          elsif HIGH='1' then
+            reg(conv_integer(WSEL))(31 downto 16) <= DIN(15 downto 0);
+          else
+            reg(conv_integer(WSEL)) <= DIN;
+          end if;
         else
-          reg(conv_integer(WSEL)) <= data_in;
+          reg(31)<=RET_ADRS;
         end if;
       end if;
       if WE_MEM='1' then

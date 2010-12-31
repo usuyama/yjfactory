@@ -14,8 +14,8 @@ architecture behav of receiver3 is
   signal countdown: integer := 0;
   signal recvbuf: std_logic_vector(7 downto 0) := (others=>'1');
   signal state: std_logic_vector(3 downto 0) := "1110";
-  constant waittime: integer := 6616;
-  constant conftime: integer := 3308;
+  constant waittime: integer := 5729;
+  constant conftime: integer := 2865;
   signal read_count: integer := 0;
 
 begin

@@ -9,11 +9,11 @@ entity IO_MODULE is
         RESET: in std_logic;
         RS_RX : in std_logic;
         SD: in std_logic_vector(7 downto 0);  -- send data
-        READ_POS: in std_logic_vector (7 downto 0);
+        READ_POS: in std_logic_vector (10 downto 0);
         GO: in std_logic;
         RS_TX : out std_logic;
         DOUT : out std_logic_vector (7 downto 0);  --received data
-        RECV_POS: out std_logic_vector (7 downto 0);  -- receive 
+        RECV_POS: out std_logic_vector (10 downto 0);  -- receive 
         SEND_BUSY: out std_logic
         );
 end IO_MODULE;
@@ -31,7 +31,7 @@ architecture cntl of IO_MODULE is
   signal received : std_logic_vector (7 downto 0);
 
   component u232c
-    generic (wtime: std_logic_vector(15 downto 0) := x"19D8");
+    generic (wtime: std_logic_vector(15 downto 0) := x"1661");
     Port ( clk  : in  STD_LOGIC;
            data : in  STD_LOGIC_VECTOR (7 downto 0);
            go   : in  STD_LOGIC;
@@ -46,23 +46,23 @@ architecture cntl of IO_MODULE is
     port(
     clk : in std_logic;
     we : in std_logic;
-    iadd : in std_logic_vector (7 downto 0); 
-    oadd : in std_logic_vector (7 downto 0);
+    iadd : in std_logic_vector (10 downto 0); 
+    oadd : in std_logic_vector (10 downto 0);
     din  : in std_logic_vector (7 downto 0);
     dout : out std_logic_vector(7 downto 0)
     );
   end component;
   signal we: std_logic := '0';
-  signal iadd: std_logic_vector (7 downto 0) := (others => '0');
+  signal iadd: std_logic_vector (10 downto 0) := (others => '0');
 --  signal oadd: std_logic_vector (7 downto 0) := (others => '0');
   signal i_slddata: std_logic_vector (7 downto 0);
-  signal iadrs_counter : std_logic_vector (7 downto 0) := (others => '0');
+  signal iadrs_counter : std_logic_vector (10 downto 0) := (others => '0');
   signal state : std_logic_vector (1 downto 0) := "00";
   signal buffed_rx: std_logic := '1';
   signal buf_delay: std_logic:='0';
   
 begin
-  rs232c: u232c generic map (wtime=>x"19D8")
+  rs232c: u232c generic map (wtime=>x"1661")
   port map (
     clk=>clk,
     data=> SD,
@@ -108,7 +108,7 @@ begin
         buf_delay<='0';
       end if;
       if RESET='1' then
-        iadrs_counter<=x"00";
+        iadrs_counter<="00000000000";
       elsif buf_delay='1' then
         iadrs_counter<=iadrs_counter+1;
       end if;

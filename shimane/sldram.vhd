@@ -11,15 +11,15 @@ entity SLDRAM is
       port(
         clk : in std_logic;
         we : in std_logic;
-        iadd : in std_logic_vector (7 downto 0); 
-        oadd : in std_logic_vector (7 downto 0);
+        iadd : in std_logic_vector (10 downto 0); 
+        oadd : in std_logic_vector (10 downto 0);
         din  : in std_logic_vector (7 downto 0);
         dout : out std_logic_vector(7 downto 0)
     );
 end SLDRAM;
 
 architecture behav of SLDRAM is
-type RamType is array(0 to 255) of std_logic_vector(7 downto 0);
+type RamType is array(0 to 2047) of std_logic_vector(7 downto 0);
 signal RAM : RamType;
 begin
   process(clk) begin

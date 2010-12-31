@@ -25,16 +25,16 @@ architecture wrapper of IO_wrapper is
           RESET: in std_logic;
           RS_RX : in std_logic;
           SD: in std_logic_vector (7 downto 0);
-          READ_POS: in std_logic_vector (7 downto 0);
+          READ_POS: in std_logic_vector (10 downto 0);
           GO: in std_logic;
           RS_TX : out std_logic;
           DOUT : out std_logic_vector (7 downto 0);  --received data
-          RECV_POS: out std_logic_vector (7 downto 0);  -- receive 
+          RECV_POS: out std_logic_vector (10 downto 0);  -- receive 
           SEND_BUSY: out std_logic
           );
     end component;
-  signal read_pos : std_logic_vector(7 downto 0) := (others=>'0');
-  signal recv_pos : std_logic_vector(7 downto 0) := (others=>'0');
+  signal read_pos : std_logic_vector(10 downto 0) := (others=>'0');
+  signal recv_pos : std_logic_vector(10 downto 0) := (others=>'0');
 --  signal flt_wait : std_logic := '0';
   signal memout: std_logic_vector(7 downto 0);
   signal count: std_logic_vector(1 downto 0);

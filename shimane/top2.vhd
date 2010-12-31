@@ -31,6 +31,14 @@ entity top is
 end top;
 
 architecture behav of top is
+  component mydcm is
+    port ( CLKIN_IN        : in    std_logic; 
+           RST_IN          : in    std_logic; 
+           CLKFX_OUT       : out   std_logic; 
+           CLKIN_IBUFG_OUT : out   std_logic; 
+           CLK0_OUT        : out   std_logic; 
+           LOCKED_OUT      : out   std_logic);
+  end component;
   
   component processor is
     port(CLK: in std_logic;
@@ -63,13 +71,26 @@ architecture behav of top is
   signal state: std_logic_vector(1 downto 0):="00";
   signal start_sig: std_logic:='0';
 
+  signal dcm_reset:std_logic:='0';
+  signal dcm_clkin_ibufg_out:std_logic;
+  signal dcm_clk0_out:std_logic;
+  signal dcm_locked_out:std_logic;
+
 begin
-  ib: IBUFG port map (
-    i=>MCLK1,
-    o=>iclk);
-  bg: BUFG port map (
-    i=>iclk,
-    o=>clk);
+--  ib: IBUFG port map (
+--    i=>MCLK1,
+--    o=>iclk);
+--  bg: BUFG port map (
+--    i=>iclk,
+--    o=>clk);
+  adcm:mydcm port map(
+    CLKIN_IN =>MCLK1,
+    RST_IN=>dcm_reset,
+    CLKFX_OUT=>clk,
+    CLKIN_IBUFG_OUT=>dcm_clkin_ibufg_out,
+    CLK0_OUT=>dcm_clk0_out,
+    LOCKED_OUT=>dcm_locked_out
+    );
 
   myprocesser:processor port map(
     CLK=>clk,

@@ -27,12 +27,12 @@ entity SRAM_CTRLER is
 );
 end SRAM_CTRLER;
 architecture structure of SRAM_CTRLER is
-  signal din_buf: std_logic_vector (31 downto 0) := x"00000001";
-  signal din_buf2: std_logic_vector (31 downto 0) :=  x"00000001";
+  signal din_buf: std_logic_vector (31 downto 0) := x"00000000";
+--  signal din_buf2: std_logic_vector (31 downto 0) :=  x"00000001";
   signal pin_buf: std_logic_vector (3 downto 0) := (others => '1');
-  signal pin_buf2: std_logic_vector (3 downto 0) := (others => '1');
+--  signal pin_buf2: std_logic_vector (3 downto 0) := (others => '1');
   signal we_buf: std_logic := '0';
-  signal we_buf2: std_logic := '0';
+--  signal we_buf2: std_logic := '0';
   
 begin
   XWA <= not we;

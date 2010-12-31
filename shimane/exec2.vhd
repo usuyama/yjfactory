@@ -47,10 +47,11 @@ component FMUL is
   port (A,B : in std_logic_vector(31 downto 0);
         P : out std_logic_vector(31 downto 0));
 end component;
-component FDIV is
-  port(MCLK1,ready : in std_logic;
+component cgdiv is
+  port(
        A,B : in std_logic_vector(31 downto 0);
-       R : out std_logic_vector(31 downto 0));
+       clk:in std_logic;
+       result : out std_logic_vector(31 downto 0));
 end component;
 component FTOI is
   port(
@@ -117,12 +118,11 @@ begin
     (A=>FA,
      B=>FB,
      P=>fmul_ret);
-  FDIVER:FDIV port map(
-    MCLK1=>CLK,
-    ready=>FP_GO,
-    A=>FA,
-    B=>FB,
-    R=>fdiv_ret);
+  FDIVER:cgdiv port map(
+    a=>FA,
+    b=>FB,
+    clk=>CLK,
+    result=>fdiv_ret);
   FTOIER:FTOI port map(
     i =>FA,
     o =>ftoi_ret
@@ -178,8 +178,7 @@ begin
         '0';
 
   dif_sign_f <= FA(31) xor FB(31);
-  gtf <= '0' when FA(30 downto 0)="0000000000000000000000000000000" and FB(30 downto 0)="0000000000000000000000000000000" else
-         FB(31) when dif_sign_f='1' else
+  gtf <= FB(31) when dif_sign_f='1' else
          '1' when FA > FB else
          '0';
       

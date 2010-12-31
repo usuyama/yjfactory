@@ -242,6 +242,7 @@ component exec is
   signal recv_delay: std_logic;
   signal io_send_busy: std_logic;
   signal io_recv_wait: std_logic;
+--  signal io_recv_wait2: std_logic:='0';
   signal data_frmio: std_logic_vector(7 downto 0);
   signal data_frmio32: std_logic_vector(31 downto 0);  
 

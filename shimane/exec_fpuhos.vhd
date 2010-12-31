@@ -47,15 +47,16 @@ component FMUL is
   port (A,B : in std_logic_vector(31 downto 0);
         P : out std_logic_vector(31 downto 0));
 end component;
-component FDIV is
-  port(MCLK1,ready : in std_logic;
-       A,B : in std_logic_vector(31 downto 0);
-       R : out std_logic_vector(31 downto 0));
-end component;
-component FTOI is
+component cgdiv is
   port(
-    i : in std_logic_vector(31 downto 0);  --input integer
-    o : out std_logic_vector(31 downto 0)
+       a,b : in std_logic_vector(31 downto 0);
+       clk: in std_logic;
+       result : out std_logic_vector(31 downto 0));
+end component;
+component ftoicg is
+  port(
+    a : in std_logic_vector(31 downto 0);  --input integer
+    result : out std_logic_vector(31 downto 0)
     );
   end component;
 component ITOF is
@@ -70,10 +71,11 @@ component FLOOR is
     o : out std_logic_vector(31 downto 0)
     );
   end component;
-component FSQRT is
-  port(MCLK1,ready : in std_logic;
-       A : in std_logic_vector(31 downto 0);
-       R : out std_logic_vector(31 downto 0));
+component cgsqrt is
+  port(
+    a : in std_logic_vector(31 downto 0);
+    clk: in std_logic;
+    result : out std_logic_vector(31 downto 0));
   end component;
 
 constant bgt_t: std_logic_vector(2 downto 0):="100";
@@ -84,6 +86,7 @@ constant bgtf_t: std_logic_vector(2 downto 0):="000";
 
 signal gt: std_logic;
 signal gtf: std_logic;
+signal gtf_tmp: std_logic;
 signal is_equal: std_logic;
 signal dif_sign: std_logic;
 signal dif_sign_f: std_logic;
@@ -95,7 +98,8 @@ signal fdiv_ret: std_logic_vector(31 downto 0);
 signal ftoi_ret: std_logic_vector(31 downto 0);
 signal sqrt_ret:std_logic_vector(31 downto 0);
 signal floor_ret:std_logic_vector(31 downto 0);
-signal itof_ret:std_logic_vector(31 downto 0);  
+signal itof_ret:std_logic_vector(31 downto 0);
+signal movf2i_ret:std_logic_vector(31 downto 0);
 
 signal frm_alu: std_logic_vector(31 downto 0);
 
@@ -117,15 +121,14 @@ begin
     (A=>FA,
      B=>FB,
      P=>fmul_ret);
-  FDIVER:FDIV port map(
-    MCLK1=>CLK,
-    ready=>FP_GO,
+  FDIVER:cgdiv port map(
     A=>FA,
     B=>FB,
-    R=>fdiv_ret);
-  FTOIER:FTOI port map(
-    i =>FA,
-    o =>ftoi_ret
+    clk=>CLK,
+    result=>fdiv_ret);
+  FTOIER:ftoicg port map(
+    a =>FA,
+    result =>ftoi_ret
     );
   ITOFER:ITOF port map(
     i_int =>A,
@@ -135,16 +138,16 @@ begin
     i =>FA,
     o =>floor_ret
     );
-  SQRTER:FSQRT port map(
-    MCLK1=>CLK,
-    ready=>FP_GO,
+  SQRTER:cgsqrt port map(
     A=>FA,
-    R=>sqrt_ret
+    clk=>clk,
+    result=>sqrt_ret
     );
   
   -- 整数レジスタ達に渡す値の選択。
+  movf2i_ret <= x"00000000" when FA="10000000000000000000000000000000" else FA;
   CALC_DATA<= ftoi_ret when ALU_CODESUB="01" else
-              FA when ALU_CODESUB="10" else
+              movf2i_ret when ALU_CODESUB="10" else
               frm_alu;
   
   addsub_f(30 downto 0)<= FB(30 downto 0);
@@ -178,10 +181,11 @@ begin
         '0';
 
   dif_sign_f <= FA(31) xor FB(31);
+  
+  gtf_tmp <= '1' when FA(30 downto 0) > FB(30 downto 0) else '0';
   gtf <= '0' when FA(30 downto 0)="0000000000000000000000000000000" and FB(30 downto 0)="0000000000000000000000000000000" else
          FB(31) when dif_sign_f='1' else
-         '1' when FA > FB else
-         '0';
+         (gtf_tmp xor FA(31));
       
   process(is_equal,gt,gtf,BRANCH_T,ISJR,BR_COND)
   begin
