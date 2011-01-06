@@ -26,7 +26,7 @@ end SRAM;
 
 architecture SR of SRAM is
 signal clk : std_logic;
-type RAM_type is array (63 downto 0) of std_logic_vector(35 downto 0);
+type RAM_type is array (2048 downto 0) of std_logic_vector(35 downto 0);
 signal RAM : ram_type := (others=>(others=>'0'));
 signal addr_keep_a,addr_keep_b,addr_keep_c : std_logic_vector(19 downto 0);
 signal XE : std_logic_vector(2 downto 0) :=(others=> '0');

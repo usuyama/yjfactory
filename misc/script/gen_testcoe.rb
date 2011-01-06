@@ -30,6 +30,9 @@ def write_with_binary_only(binary_file, output_file)
   out_stream.close
 end
 
+if ARGV[1].nil?
+  puts "ruby gen_testcoe.rb binary output"
+end
 binary = ARGV[0]
 output = ARGV[1]
 

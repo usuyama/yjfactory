@@ -5,11 +5,14 @@ let rec print_int x =
       else div10_sub (x - 10) (ret + 1)
     in div10_sub x 0
   in
-    if x < 10 then print_char (x + 48)
+    if x < 0 then
+      (print_char 45;print_int (-x))
     else
-      let q = div10 x
-      in (print_int q;
-	  print_char ((x-q*10) + 48))
+      if x < 10 then print_char (x + 48)
+      else
+	let q = div10 x
+	in (print_int q;
+	    print_char ((x-q*10) + 48))
 in
 let rec sin x =
   let rec calc_sin x =
@@ -53,9 +56,9 @@ let rec cos x =
 	else calc_cos x
   in if x >= 0.0 then cosf__ x else cosf__ (-.x)
 in let rec atan x = (* taylor expansion *)
-  if abs_float x > 0.15 then
+  if fabs x > 0.15 then
     let new_x = ( -1.0 +. sqrt ( 1.0 +. x *. x )) /. x in
-      2.0 *. ( arctan new_x )
+      2.0 *. ( atan new_x )
   else
     let xx = x *. x in (* honer method *)
       x *. (1. +. xx *. (-1. /. 3. +. xx *. (1. /. 5. +. xx *. (1. /. 7.))))

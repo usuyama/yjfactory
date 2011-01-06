@@ -58,7 +58,7 @@ begin  -- wrapper
   -- block ram
   -- 
   DOUT<=memout;
-ledout<=SD_stay;
+--ledout<=SD_stay;
   recv_wait<='0' when (conv_integer(recv_pos)>conv_integer(read_pos)) else
                 '1';
   sdkeep: process (out_go)

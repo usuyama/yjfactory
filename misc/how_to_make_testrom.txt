@@ -1,5 +1,5 @@
 #テストコードを作る
-1, まず、コンパイルして、アセンブリとバイナリを生成
+1, [まず、コンパイルして、アセンブリとバイナリを生成]
     yjfactory/compiler/min-caml-0.1.0/test
   に移動
     ruby exec.rb (program_name.ml)
@@ -7,5 +7,8 @@
     program_name.s # assembly
     program_name  # binary
   が作られる
-2, testrom用に生計
+2, [testrom用に整形]
    ruby gen_testrom.rb binary_file output_file [assembly_file]
+または
+   ruby gen_tescoe.rb binary_file
+

@@ -1,0 +1,185 @@
+/home/shimane/mycpu/processor.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/processor.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity processor
+-- Compiling architecture behav of processor
+
+} {} {}} /home/shimane/mycpu/testbench.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/testbench.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity testbench
+-- Compiling architecture behav of testbench
+
+} {} {}} /home/shimane/mycpu/receiver3.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/receiver3.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity receiver3
+-- Compiling architecture behav of receiver3
+
+} {} {}} /home/shimane/mycpu/fpregistefile.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/fpregistefile.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity fpregs
+-- Compiling architecture behav of fpregs
+
+} {} {}} /home/shimane/mycpu/IOwrapper.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/IOwrapper.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity io_wrapper
+-- Compiling architecture wrapper of io_wrapper
+
+} {} {}} /home/shimane/mycpu/hazard.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/hazard.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity hazard_cntl
+-- Compiling architecture rtl of hazard_cntl
+
+} {} {}} /home/shimane/mycpu/register32.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/register32.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity reg32bit
+-- Compiling architecture behav of reg32bit
+
+} {} {}} /home/shimane/mycpu/fetch.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/fetch.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity fetch
+-- Compiling architecture behav of fetch
+
+} {} {}} /home/shimane/mycpu/FMUL.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/FMUL.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity fmul
+-- Compiling architecture gate of fmul
+
+} {} {}} /home/shimane/mycpu/decode.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/decode.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity decode
+-- Compiling architecture behav of decode
+
+} {} {}} /home/shimane/mycpu/registerfile.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/registerfile.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity regfile
+-- Compiling architecture behav of regfile
+
+} {} {}} /home/shimane/mycpu/io_module.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/io_module.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity io_module
+-- Compiling architecture cntl of io_module
+
+} {} {}} /home/shimane/mycpu/FADD.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/FADD.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity fadd
+-- Compiling architecture gate of fadd
+-- Compiling entity tfb_priority_encoder
+-- Compiling architecture gate of tfb_priority_encoder
+-- Compiling entity tfb_lshifter
+-- Compiling architecture gate of tfb_lshifter
+
+} {} {}} /home/shimane/mycpu/FDIV.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/FDIV.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity fdiv
+-- Compiling architecture structure of fdiv
+
+} {} {}} /home/shimane/mycpu/alu.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/alu.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_signed
+-- Compiling entity alu
+-- Compiling architecture behav of alu
+
+} {} {}} /home/shimane/mycpu/mux.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/mux.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity mux
+-- Compiling architecture behav of mux
+
+} {} {}} /home/shimane/mycpu/sldram.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/sldram.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity sldram
+-- Compiling architecture behav of sldram
+
+} {} {}} /home/shimane/mycpu/controller.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/controller.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity controller
+-- Compiling architecture behav of controller
+
+} {} {}} /home/shimane/mycpu/exec.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/exec.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity exec
+-- Compiling architecture behav of exec
+
+} {} {}} /home/shimane/mycpu/instmem.vhd {1 {vcom -work work -2002 -explicit -vopt /home/shimane/mycpu/instmem.vhd
+Model Technology ModelSim SE vcom 6.6a Compiler 2010.03 Mar 19 2010
+-- Loading package standard
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package std_logic_unsigned
+-- Compiling entity instmem
+-- Compiling architecture behav of instmem
+
+} {} {}}

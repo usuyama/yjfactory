@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
 
 entity top is
-  
+  port (clk:in std_logic);
 end top;
 
 architecture tp of top is
@@ -46,10 +46,12 @@ architecture tp of top is
   ADVA : out std_logic;
   XFT : out std_logic;
   XLBO : out std_logic;
-  ZZA : out std_logic
+  ZZA : out std_logic;
+  RS_RX:in std_logic;
+  RS_TX:out std_logic
 );
   end component;
-  signal clk : std_logic:='0';
+--  signal clk : std_logic:='0';
   signal ZD : std_logic_vector(31 downto 0):=(others=>'0');
 --  variable ZD;
   signal ZDP : std_logic_vector(3 downto 0):=(others=>'0');
@@ -65,10 +67,13 @@ architecture tp of top is
   signal XFT : std_logic:='0';
   signal XLBO : std_logic:='0';
   signal ZZA : std_logic:='0';
+  signal RS_RX,RS_TX : std_logic:='0';
+  signal clk1:std_logic;
   
 begin  -- tp
+clk1<=clk;
 AL:Allover port map(
-  MCLK1=>clk,
+  MCLK1=>clk1,
    ZD  =>ZD,
     ZDP =>ZDP,
     ZA   =>ZA,
@@ -82,7 +87,9 @@ AL:Allover port map(
     ADVA =>ADVA,
     XFT =>XFT,
     XLBO =>XLBO,
-    ZZA =>ZZA);
+    ZZA =>ZZA,
+	 RS_RX=>RS_RX,
+	 RS_TX=>RS_TX);
 SR:SRAM port map( 
    ZD  =>ZD,
     ZDP =>ZDP,
