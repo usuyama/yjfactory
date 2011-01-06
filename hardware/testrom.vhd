@@ -8,14 +8,14 @@ entity PROM is
 
   port (
     clka  : in  std_logic;
---    wea   : in  std_logic_vector(0 downto 0);
-    addra : in  std_logic_vector(6 downto 0);
---    dina  : in  std_logic_vector(31 downto 0);
+    wea   : in  std_logic_vector(0 downto 0);
+    addra : in  std_logic_vector(13 downto 0);
+    dina  : in  std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 
 end PROM;
 
-architecture R_rom of PROM is
+architecture PR of PROM is
 
   -- ans(%r1) = -509
 type rom_type is array (0 to 107) of std_logic_vector(31 downto 0);
@@ -135,6 +135,12 @@ type rom_type is array (0 to 107) of std_logic_vector(31 downto 0);
 
 signal shortened : std_logic_vector(6 downto 0):=(others=>'0');
 begin  -- R_rom
-  shortened<=addra(6 downto 0);
+  process (clka)
+  begin  -- process
+    if rising_edge(clka) then
+        shortened<=addra(6 downto 0);
+    end if;
+  end process;
+
     douta<=rom(conv_integer(shortened));
-end R_rom;
+end PR;

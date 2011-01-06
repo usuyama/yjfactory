@@ -28,7 +28,7 @@ type ram_type is array (63 downto 0) of std_logic_vector(31 downto 0);
   begin
     if (clk'event and clk = '1') then
       if (we = '1') then
-        if (a="00000") then
+        if (a="000000") then
           NULL;
           else
           RAM(conv_integer(a)) <= di;

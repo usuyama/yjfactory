@@ -26,6 +26,7 @@ begin  -- MA
              (others=>'Z');
   
   data_out<=mem_Data_in;
+--mem_WE<= '0' when  mem_write='1' else '1';
   mem_WE<=mem_write;
   mem_Address<=mem_addr;
 

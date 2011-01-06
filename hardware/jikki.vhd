@@ -241,7 +241,9 @@ end component;
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
-signal send_busy_io,recv_wait_io,out_go_io,in_go_io : std_logic := '0';
+signal send_busy_io,recv_wait_io:std_logic;
+  signal out_go_io:std_logic:='0';
+  signal in_go_io : std_logic := '0';
   signal SD_io,DOUT_io : std_logic_vector(7 downto 0);
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
@@ -424,8 +426,9 @@ io_w : IO_wrapper port map (
   ledout=>gomi(23 downto 16));
   
 SD_io<=data_a(7 downto 0);
---  leddata(31 downto 24)<=SD_io;
-  leddata(31 downto 8)<=pc_pr(23 downto 0);
+  leddata(31 downto 24)<=data_a(7 downto 0);
+  leddata(23 downto 16)<=data_b(7 downto 0);
+  leddata(15 downto 8)<=pc_pr(7 downto 0);
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then

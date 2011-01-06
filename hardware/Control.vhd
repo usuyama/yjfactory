@@ -4,7 +4,8 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 entity Control is
- 
+ generic (
+   speed_limit : std_logic_vector(27 downto 0) := x"0000000");
   port (
     clk       : in  std_logic;
     op        : in  std_logic_vector(5 downto 0);
@@ -33,6 +34,8 @@ end Control;
 
 architecture Con of Control is
 signal State : std_logic_vector(6 downto 0):=(others=>'1');
+signal countdown: std_logic_vector(27 downto 0):=(others=>'0');
+signal execed_order:std_logic_vector(33 downto 0):=(others=>'0');
 begin  -- Con
 make_signal:process(State)
   begin
@@ -133,7 +136,7 @@ make_signal:process(State)
       when "0001001"=>
         ALUSrcA<='1';
         ALUSrcB<="10";
-
+        MemWrite<='1';
       when "0001010"=>
         ALUSrcA<='1';
         ALUSrcB<="00";
@@ -163,9 +166,10 @@ make_signal:process(State)
         PCSource<='0';
 
       when "0010000"=>
-        MemWrite<='1';
-      when "0011000"=>
-        memwrite<='1';
+        MemWrite<='0';
+--        MemWrite<='1';
+--      when "0011000"=>
+--        memwrite<='1';
       when "0011001"=>
         memwrite<='0';
       when "0010001"=>null;
@@ -268,9 +272,20 @@ make_signal:process(State)
       when others => null;
     end case;
   end process make_signal;
+  limit_speed:process (clk)
+  begin
+  if rising_edge(clk) then
+    if countdown=x"0000000" then
+      countdown<=speed_limit;
+    else
+      countdown<=countdown-1;
+    end if;
+	 end if;
+  end process;
+      
   Statemachine: process (clk)
   begin  -- process Statemachine
-    if (clk'event and clk = '1') then  -- rising clock edge
+    if (clk'event and clk = '1' and speed_limit=x"0000000" ) then  -- rising clock edge
       case State is
         when "0000000" =>
           State<="1000000";
@@ -280,6 +295,7 @@ make_signal:process(State)
         when "1111100"=>
           State<="0000001";
         when "0000001" =>
+		  execed_order<=execed_order+1;
           case op is
             when "100001"|"100010"|"100011"|"100101"|"100110"|"100111" =>State<="0000010";--R
             when "101001"|"101010"|"101011"|"101101"|"101110"|"101111"|"010010"|"110010"|"110011"|"010000" =>State<="0000011";--Ri
@@ -302,6 +318,7 @@ make_signal:process(State)
             when "100100"=>state<="1010010";  --loadf
             when "110100"=>state<="1000111";  --send
             when "110001"=>state<="1001001";  --recv
+            when "000000"=>state<="0000000";  --nop
             when others=>State<="0000000";
           end case;
         when "0000010" =>
@@ -322,20 +339,27 @@ make_signal:process(State)
 --          state<="0000000";
         when "0001000"=>
           state<="0001111";
-        when "0001001" =>
+          
+        when "0001001" =>               --SW
           State<="0010000";
-        when "0001010" =>
+        when "0010000"=>
+          state<="0000000";
+
+          
+        when "0001010" =>               --lw
           state<="0010100";
         when "0010100"=>
-          state<="0010101";
-        when "0010101"=>
-          state<="0010110";
-        when "0010110"=>
-          state<="0010111";
-        when "0010111"=>
-          State<="0010011";
-        when "0001011"=>                 --SW
+--          state<="0010101";
+--        when "0010101"=>
+--          state<="0000000";
+--          state<="0010110";
+--        when "0010110"=>
+--          state<="0010111";
+--        when "0010111"=>
+          State<="0010011";             --kaku
+        when "0001011"=>                
           State<="0000000";
+          
         when "0001100"=>
           State<="0000000";
         when "0001101"=>
@@ -345,18 +369,24 @@ make_signal:process(State)
         when "0001111"=>
       State<="0000000";
 --          state<="0111110";
-        when "0010000"=>
-          State<="0011000";
-        when "0011000"=>
-          state<="0011001";
-        when "0011001"=>
-          state<="0011010";
-        when "0011010"=>
-          state<="0011011";
-        when "0011011"=>
-          state<="0011100";
+      
+--          State<="0011000";
+
+--        when "0011000"=>
+--          state<="0011001";
+
+--        when "0011001"=>
+--          state<="0011010";
+
+--        when "0011010"=>
+--          state<="0011011";
+
+--        when "0011011"=>
+--          state<="0011100";
+
         when "0010011"=>
           State<="0000000";
+          
         when "0100000"=>                --f R
           state<="0100001";
         when "0100001"=>
@@ -470,27 +500,28 @@ make_signal:process(State)
         when "1001011"  =>              --storef
           state<="1001100";
         when "1001100"=>
-          state<="1001101";
-        when "1001101"=>
-          state<="1001110";
-        when "1001110"=>
-          state<="1001111";
-        when "1010000"=>
-          state<="1010001";
-        when "1010001"=>
+--          state<="1001101";
           state<="0000000";
+--        when "1001101"=>
+--          state<="1001110";
+--        when "1001110"=>
+--          state<="1001111";
+--        when "1010000"=>
+--          state<="1010001";
+ --       when "1010001"=>
+ --         state<="0000000";
 
         when "1010010"  =>              --load f
           state<="1010011";
         when "1010011"=>
-          state<="1010100";
-        when "1010100"=>
-          state<="1010101";
-        when "1010101"=>
-          state<="1010110";
-        when "1010110"=>
-          state<="1010111";
-        when "1010111"=>
+--          state<="1010100";
+--        when "1010100"=>
+--          state<="1010101";
+--        when "1010101"=>
+--          state<="1010110";
+--        when "1010110"=>
+--          state<="1010111";
+--        when "1010111"=>
           state<="1011000";
         when "1011000"=>
           state<="0000000";

@@ -32,7 +32,7 @@ signal SXWA_sig:std_logic:='0';
 signal buff1:std_logic_vector(31 downto 0);
 signal buff2:std_logic_vector(31 downto 0);
 signal par_buff: std_logic_vector(3 downto 0);
-
+signal mode_read_1 : std_logic := '1';
 begin  -- Dr
   SZCLKMA(1)<=clk;
   SZCLKMA(0)<=clk;
@@ -50,24 +50,32 @@ begin  -- Dr
   SXWA<=not(Mode_read);
   out_data<=data;
   out_par<=parity;
-    controller:process(clk)
-     begin
-       if rising_edge(clk) then
-         if Mode_Read='1' then
-             data<=(others=>'Z');
-             parity<=(others=>'Z');
-         else
-           data<=buff2;
-           parity<=par_buff;
-         end if;
-           buff2<=buff1;
-           buff1<=in_data;
---	   data<=in_data;	--pattern1
-									--pattern1.
-           par_buff<=in_par;
+  data<=buff1 when mode_read_1='1' else (others=>'Z');
+  controller: process (clk)
+  begin  -- process controller
+    if rising_edge(clk) then
+      mode_read_1<=Mode_Read;
+      buff1<=in_data;
+    end if;
+  end process controller;
+--  controller:process(clk)
+--     begin
+--       if rising_edge(clk) then
+--         if Mode_Read='1' then
+--             data<=(others=>'Z');
+--             parity<=(others=>'Z');
+--         else
+--           data<=buff2;
+--           parity<=par_buff;
+--         end if;
+--           buff2<=buff1;
+--           buff1<=in_data;
+----	   data<=in_data;	--pattern1
+--									--pattern1.
+--           par_buff<=in_par;
 
---           out_data<=(others=>'Z');
---           out_par<=(others=>'Z');
-       end if;
-     end process;
+----           out_data<=(others=>'Z');
+----           out_par<=(others=>'Z');
+--       end if;
+--     end process;
 end Dr;

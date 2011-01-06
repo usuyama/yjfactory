@@ -26,39 +26,41 @@ end SRAM;
 
 architecture SR of SRAM is
 signal clk : std_logic;
-type RAM_type is array (2048 downto 0) of std_logic_vector(35 downto 0);
+type RAM_type is array (262143 downto 0) of std_logic_vector(35 downto 0);
 signal RAM : ram_type := (others=>(others=>'0'));
-signal addr_keep_a,addr_keep_b,addr_keep_c : std_logic_vector(19 downto 0);
+signal addr_keep_a,addr_keep_b,addr_keep_c : std_logic_vector(19 downto 0):=(others=>'0');
 signal XE : std_logic_vector(2 downto 0) :=(others=> '0');
-signal XWE_a,XWE_b,XWE_c : std_logic := '0';
+signal XWE_a,XWE_b,XWE_c : std_logic := '1';
 signal XCKE : std_logic:='0';
 signal data_inout : std_logic_vector(35 downto 0):=(others=>'0');
 signal data_out_a,data_out_b,data_out_c : std_logic_vector(35 downto 0):=(others=>'0');
-signal data_in_a,data_in_b,data_in_c : std_logic_vector(35 downto 0):=(others=>'0');
+signal data_in_a,data_in_b,data_in_c : std_logic_vector(31 downto 0):=(others=>'0');
+signal state : std_logic_vector(1 downto 0) := (others=>'0');
 begin  -- SR
 clk<=ZCLKA(0);
-  process(clk)
+ZD(31 downto 0)<=(others=>'Z') when state="01" else
+     data_out_a(31 downto 0) when state="00";
+RAM(conv_integer(addr_keep_a(17 downto 0)))(31 downto 0)<=ZD when state="01";
+data_out_a<=RAM(conv_integer(addr_keep_a(17 downto 0)));
+process(clk)
     begin
       if (clk'event and clk='1') then
+
         addr_keep_a<=ZA;
         addr_keep_b<=addr_keep_a;
-        addr_keep_c<=addr_keep_b;
         XWE_a<=XWA;
         XCKE<=XZCKE;
-        XWE_b<=XWE_a;
-        XWE_c<=XWE_b;
-        if XWE_c='0' then
-          ZD<=(others=>'Z');
-          ZDP<=(others=>'Z');
-          RAM(conv_integer(addr_keep_c(5 downto 0)))(31 downto 0)<=ZD;
+        data_in_a<=ZD;
+        if XWE_a='0' then
+          state<="10";
         else
-          data_out_a<=RAM(conv_integer(addr_keep_c(5 downto 0)));
-          ZD<=data_out_a(31 downto 0);
+          if XWA='0' then
+            state<="01";
+          else
+            state<="00";
+
+          end if;
         end if;
-        data_out_b<=data_out_a;
-        data_out_c<=data_out_b;
-        data_in_b<=data_in_a;
-        data_in_c<=data_in_b;
       end if;
     end process;
 end SR;

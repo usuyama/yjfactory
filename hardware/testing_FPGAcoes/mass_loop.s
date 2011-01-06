@@ -1,5 +1,7 @@
 enrty:
 	nop
+	lli	%r11, 170
+	sendc	%r11
 	recv	%r1
 	recv	%r2
 	recv	%r3

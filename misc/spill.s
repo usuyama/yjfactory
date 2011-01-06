@@ -1,4 +1,3 @@
-entry:
 	lli	%sp, 0
 	addi	%ra, %r0, halt
 	lli	%hp, 50000
@@ -14,9 +13,7 @@ entry:
 	lli	%r2, -509
 	lhi	%r2, -509
 	j	g.136
-halt:
 	halt
-div10_sub.336:
 	lli	%r3, 10
 	bgt	%r3, %r1, bgt_else.363
 	lli	%r3, 10
@@ -24,13 +21,10 @@ div10_sub.336:
 	lli	%r3, 1
 	add	%r2, %r2, %r3
 	j	div10_sub.336
-bgt_else.363:
 	add	%r1, %r0, %r2
 	jr	%ra
-div10.320:
 	lli	%r2, 0
 	j	div10_sub.336
-print_int.128:
 	lli	%r2, 0
 	bgt	%r2, %r1, bgt_else.364
 	lli	%r2, 10

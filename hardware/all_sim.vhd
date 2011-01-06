@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
-
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
@@ -31,9 +30,9 @@ entity Allover is
   outdata4 : out std_logic_vector(7 downto 0);
   outdata5 : out std_logic_vector(7 downto 0);
   outdata6 : out std_logic_vector(7 downto 0);
-  outdata7 : out std_logic_vector(7 downto 0)
---  RS_RX:in std_logic;
---  RS_TX:out std_logic
+  outdata7 : out std_logic_vector(7 downto 0);
+  RS_RX:in std_logic;
+  RS_TX:out std_logic
     );
 
 end Allover;
@@ -157,9 +156,9 @@ end component;
 component PROM
   port (
     clka : in std_logic;
---    wea : in std_logic_vector(0 downto 0);
-    addra : in std_logic_vector(6 downto 0);
---    dina : in std_logic_vector(31 downto 0);
+    wea : in std_logic_vector(0 downto 0);
+    addra : in std_logic_vector(13 downto 0);
+    dina : in std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 end component;
 
@@ -216,7 +215,7 @@ end component;
   component IO_wrapper is
       port (
     clk      : in  std_logic;
-    RESET:in std_logic;
+	 RESET:in std_logic;
     RS_RX  : in  std_logic;
     RS_TX  : out std_logic;
     send_busy : out std_logic;
@@ -224,14 +223,26 @@ end component;
     out_go: in std_logic;
     in_go:in std_logic;
     SD : in std_logic_vector(7 downto 0);
-    DOUT:out std_logic_vector(7 downto 0)
+    DOUT:out std_logic_vector(7 downto 0);
+    Ledout:out std_logic_vector(7 downto 0)
     );
   end component;
+component u232c
+    generic (wtime: std_logic_vector(15 downto 0) := x"1A0A");
+  Port ( clk  : in  STD_LOGIC;
+         data : in  STD_LOGIC_VECTOR (7 downto 0);
+         go   : in  STD_LOGIC;
+         busy : out STD_LOGIC;
+         tx   : out STD_LOGIC);
+end component;
 
+  
   signal leddata : std_logic_vector(31 downto 0);
   signal leddotdata : std_logic_vector(7 downto 0);
 signal RG_isf : std_logic_vector(2 downto 0);
-signal send_busy_io,recv_wait_io,out_go_io,in_go_io : std_logic := '0';
+signal send_busy_io,recv_wait_io:std_logic;
+  signal out_go_io:std_logic:='0';
+  signal in_go_io : std_logic := '0';
   signal SD_io,DOUT_io : std_logic_vector(7 downto 0);
 signal iclk,mclk : std_logic;
 signal IR_out : std_logic_vector(31 downto 0);
@@ -247,10 +258,10 @@ signal opcode : std_logic_vector(5 downto 0);
 signal Mem_We_out : std_logic;
 signal Mem_Addr_out,Mem_data_out : std_logic_vector(31 downto 0);
 signal dev_null_a : std_logic_vector(3 downto 0);
-signal io_wait : std_logic;
 signal reset:std_logic;
+signal io_wait : std_logic;
   signal F_ready : std_logic;
-  signal RS_RX,RS_TX : std_logic;
+signal gomi : std_logic_vector(31 downto 0);
 begin  -- all
   p_we<="0";
   p_in<=(others=>'0');
@@ -360,9 +371,9 @@ mem_Address=>Mem_Addr_out
     out_instruciton =>  IR_out);
   PR:PROM port map (
     clka => mclk,
---    wea => p_we,
-    addra => PC_PR(6 downto 0),
---    dina => p_in,
+    wea => p_we,
+    addra => PC_PR(13 downto 0),
+    dina => p_in,
     douta => PROM_out);
 PrC : PC port map (
   clk    => mclk,
@@ -402,17 +413,21 @@ Dr:Driver port map(
 
 io_w : IO_wrapper port map (
   clk       => mclk,
-  RS_RX     => RS_RX,
   RESET=>reset,
+  RS_RX     => RS_RX,
   RS_TX     => RS_TX,
   send_busy => send_busy_io,
   recv_wait => recv_wait_io,
   out_go    => out_go_io,
   in_go     => in_go_io,
   SD        => SD_io,
-  DOUT      => DOUT_io);
-SD_io<=data_o(7 downto 0);
-  leddata(31 downto 16)<=data_o(15 downto 0);
+  DOUT      => DOUT_io,
+  ledout=>gomi(23 downto 16));
+  
+SD_io<=data_a(7 downto 0);
+  leddata(31 downto 24)<=data_a(7 downto 0);
+  leddata(23 downto 16)<=data_b(7 downto 0);
+  leddata(15 downto 8)<=pc_pr(7 downto 0);
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then
