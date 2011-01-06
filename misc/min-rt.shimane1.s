@@ -1,4 +1,6 @@
 entry:
+	lli	%r1, 170
+	sendc	%r1
 	lli	%sp, 0
 	addi	%ra, %r0, halt
 	lli	%hp, 50000

@@ -1,0 +1,121 @@
+# //  ModelSim SE 6.6a Mar 19 2010 Linux 2.6.31-22-generic
+# //
+# //  Copyright 1991-2010 Mentor Graphics Corporation
+# //              All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND 
+# //  PROPRIETARY INFORMATION WHICH IS THE PROPERTY
+# //  OF MENTOR GRAPHICS CORPORATION OR ITS LICENSORS
+# //  AND IS SUBJECT TO LICENSE TERMS.
+# //
+# Loading project work
+# Compile of alu.vhd was successful.
+# Compile of controller.vhd was successful.
+# Compile of FADD.vhd was successful.
+# Compile of FDIV.vhd was successful.
+# Compile of fetch.vhd was successful.
+# Compile of floor.vhd was successful.
+# Compile of FMUL.vhd was successful.
+# Compile of FSQRT.vhd was successful.
+# Compile of ftoi.vhd was successful.
+# Compile of hazard.vhd was successful.
+# Compile of instmem.vhd was successful.
+# Compile of io_module.vhd was successful.
+# Compile of IOwrapper.vhd was successful.
+# Compile of itof.vhd was successful.
+# Compile of mux.vhd was successful.
+# Compile of processor.vhd was successful.
+# Compile of receiver3.vhd was successful.
+# Compile of register32.vhd was successful.
+# Compile of sldram.vhd was successful.
+# Compile of testbench.vhd was successful.
+# Compile of u232c.vhd was successful.
+# Compile of decode2.vhd was successful.
+# Compile of fprfile2.vhd was successful.
+# Compile of registerfile2.vhd was successful.
+# Compile of sram_ctrler.vhd was successful.
+# Compile of exec.vhd was successful.
+# Compile of l_shifter.vhd was successful.
+# Compile of r_shifter.vhd was successful.
+# 28 compiles, 0 failed with no errors. 
+# Load canceled
+# reading /usr/modelsim/modeltech/linux/../modelsim.ini
+# Loading project simulation
+# reading /usr/modelsim/modeltech/linux/../modelsim.ini
+# Loading project work
+# reading /usr/modelsim/modeltech/linux/../modelsim.ini
+# Loading project mycpusim
+# reading /usr/modelsim/modeltech/linux/../modelsim.ini
+# Loading project sim
+vsim work.top
+# vsim work.top 
+# Loading std.standard
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_unsigned(body)
+# Loading work.top(behav)#1
+# Loading work.processor(behav)#1
+# Loading work.instmem(behav)#1
+# Loading work.decode(behav)#1
+# Loading ieee.std_logic_signed(body)
+# Loading work.exec(behav)#1
+# Loading work.r_shifter(r_s)#1
+# Loading work.fadd(gate)#1
+# Loading work.fdiv(structure)#1
+# Loading work.fsqrt(structure)#1
+#  Trace back: can't set "RunLength": RPC Closed
+#     while executing
+# "set RunLength $vsimPriv(dlg_RunLength)"
+#     (procedure "::Tbar::SetRunLengthFromInput" line 9)
+#     invoked from within
+# "::Tbar::SetRunLengthFromInput"
+#     (procedure "Transcript::SimulateMenuPostCmd" line 12)
+#     invoked from within
+# "Transcript::SimulateMenuPostCmd .mBar.simulate"
+#     ("eval" body line 1)
+#     invoked from within
+# "eval $post_cmd"
+#     (procedure "::Vsimmenu::DefaultMenuPostCmd" line 40)
+#     invoked from within
+# "::Vsimmenu::DefaultMenuPostCmd .mBar.simulate {Transcript::SimulateMenuPostCmd .mBar.simulate} SetMenuState"
+#     invoked from within
+# "{.#mBar.#mBar#simulate} post 175 103"
+#     invoked from within
+# "$menu postcascade active"
+#     (procedure "tk::MenuMotion" line 20)
+#     invoked from within
+# "tk::MenuMotion .#mBar 193 10 8448"
+#     (command bound to event) 
+#    2: ::tkerror {can't set "RunLength": RPC Closed} 
+#    1: ::bgerror {can't set "RunLength": RPC Closed} 
+# Compile of alu.vhd was successful.
+# Compile of controller.vhd was successful.
+# Compile of decode2.vhd was successful.
+# Compile of exec.vhd was successful.
+# Compile of FADD.vhd was successful.
+# Compile of FDIV.vhd was successful.
+# Compile of fetch.vhd was successful.
+# Compile of floor.vhd was successful.
+# Compile of FMUL.vhd was successful.
+# Compile of fprfile2.vhd was successful.
+# Compile of FSQRT.vhd was successful.
+# Compile of ftoi.vhd was successful.
+# Compile of hazard.vhd was successful.
+# Compile of instmem.vhd was successful.
+# Compile of io_module.vhd was successful.
+# Compile of IOwrapper.vhd was successful.
+# Compile of itof.vhd was successful.
+# Compile of l_shifter.vhd was successful.
+# Compile of mux.vhd was successful.
+# Compile of processor.vhd failed with 1 errors.
+# Compile of r_shifter.vhd was successful.
+# Compile of receiver3.vhd was successful.
+# Compile of registerfile2.vhd was successful.
+# Compile of sldram.vhd was successful.
+# Compile of sram_ctrler.vhd was successful.
+# Compile of SRAMsimurator.vhd was successful.
+# Compile of top.vhd was successful.
+# Compile of u232c.vhd was successful.
+# 28 compiles, 1 failed with 1 error. 
+# Break key hit 
+# ** Error: (vish-4000) A design must be loaded before the "vsim_break" command can be used.
