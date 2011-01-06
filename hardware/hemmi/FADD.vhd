@@ -51,7 +51,7 @@ begin
                     G(30 downto 23) - "00000001";
 
   S(31) <= G(31);
-  S(30 downto 0) <= G(30 downto 0) when L(30 downto 0) = (otheres=>'0')  --0の場合。added by usuyama
+  S(30 downto 0) <= G(30 downto 0) when (L(30 downto 0) = "000000000000000000000000000") else --0の場合。added by usuyama
                     E_1_NORMALIZED & F_1_NORMALIZED when DIFFLAG else
                     E_2_NORMALIZED & F_2_NORMALIZED;
 PRIOR0: TFB_PRIORITY_ENCODER port map (F_1(24 downto 1),P);
