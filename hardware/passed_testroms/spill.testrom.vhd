@@ -8,9 +8,9 @@ entity PROM is
 
   port (
     clka  : in  std_logic;
---    wea   : in  std_logic_vector(0 downto 0);
-    addra : in  std_logic_vector(6 downto 0);
---    dina  : in  std_logic_vector(31 downto 0);
+    wea   : in  std_logic_vector(0 downto 0);
+    addra : in  std_logic_vector(13 downto 0);
+    dina  : in  std_logic_vector(31 downto 0);
     douta : out std_logic_vector(31 downto 0));
 
 end PROM;
@@ -23,14 +23,14 @@ type rom_type is array (0 to 107) of std_logic_vector(31 downto 0);
 	-- entry:
 "11001000000111100000000000000000",	-- 1: 	lli	%sp, 0
 "10100100000111110000000000001000",	-- 2: 	addi	%ra, %r0, halt
-"11001000000111011100001101010000",	-- 3: 	lli	%hp, 50000
+"00000000000111011100001101000000",	-- 3: 	lli	%hp, 50000
 "11001000000000010000000000000100",	-- 4: 	lli	%r1, 4
 "11001000000000100000000000000011",	-- 5: 	lli	%r2, 3
 "11001000000000110000000000000010",	-- 6: 	lli	%r3, 2
 "11001000000001000000000000000001",	-- 7: 	lli	%r4, 1
 "01010100000000000000000000001001",	-- 8: 	j	f.42
 	-- halt:
-"11000000000000000000000000000000",	-- 9: 	halt
+"11111100000000000000000000000000",	-- 9: 	halt
 	-- f.42:
 "10000100001000100010100000000000",	-- 10: 	add	%r5, %r1, %r2
 "10000100001000110011000000000000",	-- 11: 	add	%r6, %r1, %r3
@@ -133,8 +133,13 @@ type rom_type is array (0 to 107) of std_logic_vector(31 downto 0);
 "01001111111000000000000000000000"	-- 108: 	jr	%ra
 );
 
-signal shortened : std_logic_vector(6 downto 0):=(others=>'0');
+signal shortened : std_logic_vector(13 downto 0):=(others=>'0');
 begin  -- R_rom
-  shortened<=addra(6 downto 0);
-    douta<=rom(conv_integer(shortened));
+      process (clka)
+  begin  -- process
+    if rising_edge(clka) then
+      douta<=rom(conv_integer(shortened));    
+    end if;
+  end process;
+  shortened<=addra(13 downto 0);
 end R_rom;

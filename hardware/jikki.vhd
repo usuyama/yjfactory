@@ -426,9 +426,7 @@ io_w : IO_wrapper port map (
   ledout=>gomi(23 downto 16));
   
 SD_io<=data_a(7 downto 0);
-  leddata(31 downto 24)<=data_a(7 downto 0);
-  leddata(23 downto 16)<=data_b(7 downto 0);
-  leddata(15 downto 8)<=pc_pr(7 downto 0);
+  leddata(31 downto 18)<=pc_pr(13 downto 0);
 process (mclk)
 begin  -- process
   if (mclk'event and mclk='1') then
