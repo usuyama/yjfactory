@@ -9,21 +9,16 @@ entity FMUL is
 end FMUL;
 
 architecture GATE of FMUL is
-signal E1,E2 : integer;
-signal F1,F2 : std_logic_vector(47 downto 0);
-signal AF,BF : std_logic_vector(23 downto 0);
-signal G : std_logic;
+signal E1,E2 : std_logic_vector(8 downto 0);
+signal F : std_logic_vector(47 downto 0);
 begin
-  P(31) <= A(31) xor B(31);
-  E1 <= conv_integer(A(30 downto 23)) + conv_integer(B(30 downto 23)) - 127;
-  F1 <= ('1' & A(22 downto 0)) * ('1' & B(22 downto 0));
-  G <= F1(23) when (F1(47) = '1') else F1(22);
+  E1 <= ('0' & A(30 downto 23)) + ('0' & B(30 downto 23)) - "001111111";
+  E2 <= ('0' & A(30 downto 23)) + ('0' & B(30 downto 23)) - "001111110";
+  F <= ('1' & A(22 downto 0)) * ('1' & B(22 downto 0));
 
-  F2(47 downto 23) <= F1(47 downto 23) + ("000000000000000000000000" & G);
-  F2(22 downto 0) <= F1(22 downto 0);
-  E2 <= E1 + 1 when (F2(47) = '1') else E1;
-  P(30 downto 0) <= "1111111100000000000000000000000"               when E2 > 254 else
-                     "0000000000000000000000000000000"               when E2 < 0 else
-                     conv_std_logic_vector(E2,8) & F2(46 downto 24) when F2(47) = '1' else
-                     conv_std_logic_vector(E2,8) & F2(45 downto 23);
+  P(31) <= A(31) xor B(31);
+  P(30 downto 0) <= "0000000000000000000000000000000" when (A(30 downto 0) = "0000000000000000000000000000000"
+                                                         or B(30 downto 0) = "0000000000000000000000000000000") else
+                    E2(7 downto 0) & F(46 downto 24) when (F(47) = '1') else
+                    E1(7 downto 0) & F(45 downto 23);
 end GATE;

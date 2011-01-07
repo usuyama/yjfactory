@@ -10,9 +10,9 @@ entity FDIV is
 end entity FDIV;
 
 architecture STRUCTURE of FDIV is
-signal X1,X3,Y1,Y3,D2,D3 : std_logic_vector(31 downto 0);
-signal X4,Y4 : std_logic_vector(63 downto 0);
-signal Sign : std_logic;
+signal X1,X3,Y1,Y3,D2,D3,InvB  : std_logic_vector(31 downto 0);
+signal X4,Y4: std_logic_vector(63 downto 0);
+signal Sign,Dini : std_logic;
 signal E : std_logic_vector(7 downto 0);
 begin
 p0 : process(MCLK1) is
@@ -23,17 +23,25 @@ begin
       X1 <= '1' & A(22 downto 0) & "00000000";
       if (A(22 downto 0) < B(22 downto 0)) then
         Y1 <= "01" & B(22 downto 0) & "0000000";
+        InvB(31 downto 30) <= "01";
+        InvB(29 downto 28) <= not B(22) & B(22);
+        InvB(27 downto 0) <= "0000000000000000000000000000";
         E <= A(30 downto 23) - B(30 downto 23) + "01111110";
       else
         Y1 <= '1' & B(22 downto 0) & "00000000";
+        InvB(31 downto 29) <= "001";
+        InvB(28 downto 27) <= not B(22) & B(22);
+        InvB(26 downto 0) <= "000000000000000000000000000";
         E <= A(30 downto 23) - B(30 downto 23) + "01111111";
       end if;
+		Dini <= '1';
     else
       X1 <= X4(62 downto 31);
       Y1 <= Y4(62 downto 31);
       X3 <= X1;
       Y3 <= Y1;
       D3 <= D2;
+      Dini <= '0';
     end if;
   end if;
 end process p0;
@@ -42,7 +50,8 @@ R(30 downto 23) <= E when (X4(62) = '1') else
                    E - "00000001";
 R(22 downto 0) <= X4(61 downto 39) when (X4(62) = '1') else
                   X4(60 downto 38);
-D2 <= (not Y1) + "00000000000000000000000000000001";
+D2 <= (not Y1) + "00000000000000000000000000000001" when (Dini = '0') else
+      InvB;
 X4 <= X3 * D3;
 Y4 <= Y3 * D3;
 end STRUCTURE;
