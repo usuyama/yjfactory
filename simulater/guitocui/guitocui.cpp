@@ -80,7 +80,7 @@ int recv_count=0;
 unsigned int mask = (unsigned int)0xff<<24;
 
 void hogehoge::doInst(int steps){
-  std::ofstream os("outputfile");
+  //  std::ofstream os("outputfile");
   int opcode;
   int tmp,count2=0;
   int count3=0;
