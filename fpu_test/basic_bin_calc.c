@@ -5,7 +5,7 @@
 typedef union floating_point_number
 {
   float f;
-  int i;
+  unsigned int i;
 } fpn;
 
 /* ビット列sとtをnビットまで比較する */
