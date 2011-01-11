@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "fpu_sim.h"
 
@@ -14,7 +15,7 @@ int conv_integer(char *s, int n)
 
 void tfb_priority_encoder(char *count, char *p)
 {
-  int top = 23,i,n;
+  int top = 0,i,n;
 
   for (i = 0; i < 24; i++) {
     if (count[i] == '1') top = i;
@@ -34,18 +35,32 @@ void tfb_priority_encoder(char *count, char *p)
 
 void tfb_lshifter(char *a, char *count, char *r)
 {
-  int i,j,n = 16;
-  char shifted[25];
+  char shifted_1[25],shifted_2[25],shifted_3[25],shifted_4[25];
 
-  strncpy(shifted,a,25);
-  for (i = 4; i > 0; i--) {
-    if (count[i] == '1') {
-      for (j = n; j < 25; j++) shifted[j] = shifted[j-n];
-    }
-    n /= 2;
-  }
-  if (count[0] == '1') strncpy(r,shifted,23);
-  else strncpy(r,shifted+1,23);
+  if (count[4] == '1') {
+    strncpy(shifted_4+16,a,9);
+    fill_with_zero(shifted_4,16);
+  } else
+    strncpy(shifted_4,a,25);
+  if (count[3] == '1') {
+    strncpy(shifted_3+8,shifted_4,17);
+    fill_with_zero(shifted_3,8);
+  } else
+    strncpy(shifted_3,shifted_4,25);
+  if (count[2] == '1') {
+    strncpy(shifted_2+4,shifted_3,21);
+    fill_with_zero(shifted_2,4);
+  } else
+    strncpy(shifted_2,shifted_3,25);
+  if (count[1] == '1') {
+    strncpy(shifted_1+2,shifted_2,23);
+    fill_with_zero(shifted_1,2);
+  } else
+    strncpy(shifted_1,shifted_2,25);
+  if (count[0] == '1')
+    strncpy(r,shifted_1,23);
+  else
+    strncpy(r,shifted_1+1,23);
 }
 
 float fadd(float in1, float in2)
@@ -88,7 +103,7 @@ float fadd(float in1, float in2)
   binsub(tmp1,A,B,32);
   tmp2[31] = '1'; fill_with_zero(tmp2,31);
   tfb_priority_encoder(F_1+1,P);
-  if (bincmp(tmp1,tmp2,32) == 0)
+  if (bincmp(tmp1,tmp2,31) == 0)
     fill_with_zero(E_1_NORMALIZED,8);
   else {
     fill_with_zero(tmp1+5,3); strncpy(tmp1,P,5);
