@@ -1,10 +1,17 @@
-fpu = fsqrt.o fdiv.o fadd.o fmul.o basic_bin_calc.o
-default: $(fpu)
-	g++ fpu_test.c -o fpu_test -lm $(fpu)
+objs = parser3.o guitocui2.o guitocuimain2.o
+fpu = fadd.o fmul.o fdiv.o fsub.o fsqrt.o basic_bin_calc.o
+CPPC = g++
+CFLAGS = -Wall -O3 -std=c++0x
+.SUFFIXES: .o .cpp
+cpp.o:
+	$(CPPC) $(CFLAGS) -c $<
 
-.c.o:
-	g++ -c $<
+simulator: $(objs) $(fpu)
+	$(CPPC) $(CFLAGS) -o $@ $(objs) $(fpu)
 
+fpu_test: $(fpu)
+	$(CPPC) $(CFLAGS) -o $@ $(fpu)
+
+.PHONY: clean
 clean:
-	rm *.o fpu_test
-
+	rm $(objs) $(fpu)
