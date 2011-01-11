@@ -1,8 +1,11 @@
 #ifndef FPU_SIM_H
 #define FPU_SIM_H
 
+#include <stdio.h>
+
 /* basic_calc.c */
 int bincmp(char *s, char *t, int n);
+void print_array(char *s, int n, FILE *stream);
 void fill_with_zero(char *s, int n);
 void dtob(float f, char *s);
 float btod(char *s);

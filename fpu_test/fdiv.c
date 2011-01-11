@@ -80,13 +80,12 @@ void div_wait()
   binmul(Y4,Y3,D3,32);
   R[31] = Sign;
   fill_with_zero(tmp1,31);
-  if (bincmp(B,tmp1,31) == 0) {
-    R[23] = R[24] = R[25] = R[26] = R[27]
-          = R[28] = R[29] = R[30] = '1';
-    fill_with_zero(R,23);
-  } else if (bincmp(A,tmp1,31) == 0)
+  if (bincmp(A+23,tmp1,8) == 0) {
     fill_with_zero(R,31);
-  else if (X4[62] == '1') {
+  } else if (bincmp(B+23,tmp1,8) == 0) {
+    strncpy(R+23,"11111111",8);
+    fill_with_zero(R,23);
+  } else if (X4[62] == '1') {
     strncpy(R+23,E1,8);
     strncpy(R,X4+39,23);
   } else {

@@ -2,6 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+typedef union floating_point_number
+{
+  float f;
+  unsigned int i;
+} fpn;
+
 /* ビット列sとtをnビットまで比較する */
 int bincmp(char *s, char *t, int n)
 {
@@ -13,11 +19,12 @@ int bincmp(char *s, char *t, int n)
   return 0;
 }
 
-void print_array(char *s, int n)
+void print_array(char *s, int n, FILE *stream)
 {
-  int i, nm = n-1;
-  for (i = 0; i < n; i++) putchar(s[nm-i]);
-  putchar('\n');
+  int i;
+  n--;
+  for (i = 0; i <= n; i++)
+    fputc(s[n-i],stream);
 }
 
 /* sをn個0で埋める */
@@ -27,85 +34,36 @@ void fill_with_zero(char *s, int n)
   for (i = 0; i < n; i++) s[i] = '0';
 }
 
-/* xのn乗を返す */
-float power(int x,int n)
-{
-  float ans = 1;
-  if (n > 0) {
-    while(n != 0) {
-      ans *= x;
-      n--;
-    }
-  } else {
-    while(n != 0) {
-      ans /= x;
-      n++;
-    }
-  }
-  return ans;
-}
-
 /* floatを2進数ビット列に変換する */
 void dtob(float f, char *s)
 {
-  float p;
-  int i,e = 127;
-  if (f >= 0)
-    s[31] = '0';
-  else {
-    s[31] = '1';
-    f *= -1;
-  }
-  if (f >= 2) {
-    while(f >= 2) {
-      f /= 2;
-      e++;
-      if (e == 255) break;
-    }
-  } else {
-    while(f < 1) {
-      f *= 2;
-      e--;
-      if (e == 0) break;
-    }
-  }
-  for (i = 7; i >= 0; i--) {
-    p = power(2,i);
-    if (e >= p) {
-      s[23+i] = '1';
-      e -= p;
-    } else
-      s[23+i] = '0';
-  }
-  f -= 1;
-  p = 0.5;
-  for (i = 1; i < 24; i++) {
-    if (f >= p) {
-      s[23-i] = '1';
-      f -= p;
-    } else
-      s[23-i] = '0';
-    p /= 2;
+  int j;
+  fpn tmp;
+
+  tmp.f = f;
+  for (j = 0; j < 32; j++) {
+    if ((tmp.i & 0x00000001) == 0x00000000)
+      s[j] = '0';
+    else
+      s[j] = '1';
+    tmp.i >>= 1;
   }
 }
 
 /* 2進数ビット列をfloatに変換して返す */
 float btod(char *s)
 {
-  char tmp[33];
-  int i;
-  float f = 1;
-  for (i = 0; i < 32; i++)
-    tmp[i] = s[31-i];
-  tmp[32] = '\0';
-  f += strtol(tmp+21,NULL,2)/power(2,23);
-  tmp[21] = '\0';
-  f += strtol(tmp+9,NULL,2)/power(2,12);
-  tmp[9] = '\0';
-  f *= power(2,strtol(tmp+1,NULL,2) - 127);
-  if (tmp[0] == '1') f *= -1;
+  fpn tmp;
+  int j;
 
-  return f;
+  tmp.i = 0;
+  for (j = 31; j >= 0; j--) {
+    tmp.i <<= 1;
+    if (s[j] == '1')
+      tmp.i |= 0x00000001;
+  }
+
+  return tmp.f;
 }
 
 /* '1'の個数を返す */
