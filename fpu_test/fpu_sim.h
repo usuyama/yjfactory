@@ -13,6 +13,7 @@ void binmul(char *d, char *s, char *t, int n);
 float fadd(float in1, float in2); /* fadd.c */
 float fmul(float in1, float in2); /* fmul.c */
 float fdiv(float in1, float in2); /* fdiv.c  */
+float fsub(float in1, float in2); /* fsub.c  */
 float fsqrt(float in);             /* fsqrt.c */
 
 #endif

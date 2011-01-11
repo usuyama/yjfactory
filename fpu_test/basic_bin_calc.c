@@ -141,9 +141,9 @@ void binsub(char *d, char *s, char *t, int n)
 {
   int i;
   char *tmp, *not_t, *minus_t;
-  tmp = malloc(n * sizeof(char));
-  not_t = malloc(n * sizeof(char));
-  minus_t = malloc(n * sizeof(char));
+  tmp = (char *)malloc(n * sizeof(char));
+  not_t = (char *)malloc(n * sizeof(char));
+  minus_t = (char *)malloc(n * sizeof(char));
 
   for (i = 0; i < n; i++) {
     tmp[i] = '0';
@@ -166,8 +166,8 @@ void binmul(char *d, char *s, char *t, int n)
   char *tmp1,*tmp2;
 
   np = n + 1; double_n = 2*n;
-  tmp1 = malloc(double_n * sizeof(char));
-  tmp2 = malloc(np * sizeof(char));
+  tmp1 = (char *)malloc(double_n * sizeof(char));
+  tmp2 = (char *)malloc(np * sizeof(char));
   tmp2[n] = '0';
   strncpy(tmp2,t,n);
   fill_with_zero(d,double_n);
