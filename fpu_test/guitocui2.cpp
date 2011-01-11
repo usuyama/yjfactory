@@ -15,7 +15,7 @@ FILE* hogehoge::dumpf;
 int hogehoge::count2;
 int hogehoge::count3;
 
-#include "../fpu_sim.h" // for fpu
+#include "fpu_sim.h" // for fpu
 
 hogehoge::hogehoge(const char* input_sld)
 {
