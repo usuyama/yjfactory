@@ -3,8 +3,8 @@
 #include "fpu_sim.h"
 #include <math.h>
 
-//static const float epsilon = pow(2.0, -126); // <- 指定のepsilon
-static const float epsilon = pow(2.0, -18);
+//static const float epsilon = pow(2.0, -126); // <- floatspec指定のepsilon
+static const float epsilon = pow(2.0, -20);
 
 float max2(float a, float b)
 {
