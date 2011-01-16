@@ -20,5 +20,6 @@ float fsub(float in1, float in2); /* fsub.c  */
 float fsqrt(float in);             /* fsqrt.c */
 int ftoi_sim(float f);                /* converter.cpp */
 float itof_sim(int i);                /* converter.cpp */
+float floor_sim(float f);                /* converter.cpp */
 
 #endif

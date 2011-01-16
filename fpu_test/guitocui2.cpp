@@ -390,7 +390,7 @@ void hogehoge::SENDCfunc(){
 }
 
 void hogehoge::FLOORfunc(){
-  fpr[iinfo.op2] = floor(fpr[iinfo.op1]);
+  fpr[iinfo.op2] = floor_sim(fpr[iinfo.op1]);
   pc++; }
  void hogehoge::ITOFfunc(){
    //  fpr[iinfo.op2] = (float)regs[iinfo.op1];

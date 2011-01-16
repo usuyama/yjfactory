@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include "fpu_sim.h"
 using namespace std;
 
 typedef union fu{
@@ -43,8 +45,8 @@ int ftoi_sim(float f){
 }
 
 unsigned int get_subbit(unsigned int in,int start, int end){
-  if (start >30 || start <0 || end >30 || end < 0){
-    cout << "gut_subbit_error";
+  if (start >31 || start <0 || end >30 || end < 0){
+    cout << "get_subbit_error";
     exit(1);
   }
   in<<=(31-start);
@@ -78,7 +80,7 @@ float itof_sim(int i){
   }
   //  cout << "max_bit="<< max_bit<<endl;
   if(max_bit<=30 && max_bit>=24){
-    if( ( (tmp & (1<<(max_bit-24))) == 0) || get_subbit(tmp,max_bit-23,0)==(1<<(max_bit-24)))
+    if( ( (tmp & (1<<(max_bit-24))) == 0) || get_subbit(tmp,max_bit-23,0)==1<<(max_bit-24))
       o_fl= ((127+max_bit)<<23) + get_subbit(tmp,max_bit-1,max_bit-23);
     else if(get_subbit(tmp,max_bit-1,max_bit-23)!=(1<<23)-1)
       o_fl=((127+max_bit)<<23) + get_subbit(tmp,max_bit-1,max_bit-23) + 1;
@@ -98,11 +100,48 @@ float itof_sim(int i){
   ret.u = (sign<<31) | o_fl;
   return ret.f;
 }
-/*int main(){
-  vector<int> v={};
+
+float floor_sim(float f){
+  bool sign;
+  unsigned int exp_mask=0x7F800000;
+  fu i_fl;
+  i_fl.f=f;
+  unsigned int exp=(i_fl.u & exp_mask)>>23;
+  fu tmp1;
+  fu tmp2;
+  float ret;
+
+
+  /* sign=true なら負 falseなら正*/
+  if( (i_fl.u>>31)==0 )
+    sign=false;
+  else 
+    sign=true;
+
+  if(exp==127)
+    tmp1.u=get_subbit(i_fl.u,31,23)<<23;
+  else if( (exp>>7)==0 )
+    tmp1.u=0;
+  else if(exp>=128 && exp<=149)
+    tmp1.u=get_subbit(i_fl.u,31,150-exp)<<(150-exp);
+  else
+    tmp1.u=i_fl.u;
+
+  tmp2.u=0xBF800000;
+  if(sign)
+    ret=fadd(tmp1.f,tmp2.f);
+  else
+    ret=fadd(tmp1.f,0.0);
+
+  return ret;
+}
+
+/*
+int main(){
+  vector<float> v={-8.432, -6.4324, 5111.1, 32.0, 22.13, 4312.0001,-11.0};
 
   for(int i=0;i<v.size();i++)
-    cout<< itof_sim(v[i]) << endl;
+    cout<< floor_sim(v[i]) << endl;
 
   return 0;
   }*/
