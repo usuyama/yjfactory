@@ -385,7 +385,7 @@ void hogehoge::SENDCfunc(){
   pc++;}
 
  void hogehoge::SQRTfunc(){
-  fpr[iinfo.op2] = sqrt(fpr[iinfo.op1]);
+  fpr[iinfo.op2] = sqrt_sim(fpr[iinfo.op1]);
   pc++;
 }
 

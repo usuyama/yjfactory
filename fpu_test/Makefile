@@ -1,5 +1,5 @@
 objs = parser3.o guitocui2.o guitocuimain2.o
-fpu = fadd.o fsub.o fdiv.o fmul.o fsqrt.o converter.o basic_bin_calc.o
+fpu = fadd.o fsub.o fdiv.o fmul.o sqrt_sim.o converter.o basic_bin_calc.o
 CPPC = g++
 CFLAGS = -Wall -O3 -std=c++0x
 .SUFFIXES: .o .cpp

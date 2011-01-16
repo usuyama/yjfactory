@@ -13,11 +13,13 @@ void binadd(char *d, char *s, char *t, int n);
 void binsub(char *d, char *s, char *t, int n);
 void binmul(char *d, char *s, char *t, int n);
 
+unsigned int get_subbit(unsigned int in,int start,int end);/* converter.cpp */
+
 float fadd(float in1, float in2); /* fadd.c */
 float fmul(float in1, float in2); /* fmul.c */
 float fdiv(float in1, float in2); /* fdiv.c  */
 float fsub(float in1, float in2); /* fsub.c  */
-float fsqrt(float in);             /* fsqrt.c */
+float sqrt_sim(float in);             /* sqrt_sim.cpp */
 int ftoi_sim(float f);                /* converter.cpp */
 float itof_sim(int i);                /* converter.cpp */
 float floor_sim(float f);                /* converter.cpp */
