@@ -1,16 +1,13 @@
 objs = parser3.o guitocui2.o guitocuimain2.o
-fpu = fadd.o fmul.o fdiv.o fsub.o fsqrt.o basic_bin_calc.o
+fpu = fadd.o fsub.o fdiv.o fmul.o fsqrt.o converter.o basic_bin_calc.o
 CPPC = g++
 CFLAGS = -Wall -O3 -std=c++0x
 .SUFFIXES: .o .cpp
-cpp.o:
+.cpp.o:
 	$(CPPC) $(CFLAGS) -c $<
 
 simulator: $(objs) $(fpu)
 	$(CPPC) $(CFLAGS) -o $@ $(objs) $(fpu)
-
-fpu_test: $(fpu)
-	$(CPPC) $(CFLAGS) -o $@ $(fpu)
 
 .PHONY: clean
 clean:

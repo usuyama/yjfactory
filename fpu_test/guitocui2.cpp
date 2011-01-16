@@ -393,10 +393,11 @@ void hogehoge::FLOORfunc(){
   fpr[iinfo.op2] = floor(fpr[iinfo.op1]);
   pc++; }
  void hogehoge::ITOFfunc(){
-  fpr[iinfo.op2] = (float)regs[iinfo.op1];
-  fpr[0]=(float)regs[1];
+   //  fpr[iinfo.op2] = (float)regs[iinfo.op1];
+   fpr[iinfo.op2] = itof_sim(regs[iinfo.op1]);   
   pc++; }
  void hogehoge::FTOIfunc(){
-  regs[iinfo.op2] = (int)fpr[iinfo.op1];
+   //  regs[iinfo.op2] = (int)fpr[iinfo.op1];
+   regs[iinfo.op2] = ftoi_sim(fpr[iinfo.op1]);   
   pc++; }
 
