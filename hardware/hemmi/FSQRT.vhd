@@ -43,7 +43,8 @@ begin
   end if;
 end process p0;
 R(31) <= Sign;
-R(30 downto 0) <= E1 & Z4(61 downto 39) when (Z4(62) = '1') else
+R(30 downto 0) <= "0000000000000000000000000000000" when A(30 downto 0) = "0000000000000000000000000000000" else
+                  E1 & Z4(61 downto 39) when (Z4(62) = '1') else
                   E2 & Z4(60 downto 38);
 D1 <= "11000000000000000000000000000000" - ('0' & X1(31 downto 1));
 DD <= D2 * D2;
