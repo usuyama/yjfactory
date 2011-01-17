@@ -7,8 +7,10 @@ CFLAGS = -Wall -O3 -std=c++0x
 	$(CPPC) $(CFLAGS) -c $<
 
 simulator: $(objs) $(fpu)
-	$(CPPC) $(CFLAGS) -o $@ $(objs) $(fpu) 
+	$(CPPC) $(CFLAGS) -o $@ $(objs) $(fpu)
+fpu_test: $(fpu)
+	$(CPPC) $(CFLAGS) -o $@ fpu_test.o $(fpu)
 
 .PHONY: clean
 clean:
-	rm $(objs) $(fpu)
+	rm $(objs) $(fpu) fpu_test.o

@@ -3,8 +3,7 @@
 #include "fpu_sim.h"
 #include <math.h>
 
-//static const float epsilon = pow(2.0, -126); // <- floatspec指定のepsilon
-static const float epsilon = pow(2.0, -20);
+static const float epsilon = pow(2.0, -126); // <- floatspec指定のepsilon
 
 float max2(float a, float b)
 {
@@ -21,7 +20,7 @@ float max3(float a, float b, float c)
 
 float max4(float a, float b, float c, float d)
 {
-  return max2(max3(a, b, c), d);
+  return max2(max2(a, b), max2(c, d));
 }
 
 float lm_div(float a, float b){
@@ -44,7 +43,7 @@ void fsqrt_assert(float i)
 {
   float acc_error_rate = pow(2.0, -20.0);
   float true_value = sqrtf(i);
-  float calc = fsqrt(i);
+  float calc = sqrt_sim(i);
   if(fabs(calc - true_value) >= max2(true_value * acc_error_rate, epsilon))
     printf("error: calc = %f, true = %f, sqrt(%f), diff = %f\n", calc, true_value, i, fabs(calc - true_value));
 }
