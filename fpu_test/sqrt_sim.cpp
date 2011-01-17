@@ -67,7 +67,7 @@ float sqrt_sim(float f){
     }
     if(get_sublbit(Z4,62,62))
       Rsub=(E1<<23)+get_sublbit(Z4,61,39);
-    else 
+    else
       Rsub=(E2<<23)+get_sublbit(Z4,60,38);
 
     if(Sign) R.u=Rsub | 0x8000000;
@@ -78,6 +78,9 @@ float sqrt_sim(float f){
     DD=(unsigned long long)D2 * (unsigned long long)D2;
     X4= (unsigned long long)X3 * (unsigned long long)DD2;
     Z4=(unsigned long long)Z3 * (unsigned long long)D3;
+  }
+  if(f==0.0 | f==-0.0){
+    return f;
   }
   return R.f;
 }
