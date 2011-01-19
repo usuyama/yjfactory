@@ -1,27 +1,23 @@
 #ifndef FPU_SIM_H
 #define FPU_SIM_H
 
-#include <stdio.h>
+typedef union floating_point_number
+{
+  float f;
+  unsigned int i;
+} fpn;
 
-/* basic_calc.c */
-int bincmp(char *s, char *t, int n);
-void print_array(char *s, int n, FILE *stream);
-void fill_with_zero(char *s, int n);
-void dtob(float f, char *s);
-float btod(char *s);
-void binadd(char *d, char *s, char *t, int n);
-void binsub(char *d, char *s, char *t, int n);
-void binmul(char *d, char *s, char *t, int n);
-
-unsigned int get_subbit(unsigned int in,int start,int end);/* converter.cpp */
+/* basic_bin_calc.c */
+unsigned int dtob(float f);
+float btod(unsigned int i);
+unsigned int binadd(unsigned int a, unsigned int b);
+unsigned int binsub(unsigned int a, unsigned int b);
+unsigned long long binmul(unsigned int a, unsigned int b);
 
 float fadd(float in1, float in2); /* fadd.c */
+float fsub(float in1, float in2); /* fsub.c */
 float fmul(float in1, float in2); /* fmul.c */
-float fdiv(float in1, float in2); /* fdiv.c  */
-float fsub(float in1, float in2); /* fsub.c  */
-float sqrt_sim(float in);             /* sqrt_sim.cpp */
-int ftoi_sim(float f);                /* converter.cpp */
-float itof_sim(int i);                /* converter.cpp */
-float floor_sim(float f);                /* converter.cpp */
+float fdiv(float in1, float in2); /* fdiv.c */
+float fsqrt(float in);             /* fsqrt.c */
 
 #endif

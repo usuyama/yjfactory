@@ -1,140 +1,110 @@
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "fpu_sim.h"
 
-typedef union floating_point_number
+unsigned int dtob(float f)
 {
-  float f;
-  unsigned int i;
-} fpn;
-
-/* ビット列sとtをnビットまで比較する */
-int bincmp(char *s, char *t, int n)
-{
-  int i;
-  for (i = n-1; i >= 0; i--) {
-    if (s[i] == '1' && t[i] == '0') return 1;
-    if (s[i] == '0' && t[i] == '1') return -1;
-  }
-  return 0;
-}
-
-void print_array(char *s, int n, FILE *stream)
-{
-  int i;
-  n--;
-  for (i = 0; i <= n; i++)
-    fputc(s[n-i],stream);
-}
-
-/* sをn個0で埋める */
-void fill_with_zero(char *s, int n)
-{
-  int i;
-  for (i = 0; i < n; i++) s[i] = '0';
-}
-
-/* floatを2進数ビット列に変換する */
-void dtob(float f, char *s)
-{
-  int j;
   fpn tmp;
-
   tmp.f = f;
-  for (j = 0; j < 32; j++) {
-    if ((tmp.i & 0x00000001) == 0x00000000)
-      s[j] = '0';
-    else
-      s[j] = '1';
-    tmp.i >>= 1;
-  }
+  return tmp.i;
 }
 
-/* 2進数ビット列をfloatに変換して返す */
-float btod(char *s)
+float btod(unsigned int i)
 {
   fpn tmp;
-  int j;
-
-  tmp.i = 0;
-  for (j = 31; j >= 0; j--) {
-    tmp.i <<= 1;
-    if (s[j] == '1')
-      tmp.i |= 0x00000001;
-  }
-
+  tmp.i = i;
   return tmp.f;
 }
 
+void binprint(unsigned int a, FILE *stream)
+{
+  int i;
+  for (i = 0; i < 32; i++) {
+    if ((a >> 31) == 0)
+      fputc('0',stream);
+    else
+      fputc('1',stream);
+    a <<= 1;
+  }
+}
+
 /* '1'の個数を返す */
-int fulladder(char a, char b, char c)
+int fulladder(unsigned int a, unsigned int b, unsigned int c)
 {
   int count = 0;
-  if (a == '1') count++;
-  if (b == '1') count++;
-  if (c == '1') count++;
+  if (a != 0) count++;
+  if (b != 0) count++;
+  if (c != 0) count++;
   return count;
 }
 
-/* nビット同士の加算 d = s+t */
-void binadd(char *d, char *s, char *t, int n)
+unsigned int binadd(unsigned int a, unsigned int b)
 {
   int i, count;
-  char carry = 0;
-  for (i = 0; i < n; i++) {
-    count = fulladder(s[i],t[i],carry);
+  unsigned int tmp = 0, carry = 0;
+  for (i = 0; i < 32; i++) {
+    tmp >>= 1;
+    count = fulladder(a&0x00000001,b&0x00000001,carry);
     if (count == 1 || count == 3)
-      d[i] = '1';
-    else
-      d[i] = '0';
+      tmp |= 0x80000000;
     if (count >= 2)
-      carry = '1';
+      carry = 1;
     else
-      carry = '0';
+      carry = 0;
+    a >>= 1;
+    b >>= 1;
   }
+
+  return tmp;
 }
 
-/* nビット同士の減算 d = s-t */
-void binsub(char *d, char *s, char *t, int n)
+unsigned int binsub(unsigned int a, unsigned int b)
 {
   int i;
-  char *tmp, *not_t, *minus_t;
-  tmp = (char *)malloc(n * sizeof(char));
-  not_t = (char *)malloc(n * sizeof(char));
-  minus_t = (char *)malloc(n * sizeof(char));
-
-  for (i = 0; i < n; i++) {
-    tmp[i] = '0';
-    if (t[i] == '1')
-      not_t[i] = '0';
-    else
-      not_t[i] = '1';
+  unsigned int tmp = 0;
+  for (i = 0; i < 32; i++) {
+    tmp >>= 1;
+    if ((b & 0x00000001) == 0)
+      tmp |= 0x80000000;
+    b >>= 1;
   }
-  tmp[0] = '1';
-  binadd(minus_t, tmp, not_t, n);
-  binadd(d, s, minus_t, n);
+  tmp = binadd(tmp,0x00000001);
+  tmp = binadd(a,tmp);
 
-  free(tmp); free(not_t); free(minus_t);
+  return tmp;
 }
 
-/* nビット同士の乗算 d = s*t */
-void binmul(char *d, char *s, char *t, int n)
+unsigned long long lbinadd(unsigned long long a, unsigned long long b)
 {
-  int i, np, double_n;
-  char *tmp1,*tmp2;
-
-  np = n + 1; double_n = 2*n;
-  tmp1 = (char *)malloc(double_n * sizeof(char));
-  tmp2 = (char *)malloc(np * sizeof(char));
-  tmp2[n] = '0';
-  strncpy(tmp2,t,n);
-  fill_with_zero(d,double_n);
-  for (i = 0; i < n; i++) {
-    if (s[i] == '1') {
-      binadd(tmp1+i,d+i,tmp2,np);
-      strncpy(d+i,tmp1+i,np);
-    }
+  int i, count;
+  unsigned long long tmp = 0, carry = 0;
+  for (i = 0; i < 64; i++) {
+    tmp >>= 1;
+    count = fulladder(a&1,b&1,carry);
+    if (count == 1 || count == 3)
+      tmp |= (unsigned long long)0x80000000 << 32;
+    if (count >= 2)
+      carry = 1;
+    else
+      carry = 0;
+    a >>= 1;
+    b >>= 1;
   }
-  free(tmp1); free(tmp2);
+
+  return tmp;
+}
+
+unsigned long long binmul(unsigned int a, unsigned int b)
+{
+  int i;
+  unsigned long long tmp = (unsigned long long)a, acc = 0;
+
+  for (i = 0; i < 32; i++) {
+    if (b << 31 != 0)
+      acc = lbinadd(acc,tmp);
+    tmp <<= 1;
+    b >>= 1;
+  }
+
+  return acc;
 }
 
