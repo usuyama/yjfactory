@@ -11,7 +11,12 @@ type t = (* 命令の列 (caml2html: sparcasm_t) *)
   | Ans of exp
   | Let of (Id.t * Type.t) * exp * t
 and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
+  | GetStackTop
   | Nop
+  | SMS (* mapsize *)
+  | SLS (* listsize *)
+  | HP
+  | SP
   | Set of int
   | SetF of float
   | SetL of Id.l
@@ -24,8 +29,16 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | SLL of Id.t * int
   | Ld of Id.t * int
   | St of Id.t * Id.t * int
+  | StackSt of Id.t * Id.t * int
+  | StackStF of Id.t * Id.t * int
   | FMov of Id.t
   | FNeg of Id.t
+  | FAbs of Id.t
+  | FSqrt of Id.t
+  | F2I of Id.t
+  | I2F of Id.t
+  | Floor of Id.t
+  | Sendc of Id.t
   | FAdd of Id.t * Id.t
   | FSub of Id.t * Id.t
   | FMul of Id.t * Id.t
@@ -61,6 +74,7 @@ let reg_fsw = fregs.(Array.length fregs - 1) (* temporary for swap *)
 let reg_sp = "%sp" (* stack pointer *)
 let reg_hp = "%hp" (* heap pointer (caml2html: sparcasm_reghp) *)
 let reg_ra = "%ra" (* return address *)
+let reg_zero = "%r0"
 let is_reg x = (x.[0] = '%')
 
 (* super-tenuki *)
@@ -72,10 +86,10 @@ let rec remove_and_uniq xs = function
 (* free variables in the order of use (for spilling) (caml2html: sparcasm_fv) *)
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
 let rec fv_exp = function
-  | Nop | Set(_) | SetL(_) | SetF(_) | Comment(_) | Restore(_) -> []
-  | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) | MovFToI x | SRA(x, _) -> [x]
+  | GetStackTop | Nop | Set(_) | SetL(_) | SetF(_) | Comment(_) | Restore(_) | SMS | SLS | SP | HP -> []
+  | Mov(x) | Neg(x) | FMov(x) | FNeg(x) | SLL(x, _) | Ld(x, _) | LdF(x, _) | Save(x, _) | MovFToI x | SRA(x, _) | FAbs(x) | FSqrt(x) | F2I(x) | I2F(x) | Floor(x) | Sendc(x) -> [x]
   | Add(x, y') | Sub(x, y') | Mul(x, y') -> x :: fv_id_or_imm y'
-  | St(x, y, _) | StF(x, y, _) -> [x; y]
+  | St(x, y, _) | StF(x, y, _) | StackSt(x, y, _) | StackStF(x, y, _) -> [x; y]
   | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y) -> [x; y]
   | IfEq(x, y, e1, e2) | IfLE(x, y, e1, e2) | IfGE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
   | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
@@ -92,14 +106,14 @@ let rec concat e1 xt e2 =
   | Ans(exp) -> Let(xt, exp, e2)
   | Let(yt, exp, e1') -> Let(yt, exp, concat e1' xt e2)
 
-let rec print_t t i = 
+let rec print_t t i =
   (let i = i + 1 (* i : indent level *)
   in let pi () =
       (printf "%s" (String.make (i * 2) ' '))
   in
     match t with
       | Ans(e) -> print_exp e i
-      | Let((t1, typ), e, t) -> (pi ();printf "Let %s = \n" t1;
+      | Let((t1, typ), e, t) -> (pi ();printf "Let %s(%s) = \n" t1 (Type.str_of_t typ);
 				 print_exp e i;pi ();printf "In\n";
 				 print_t t i))
 and print_exp t i = (* Asm.t -> Asm.t *)
@@ -109,7 +123,12 @@ and print_exp t i = (* Asm.t -> Asm.t *)
   in
     pi ();
     (match t with
+       | GetStackTop -> printf "GetStackTop\n"
        | Nop -> printf "Nop\n"
+       | SLS -> printf "SLS\n"
+       | SMS -> printf "SMS\n"
+       | HP -> printf "HP\n"
+       | SP -> printf "SP\n"
        | Set i -> printf "Set(%s)\n" (string_of_int i)
        | SetF f -> printf "SetF(%s)\n" (string_of_float f)
        | SetL l -> printf "SetL(%s)\n" (Id.str_of_l l)
@@ -123,8 +142,16 @@ and print_exp t i = (* Asm.t -> Asm.t *)
        | Ld(t1, t2) -> printf "Ld [%s + %d]\n" t1 t2
        | MovFToI(t) -> printf "MovFToI %s\n" t
        | St(t1, t2, t3) -> printf "St %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)
+       | StackSt(t1, t2, t3) -> printf "StackSt %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)
+       | StackStF(t1, t2, t3) -> printf "StackStF %s %s %d\n" t1 t2 t3 (* t1 <- [t2 + t3] ...かな？ *)
        | FMov t -> printf "FMov %s\n" t
        | FNeg t -> printf "FNeg %s\n" t
+       | F2I t -> printf "F2I %s\n" t
+       | I2F t -> printf "I2F %s\n" t
+       | FSqrt t -> printf "FSqrt %s\n" t
+       | FAbs t -> printf "FAbs %s\n" t
+       | Floor t -> printf "Floor %s\n" t
+       | Sendc t -> printf "Sendc %s\n" t
        | FAdd(t1, t2) -> printf "FAdd %s + %s\n" t1 t2
        | FSub(t1, t2) -> printf "FSub %s + %s\n" t1 t2
        | FMul(t1, t2) -> printf "FMul %s + %s\n" t1 t2

@@ -1,3 +1,4 @@
+(*-*- coding:euc-jp -*-*)
 (* flatten let-bindings (just for prettier printing) *)
 
 open KNormal

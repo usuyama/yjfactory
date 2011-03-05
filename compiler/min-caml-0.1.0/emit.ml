@@ -73,6 +73,10 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), MovFToI(y) -> fprintf oc "\tmovf2i\t%s, %s\n" x y
   | NonTail(x), SetF(f) -> print_lif oc x f
   | NonTail(x), Mov(y) when x = y -> ()
+  | NonTail(x), SLS -> print_li oc x (stacksize ())
+  | NonTail(x), SMS -> print_li oc x (List.length !stackmap)
+  | NonTail(x), HP -> print_mov oc x reg_hp
+  | NonTail(x), SP -> print_mov oc x reg_sp
   | NonTail(x), Mov(y) -> print_mov oc x y
   | NonTail(x), Add(y, z) -> print_int_ope oc "add" x y z
   | NonTail(x), Sub(y, z) -> print_int_ope oc "sub" x y z
@@ -81,9 +85,18 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(x), SLL(y, z) -> fprintf oc "\tsll\t%s, %s, %d\n" x y z
   | NonTail(x), Neg(y) -> fprintf oc "\tsub\t%s, %%r0, %s\n" x y
   | NonTail(x), FNeg(y) -> fprintf oc "\tnegf\t%s, %s\n" x y
+  | NonTail(x), FAbs(y) -> fprintf oc "\tabsf\t%s, %s\n" x y
+  | NonTail(x), FSqrt(y) -> fprintf oc "\tsqrt\t%s, %s\n" x y
+  | NonTail(x), F2I(y) -> fprintf oc "\tftoi\t%s, %s\n" x y
+  | NonTail(x), I2F(y) -> fprintf oc "\titof\t%s, %s\n" x y
+  | NonTail(x), Floor(y) -> fprintf oc "\tfloor\t%s, %s\n" x y
+  | NonTail(x), Sendc(y) -> fprintf oc "\tsendc\t%s\n" y
   | NonTail(x), Ld(y, z) -> fprintf oc "\tlw\t%s, [%s + %d]\n" x y z
   | NonTail(_), St(x, y, z) -> fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
   | NonTail(_), Comment(s) -> fprintf oc "\t# %s\n" s
+  | NonTail(_), StackSt(x, y, z) -> save (Id.genid "t");fprintf oc "\tsw\t%s, [%s + %d]\n" x y z
+  | NonTail(_), StackStF(x, y, z) -> save (Id.genid "t");fprintf oc "\tsf\t%s, [%s + %d]\n" x y z
+  | NonTail(x), GetStackTop -> fprintf oc "\taddi\t%s, %s, %d\n" x reg_sp (stacksize () - 1)
 (* float *)
   | NonTail(x), FAdd(y, z) -> fprintf oc "\taddf\t%s, %s, %s\n" x y z
   | NonTail(x), FSub(y, z) -> fprintf oc "\tsubf\t%s, %s, %s\n" x y z
@@ -108,13 +121,13 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       fprintf oc "\tlf\t%s, [%s + %d]\n" x reg_sp (offset y)
   | NonTail(x), Restore(y) -> failwith "restore fail"
   (* 末尾だったら計算結果を第一レジスタにセットしてret (caml2html: emit_tailret) *)
-  | Tail, (Nop | St _ | StF _ | Comment _ | Save _ as exp) ->
+  | Tail, (GetStackTop | Nop | StackSt _ | StackStF _ | St _ | StF _ | Comment _ | Save _ | Sendc _ | SMS | SLS | HP | SP as exp) ->
       g' oc (NonTail(Id.gentmp Type.Unit), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | SRA _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ | MovFToI _ as exp) ->
+  | Tail, (Set _ | (* SetL _ |*) Mul _ | SetL _ | SRA _ | Mov _ | Neg _ | Add _ | Sub _ | SLL _ | Ld _ | MovFToI _ | F2I _ as exp) ->
       g' oc (NonTail(regs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
-  | Tail, (LdF _ | FSub _ | FNeg _ | FMov _ | FAdd _ | FMul _ | FDiv _ | SetF _ as exp) ->
+  | Tail, (LdF _ | FSub _ | FNeg _ | FMov _ | FAdd _ | FMul _ | FDiv _ | SetF _ | FAbs _ | FSqrt _ | I2F _ | Floor _ as exp) ->
       g' oc (NonTail(fregs.(0)), exp);
       fprintf oc "\tjr\t%s\n" reg_ra;
   | Tail, (Restore(x) as exp) ->
@@ -153,27 +166,27 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   | NonTail(a), CallCls(x, ys, zs) ->
       g'_args oc [(x, reg_cl)] ys zs;
       let ss = stacksize () in
-      fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
-      fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
-      print_int_ope oc "add" reg_sp reg_sp (C(ss));
-      fprintf oc "\tjalr\t%s\n" reg_sw;
-      print_int_ope oc "sub" reg_sp reg_sp (C(ss));
-      fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
-      if List.mem a allregs && a <> regs.(0) then
-	print_mov oc a regs.(0) (* a <- regs.(0) *)
-      else if List.mem a allfregs && a <> fregs.(0) then
-	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)
+	fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
+	fprintf oc "\tlw\t%s, [%s + 0]\n" reg_sw reg_cl;
+	print_int_ope oc "add" reg_sp reg_sp (C(ss));
+	fprintf oc "\tjalr\t%s\n" reg_sw;
+	print_int_ope oc "sub" reg_sp reg_sp (C(ss));
+	fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
+	if List.mem a allregs && a <> regs.(0) then
+	  print_mov oc a regs.(0) (* a <- regs.(0) *)
+	else if List.mem a allfregs && a <> fregs.(0) then
+	  fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)
   | NonTail(a), CallDir(Id.L(x), ys, zs) ->
       g'_args oc [] ys zs;
       let ss = stacksize () in
-      fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
-      print_int_ope oc "add" reg_sp reg_sp (C(ss));
-      fprintf oc "\tjal\t%s\n" x;
-      print_int_ope oc "sub" reg_sp reg_sp (C(ss));
-      fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
-      if List.mem a allregs && a <> regs.(0) then
-	print_mov oc a regs.(0)
-      else if List.mem a allfregs && a <> fregs.(0) then
+	fprintf oc "\tsw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
+	print_int_ope oc "add" reg_sp reg_sp (C(ss));
+	fprintf oc "\tjal\t%s\n" x;
+	print_int_ope oc "sub" reg_sp reg_sp (C(ss));
+	fprintf oc "\tlw\t%s, [%s + %d]\n" reg_ra reg_sp (ss - 1);
+	if List.mem a allregs && a <> regs.(0) then
+	  print_mov oc a regs.(0)
+	else if List.mem a allfregs && a <> fregs.(0) then
 	fprintf oc "\tmovf\t%s, %s\n" a fregs.(0)
 and g'_tail_if oc e1 e2 ope r1 r2 =
   let b_else = Id.genid (ope ^ "_else") in

@@ -2,7 +2,7 @@
 %{
 (* parserが利用する変数、関数、型などの定義 *)
 open Syntax
-let addtyp x = (x, Type.gentyp ())
+let addtyp x = (x, Type.gentyp (), Esc.gentyp ())
 %}
 
 /* 字句を表すデータ型の定義 (caml2html: parser_token) */
@@ -20,6 +20,7 @@ let addtyp x = (x, Type.gentyp ())
 %token AST_DOT
 %token SLASH_DOT
 %token EQUAL
+%token SMS SLS HP SP /* for debug */
 %token LESS_GREATER
 %token LESS_EQUAL
 %token GREATER_EQUAL
@@ -40,6 +41,7 @@ let addtyp x = (x, Type.gentyp ())
 %token LPAREN
 %token RPAREN
 %token EOF
+%token F2I I2F FSqrt FAbs FNeg Floor Sendc
 
 /* 優先順位とassociativityの定義（低い方から高い方へ） (caml2html: parser_prior) */
 %right prec_let
@@ -71,6 +73,14 @@ simple_exp: /* 括弧をつけなくても関数の引数になれる式 (caml2html: parser_simple)
     { Int($1) }
 | FLOAT
     { Float($1) }
+| SMS
+ { SMS }
+| SLS
+ { SLS }
+| HP
+ { HP }
+| SP
+  { SP }
 | IDENT
     { Var($1) }
 | simple_exp DOT LPAREN exp RPAREN
@@ -80,8 +90,29 @@ exp: /* 一般の式 (caml2html: parser_exp) */
 | simple_exp
     { $1 }
 | NOT exp
-    %prec prec_app
+   %prec prec_app
     { Not($2) }
+| F2I exp
+   %prec prec_app
+    { F2I($2) }
+| I2F exp
+   %prec prec_app
+    { I2F($2) }
+| FSqrt exp
+   %prec prec_app
+    { FSqrt($2) }
+| FAbs exp
+   %prec prec_app
+    { FAbs($2) }
+| FNeg exp
+   %prec prec_app
+    { FNeg($2) }
+| Floor exp
+   %prec prec_app
+     { Floor($2) }
+| Sendc exp
+   %prec prec_app
+    { Sendc($2) }
 | MINUS exp
     %prec prec_unary_minus
     { match $2 with
@@ -91,7 +122,7 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     { Add($1, $3) }
 | exp MINUS exp
     { Sub($1, $3) }
-| exp MUL exp /* 足し算を構文解析するルール (caml2html: parser_add) */
+| exp MUL exp
     { Mul($1, $3) }
 | exp DIV exp
     { Div($1, $3) }
@@ -131,16 +162,16 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     %prec prec_app
     { App($1, $2) }
 | elems
-    { Tuple($1) }
+	{ Tuple($1, Esc.gentyp ()) }
 | LET LPAREN pat RPAREN EQUAL exp IN exp
     { LetTuple($3, $6, $8) }
 | simple_exp DOT LPAREN exp RPAREN LESS_MINUS exp
     { Put($1, $4, $7) }
 | exp SEMICOLON exp
-    { Let((Id.gentmp Type.Unit, Type.Unit), $1, $3) }
+    { Let(addtyp (Id.genid "continue"), $1, $3) }
 | ARRAY_CREATE simple_exp simple_exp
     %prec prec_app
-    { Array($2, $3) }
+    { Array($2, $3, Esc.gentyp ()) }
 | error
 	{ failwith
 	(Printf.sprintf "parse error near characters %d-%d, L: %d, R: %d"

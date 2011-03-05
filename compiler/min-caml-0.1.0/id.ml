@@ -20,7 +20,7 @@ let rec id_of_typ = function
   | Type.Float -> "d"
   | Type.Fun _ -> "f"
   | Type.Tuple _ -> "t"
-  | Type.Array _ -> "a" 
+  | Type.Array _ -> "a"
   | Type.Var _ -> failwith "fail@id.ml"
 let gentmp typ =
   incr counter;

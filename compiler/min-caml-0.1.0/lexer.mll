@@ -29,18 +29,40 @@ rule token = parse
     { BOOL(false) }
 | "not"
     { NOT }
+| "_stack_map_size"
+    { SMS }
+| "_stack_list_size"
+    { SLS }
+| "_sp"
+    { SP }
+| "_hp"
+    { HP }
 | digit+ (* 整数を字句解析するルール (caml2html: lexer_int) *)
     { INT(int_of_string (Lexing.lexeme lexbuf)) }
 | digit+ ('.' digit*)? (['e' 'E'] ['+' '-']? digit+)?
     { FLOAT(float_of_string (Lexing.lexeme lexbuf)) }
-| '-' (* -.より後回しにしなくても良い? 最長一致? *)
+| '-' (* -.より後回しにしなくても良い? 最長一致? *) (* <- 最長一致なのでok。それでも、ふるいきれない場合のみ、上にあるものが優先される(そんな場合ある?) *)
     { MINUS }
 | '*' (* +.より後回しにしなくても良い? 最長一致? *)
     { MUL }
-| '/' 
+| '/'
     { DIV }
-| '+' 
+| '+'
     { PLUS }
+| "int_of_float"
+   { F2I }
+| "float_of_int"
+   { I2F }
+| "sqrt"
+   { FSqrt }
+| "fabs"
+   { FAbs }
+| "fneg"
+   { FNeg }
+| "floor"
+   { Floor }
+| "print_char"
+   { Sendc }
 | "-."
     { MINUS_DOT }
 | "+."

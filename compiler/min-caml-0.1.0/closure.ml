@@ -7,12 +7,22 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | Unit
   | Int of int
   | Float of float
+  | SMS (* mapsize *)
+  | SLS (* listsize *)
+  | HP
+  | SP
   | Neg of Id.t
   | Add of Id.t * Id.t
   | Sub of Id.t * Id.t
   | SRA of Id.t * int
   | Mul of Id.t * Id.t
   | FNeg of Id.t
+  | FAbs of Id.t
+  | FSqrt of Id.t
+  | F2I of Id.t
+  | I2F of Id.t
+  | Floor of Id.t
+  | Sendc of Id.t
   | FAdd of Id.t * Id.t
   | FSub of Id.t * Id.t
   | FMul of Id.t * Id.t
@@ -21,30 +31,31 @@ type t = (* クロージャ変換後の式 (caml2html: closure_t) *)
   | IfLE of Id.t * Id.t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
-  | MakeCls of (Id.t * Type.t) * closure * t
+  | MakeCls of (Id.t * Type.t * Esc.t) * closure * t
   | AppCls of Id.t * Id.t list (* apply closure *)
   | AppDir of Id.l * Id.t list (* apply top level function *)
-  | Tuple of Id.t list
+  | Tuple of Id.t list * Esc.t
   | LetTuple of (Id.t * Type.t) list * Id.t * t
   | Get of Id.t * Id.t
   | Put of Id.t * Id.t * Id.t
   | ExtArray of Id.l
+  | CreateArray of Id.t * Id.t * Type.t * Esc.t
 type fundef = { name : Id.l * Type.t;
 		args : (Id.t * Type.t) list;
 		formal_fv : (Id.t * Type.t) list;
 		body : t }
 type prog = Prog of fundef list * t
-
 let rec fv = function (* 自由変数のリスト *)
   | Unit | Int(_) | Float(_) | ExtArray(_) -> S.empty
-  | Neg(x) | FNeg(x) | SRA(x, _) -> S.singleton x
-  | Add(x, y) | Sub(x, y) | Get(x, y) | Mul(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y)  -> S.of_list [x; y]
+  | SMS | SLS | HP | SP -> S.empty
+  | Neg(x) | FNeg(x) | SRA(x, _) | FAbs(x) | FSqrt(x) | F2I(x) | I2F(x) | Floor(x) | Sendc(x) -> S.singleton x
+  | CreateArray(x, y, _, _) | Add(x, y) | Sub(x, y) | Get(x, y) | Mul(x, y) | FAdd(x, y) | FSub(x, y) | FMul(x, y) | FDiv(x, y)  -> S.of_list [x; y]
   | IfEq(x, y, e1, e2)| IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
-  | MakeCls((x, t), { entry = l; actual_fv = ys }, e) -> S.remove x (S.union (S.of_list ys) (fv e))
+  | MakeCls((x, t, _), { entry = l; actual_fv = ys }, e) -> S.remove x (S.union (S.of_list ys) (fv e))
   | AppCls(x, ys) -> S.of_list (x :: ys)
-  | AppDir(_, xs) | Tuple(xs) -> S.of_list xs
+  | AppDir(_, xs) | Tuple(xs, _) -> S.of_list xs
   | LetTuple(xts, y, e) -> S.add y (S.diff (fv e) (S.of_list (List.map fst xts)))
   | Put(x, y, z) -> S.of_list [x; y; z]
 
@@ -56,11 +67,21 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
   | KNormal.Int(i) -> Int(i)
   | KNormal.Float(d) -> Float(d)
   | KNormal.Neg(x) -> Neg(x)
+  | KNormal.SMS -> SMS
+  | KNormal.SLS -> SLS
+  | KNormal.HP -> HP
+  | KNormal.SP -> SP
   | KNormal.Add(x, y) -> Add(x, y)
   | KNormal.Sub(x, y) -> Sub(x, y)
   | KNormal.SRA(x, y) -> SRA(x, y)
   | KNormal.Mul(x, y) -> Mul(x, y)
   | KNormal.FNeg(x) -> FNeg(x)
+  | KNormal.FSqrt(x) -> FSqrt(x)
+  | KNormal.FAbs(x) -> FAbs(x)
+  | KNormal.F2I(x) -> F2I(x)
+  | KNormal.I2F(x) -> I2F(x)
+  | KNormal.Floor(x) -> Floor(x)
+  | KNormal.Sendc(x) -> Sendc(x)
   | KNormal.FAdd(x, y) -> FAdd(x, y)
   | KNormal.FSub(x, y) -> FSub(x, y)
   | KNormal.FMul(x, y) -> FMul(x, y)
@@ -69,7 +90,7 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
   | KNormal.IfLE(x, y, e1, e2) -> IfLE(x, y, g env known e1, g env known e2)
   | KNormal.Let((x, t), e1, e2) -> Let((x, t), g env known e1, g (M.add x t env) known e2)
   | KNormal.Var(x) -> Var(x)
-  | KNormal.LetRec({ KNormal.name = (x, t); KNormal.args = yts; KNormal.body = e1 }, e2) -> (* 関数定義の場合 (caml2html: closure_letrec) *)
+  | KNormal.LetRec({ KNormal.name = (x, t, esc); KNormal.args = yts; KNormal.body = e1 }, e2) -> (* 関数定義の場合 (caml2html: closure_letrec) *)
       (* 関数定義let rec x y1 ... yn = e1 in e2の場合は、
 	 xに自由変数がない(closureを介さずdirectに呼び出せる)
 	 と仮定し、knownに追加してe1をクロージャ変換してみる *)
@@ -83,26 +104,27 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
       let zs = S.diff (fv e1') (S.of_list (List.map fst yts)) in
       let known', e1' =
 	if S.is_empty zs then known', e1' else
-	(* 駄目だったら状態(toplevelの値)を戻して、クロージャ変換をやり直す *)
-	(Format.eprintf "free variable(s) %s found in function %s@." (Id.pp_list (S.elements zs)) x;
-	 Format.eprintf "function %s cannot be directly applied in fact@." x;
-	 toplevel := toplevel_backup;
-	 let e1' = g (M.add_list yts env') known e1 in
-	 known, e1') in
+	  (* 駄目だったら状態(toplevelの値)を戻して、クロージャ変換をやり直す *)
+	  (Format.eprintf "free variable(s) %s found in function %s@." (Id.pp_list (S.elements zs)) x;
+	   Format.eprintf "function %s cannot be directly applied in fact@." x;
+	   toplevel := toplevel_backup;
+	   let e1' = g (M.add_list yts env') known e1 in
+	     known, e1') in
       let zs = S.elements (S.diff (fv e1') (S.add x (S.of_list (List.map fst yts)))) in (* 自由変数のリスト *)
       let zts = List.map (fun z -> (z, M.find z env')) zs in (* ここで自由変数zの型を引くために引数envが必要 *)
-      toplevel := { name = (Id.L(x), t); args = yts; formal_fv = zts; body = e1' } :: !toplevel; (* トップレベル関数を追加 *)
-      let e2' = g env' known' e2 in
-      if S.mem x (fv e2') then (* xが変数としてe2'に出現するか *)
-	MakeCls((x, t), { entry = Id.L(x); actual_fv = zs }, e2') (* 出現していたら削除しない *)
-      else
-	(Format.eprintf "eliminating closure(s) %s@." x;
-	 e2') (* 出現しなければMakeClsを削除 *)
+	toplevel := { name = (Id.L(x), t); args = yts; formal_fv = zts; body = e1' } :: !toplevel; (* トップレベル関数を追加 *)
+	let e2' = g env' known' e2 in
+	  if S.mem x (fv e2') then (* xが変数としてe2'に出現するか *)
+	    MakeCls((x, t, esc), { entry = Id.L(x); actual_fv = zs }, e2') (* 出現していたら削除しない *)
+	  else
+	    (Format.eprintf "eliminating closure(s) %s@." x;
+	     e2') (* 出現しなければMakeClsを削除 *)
   | KNormal.App(x, ys) when S.mem x known -> (* 関数適用の場合 (caml2html: closure_app) *)
       Format.eprintf "directly applying %s@." x;
       AppDir(Id.L(x), ys)
   | KNormal.App(f, xs) -> AppCls(f, xs)
-  | KNormal.Tuple(xs) -> Tuple(xs)
+  | KNormal.CreateArray(x, y, t, esc) -> CreateArray(x, y, t, esc)
+  | KNormal.Tuple(xs, esc) -> Tuple(xs, esc)
   | KNormal.LetTuple(xts, y, e) -> LetTuple(xts, y, g (M.add_list xts env) known e)
   | KNormal.Get(x, y) -> Get(x, y)
   | KNormal.Put(x, y, z) -> Put(x, y, z)
@@ -128,20 +150,31 @@ let print_t t = (* Closure.t -> Closure.t *)
 	 | Int i -> printf "Int(%s)\n" (string_of_int i)
 	 | Float f -> printf "Float(%s)\n" (string_of_float f)
 	 | Var t -> printf "Var(%s)\n" t
-	 | Tuple t -> printf "Tuple Start\n";List.iter (pi ();printf "  %s\n") t;pi ();printf "Tuple end\n"
+	 | Tuple(t, esc) -> printf "Tuple Start : %s\n" (Esc.str esc);List.iter (pi ();printf "  %s\n") t;pi ();printf "Tuple end\n"
 	 | Neg t -> printf "Neg %s\n" t;
+	 | SLS -> printf "SLS\n"
+	 | SMS -> printf "SMS\n"
+	 | HP -> printf "HP\n"
+	 | SP -> printf "SP\n"
+	 | CreateArray(t1, t2, _, esc) -> printf "CreateArray %s %s : %s\n" t1 t2 (Esc.str esc)
 	 | Add(t1, t2) -> printf "Add %s + %s\n" t1 t2
 	 | Sub(t1, t2) -> printf "Sub %s - %s\n" t1 t2
 	 | Mul(t1, t2) -> printf "Mul %s + %s\n" t1 t2
 	 | SRA(t1, i) -> printf "SRA %s %d\n" t1 i
 	 | FNeg t -> printf "FNeg %s\n" t
+	 | F2I t -> printf "F2I %s\n" t
+	 | I2F t -> printf "I2F %s\n" t
+	 | FSqrt t -> printf "FSqrt %s\n" t
+	 | FAbs t -> printf "FAbs %s\n" t
 	 | FAdd(t1, t2) -> printf "FAdd %s +. %s\n" t1 t2
 	 | FSub(t1, t2) -> printf "FSub %s -. %s\n" t1 t2
 	 | FMul(t1, t2) -> printf "FMul %s *. %s\n" t1 t2
 	 | FDiv(t1, t2) -> printf "FDiv %s /. %s\n" t1 t2
+	 | Floor t -> printf "Floor %s\n" t
+	 | Sendc t -> printf "Sendc %s\n" t
 	 | IfEq(t1, t2, t3, t4) -> printf "IF %s = %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
 	 | IfLE(t1, t2, t3, t4) -> printf "IF %s <= %s THEN\n" t1 t2;pt i t3;pi ();printf "ELSE\n";pt i t4
-	 | Let((t1, _), t3, t4) -> printf "LET %s =\n" t1;pt i t3;pi ();printf "IN\n";pt i t4
+	 | Let((t1, typ), t3, t4) -> printf "LET %s(%s) =\n" t1 (Type.str_of_t typ);pt i t3;pi ();printf "IN\n";pt i t4
 	 | LetTuple(itl, t1, t2) -> (printf "LETTUPLE\n";
 				    (List.iter
 				      (fun (id, _ ) -> pi ();printf "  %s\n" id)
@@ -152,7 +185,7 @@ let print_t t = (* Closure.t -> Closure.t *)
 	 | ExtArray(Id.L(t)) -> printf "ExtArray %s\n" t
 	 | Get(t1, t2) -> printf "GET %s %s\n" t1 t2
 	 | Put(t1, t2, t3) -> printf "PUT %s %s %s\n" t1 t2 t3
-	 | MakeCls((t1, typ), clo, t2) ->  (printf "MakeCls %s\n" t1;
+	 | MakeCls((t1, typ, esc), clo, t2) ->  (printf "MakeCls %s(%s)\n" t1 (Esc.str esc);
 					    pi ();printf "entry: %s\n" (Id.str_of_l clo.entry))
 	 | AppCls(t, tl) -> (printf "AppCls %s\n" t;
 			     pi ();List.iter (fun t -> printf "  %s" t) tl;printf "\n")
@@ -165,5 +198,5 @@ let print (Prog(fundef_list, t)) = (* Closure.prog -> Closure.prog *)
     printf "<<< fundef : %s >>>\nargs:" (Id.str_of_l (fst f.name));
     List.iter (fun (t,_) -> printf "  %s" t) f.args;
     printf "\nformal_fv:";List.iter (fun (t,_) -> printf "  %s" t) f.formal_fv;printf "\n";
-    printf "body:\n";ignore(print_t f.body);()    
+    printf "body:\n";ignore(print_t f.body);()
   in (printf "=== Closure.prog ===\nfundef_list:\n";List.iter print_fundef fundef_list;ignore (print_t t);printf "=== END ===\n";Prog(fundef_list, t))

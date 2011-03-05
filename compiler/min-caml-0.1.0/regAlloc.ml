@@ -1,4 +1,6 @@
+(* -*- coding:euc-jp -*- *)
 open Asm
+open Printf
 
 (* for register coalescing *)
 (* [XXX] Call¤¬¤¢¤Ã¤¿¤é¡¢¤½¤³¤«¤éÀè¤ÏÌµ°ÕÌ£¤È¤¤¤¦¤«µÕ¸ú²Ì¤Ê¤Î¤ÇÄÉ¤ï¤Ê¤¤¡£
@@ -95,7 +97,7 @@ let find' x' regenv = (* imm_or_¤Ê¤ó¤Á¤ã¤éÍÑ *)
   | c -> c
 
 let rec g dest cont regenv = function (* Ì¿ÎáÎó¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regalloc_g) *)
-  | Ans(exp) -> g'_and_restore dest cont regenv exp 
+  | Ans(exp) -> g'_and_restore dest cont regenv exp
   | Let((x, t) as xt, exp, e) ->
       assert (not (M.mem x regenv));
       let cont' = concat e dest cont in
@@ -106,7 +108,7 @@ let rec g dest cont regenv = function (* Ì¿ÎáÎó¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: re
 	  let (e2', regenv2) = g dest cont (add x r (M.remove y regenv1)) e in
 	  let save =
 	    try Save(M.find y regenv, y)
-	    with Not_found -> Nop in	    
+	    with Not_found -> Nop in
 	  (seq(save, concat e1' (r, t) e2'), regenv2)
       | Alloc(r) ->
 	  let (e2', regenv2) = g dest cont (add x r regenv1) e in
@@ -117,7 +119,7 @@ and g'_and_restore dest cont regenv exp = (* »ÈÍÑ¤µ¤ì¤ëÊÑ¿ô¤ò¥¹¥¿¥Ã¥¯¤«¤é¥ì¥¸¥¹¥
     ((* Format.eprintf "restoring %s@." x; *)
      g dest cont regenv (Let((x, t), Restore(x), Ans(exp))))
 and g' dest cont regenv = function (* ³ÆÌ¿Îá¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regalloc_gprime) *)
-  | Nop | Set _ | SetL _ | SetF _ | Comment _ | Restore _ as exp -> (Ans(exp), regenv)
+  | Nop | Set _ | SetL _ | SetF _ | Comment _ | Restore _ | SMS | SLS | HP | SP | GetStackTop as exp -> (Ans(exp), regenv)
   | Mov(x) -> (Ans(Mov(find x Type.Int regenv)), regenv)
   | Neg(x) -> (Ans(Neg(find x Type.Int regenv)), regenv)
   | MovFToI(x) -> (Ans(MovFToI(find x Type.Float regenv)), regenv)
@@ -128,14 +130,22 @@ and g' dest cont regenv = function (* ³ÆÌ¿Îá¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regal
   | SLL(x, y) -> (Ans(SLL(find x Type.Int regenv, y)), regenv)
   | Ld(x, y) -> (Ans(Ld(find x Type.Int regenv, y)), regenv)
   | St(x, y, z) -> (Ans(St(find x Type.Int regenv, find y Type.Int regenv, z)), regenv)
+  | StackSt(x, y, z) -> (Ans(StackSt(find x Type.Int regenv, find y Type.Int regenv, z)), regenv)
   | FMov(x) -> (Ans(FMov(find x Type.Float regenv)), regenv)
   | FNeg(x) -> (Ans(FNeg(find x Type.Float regenv)), regenv)
+  | FAbs(x) -> (Ans(FAbs(find x Type.Float regenv)), regenv)
+  | FSqrt(x) -> (Ans(FSqrt(find x Type.Float regenv)), regenv)
+  | F2I(x) -> (Ans(F2I(find x Type.Float regenv)), regenv)
+  | I2F(x) -> (Ans(I2F(find x Type.Int regenv)), regenv)
+  | Floor(x) -> (Ans(Floor(find x Type.Float regenv)), regenv)
+  | Sendc(x) -> (Ans(Sendc(find x Type.Int regenv)), regenv)
   | FAdd(x, y) -> (Ans(FAdd(find x Type.Float regenv, find y Type.Float regenv)), regenv)
   | FSub(x, y) -> (Ans(FSub(find x Type.Float regenv, find y Type.Float regenv)), regenv)
   | FMul(x, y) -> (Ans(FMul(find x Type.Float regenv, find y Type.Float regenv)), regenv)
   | FDiv(x, y) -> (Ans(FDiv(find x Type.Float regenv, find y Type.Float regenv)), regenv)
   | LdF(x, y) -> (Ans(LdF(find x Type.Int regenv, y)), regenv)
   | StF(x, y, z) -> (Ans(StF(find x Type.Float regenv, find y Type.Int regenv, z)), regenv)
+  | StackStF(x, y, z) -> (Ans(StackStF(find x Type.Float regenv, find y Type.Int regenv, z)), regenv)
   | IfEq(x, y, e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfEq(find x Type.Int regenv, find y Type.Int regenv, e1', e2')) e1 e2 (* XXX *)
   | IfLE(x, y, e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfLE(find x Type.Int regenv, find y Type.Int regenv, e1', e2')) e1 e2
   | IfGE(x, y, e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfGE(find x Type.Int regenv, find y Type.Int regenv, e1', e2')) e1 e2
