@@ -1,3 +1,4 @@
+(*-*- coding:euc-jp -*-*)
 let rec fispos x = x > 0.0 in
 let rec fisneg x = x < 0.0 in
 let rec fiszero x = (x = 0.0) in
@@ -2403,6 +2404,6 @@ let rec rt size_x size_y =
 )
 in
 
-let _ = rt 256 256
+let _ = rt 128 128
 
 in 0
